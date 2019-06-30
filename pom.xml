@@ -57,6 +57,7 @@
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
+                    <createSourcesJar>true</createSourcesJar>
                 </configuration>
             </plugin>
             <plugin>
