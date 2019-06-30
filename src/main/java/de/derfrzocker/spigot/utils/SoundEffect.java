@@ -22,9 +22,9 @@ public class SoundEffect implements ConfigurationSerializable {
     private final static String SOUND_KEY = "sound";
     private final static String VOLUME_KEY = "volume";
     private final static String PITCH_KEY = "pitch";
-    private final static String X_INCREMENTAL_KEY = "x-incremental";
-    private final static String Y_INCREMENTAL_KEY = "y-incremental";
-    private final static String Z_INCREMENTAL_KEY = "z-incremental";
+    private final static String X_RELATIVE_KEY = "x-relative";
+    private final static String Y_RELATIVE_KEY = "y-relative";
+    private final static String Z_RELATIVE_KEY = "z-relative";
     private final static String X_KEY = "x";
     private final static String Y_KEY = "y";
     private final static String Z_KEY = "z";
@@ -35,9 +35,9 @@ public class SoundEffect implements ConfigurationSerializable {
     private final Sound sound;
     private final float volume;
     private final float pitch;
-    private final boolean xIncremental;
-    private final boolean yIncremental;
-    private final boolean zIncremental;
+    private final boolean xRelative;
+    private final boolean yRelative;
+    private final boolean zRelative;
     private final double x;
     private final double y;
     private final double z;
@@ -48,13 +48,13 @@ public class SoundEffect implements ConfigurationSerializable {
         double y = this.y;
         double z = this.z;
 
-        if (xIncremental)
+        if (xRelative)
             x += player.getLocation().getX();
 
-        if (yIncremental)
+        if (yRelative)
             y += player.getLocation().getY();
 
-        if (zIncremental)
+        if (zRelative)
             z += player.getLocation().getZ();
 
         Location location = new Location(player.getWorld(), x, y, z);
@@ -74,9 +74,9 @@ public class SoundEffect implements ConfigurationSerializable {
         map.put(SOUND_KEY, getSound().toString());
         map.put(VOLUME_KEY, getVolume());
         map.put(PITCH_KEY, getPitch());
-        map.put(X_INCREMENTAL_KEY, isXIncremental());
-        map.put(Y_INCREMENTAL_KEY, isYIncremental());
-        map.put(Z_INCREMENTAL_KEY, isZIncremental());
+        map.put(X_RELATIVE_KEY, isXRelative());
+        map.put(Y_RELATIVE_KEY, isYRelative());
+        map.put(Z_RELATIVE_KEY, isZRelative());
         map.put(X_KEY, getX());
         map.put(Y_KEY, getY());
         map.put(Z_KEY, getZ());
@@ -89,9 +89,9 @@ public class SoundEffect implements ConfigurationSerializable {
         final Sound sound = Sound.valueOf((String) map.get(SOUND_KEY));
         final float volume = ((Number) map.get(VOLUME_KEY)).floatValue();
         final float pitch = ((Number) map.get(PITCH_KEY)).floatValue();
-        final boolean xIncremental = (boolean) map.get(X_INCREMENTAL_KEY);
-        final boolean yIncremental = (boolean) map.get(Y_INCREMENTAL_KEY);
-        final boolean zIncremental = (boolean) map.get(Z_INCREMENTAL_KEY);
+        final boolean xIncremental = (boolean) map.get(X_RELATIVE_KEY);
+        final boolean yIncremental = (boolean) map.get(Y_RELATIVE_KEY);
+        final boolean zIncremental = (boolean) map.get(Z_RELATIVE_KEY);
         final double x = ((Number) map.get(X_KEY)).doubleValue();
         final double y = ((Number) map.get(Y_KEY)).doubleValue();
         final double z = ((Number) map.get(Z_KEY)).doubleValue();
@@ -113,8 +113,8 @@ public class SoundEffect implements ConfigurationSerializable {
 
         if (section.isDouble(X_KEY)) {
             x = section.getDouble(X_KEY);
-            if (section.contains(X_INCREMENTAL_KEY)) {
-                xIncremental = section.getBoolean(X_INCREMENTAL_KEY);
+            if (section.contains(X_RELATIVE_KEY)) {
+                xIncremental = section.getBoolean(X_RELATIVE_KEY);
             } else {
                 xIncremental = false;
             }
@@ -137,8 +137,8 @@ public class SoundEffect implements ConfigurationSerializable {
 
         if (section.isDouble(Y_KEY)) {
             y = section.getDouble(Y_KEY);
-            if (section.contains(Y_INCREMENTAL_KEY)) {
-                yIncremental = section.getBoolean(Y_INCREMENTAL_KEY);
+            if (section.contains(Y_RELATIVE_KEY)) {
+                yIncremental = section.getBoolean(Y_RELATIVE_KEY);
             } else {
                 yIncremental = false;
             }
@@ -161,8 +161,8 @@ public class SoundEffect implements ConfigurationSerializable {
 
         if (section.isDouble(Z_KEY)) {
             z = section.getDouble(Z_KEY);
-            if (section.contains(Z_INCREMENTAL_KEY)) {
-                zIncremental = section.getBoolean(Z_INCREMENTAL_KEY);
+            if (section.contains(Z_RELATIVE_KEY)) {
+                zIncremental = section.getBoolean(Z_RELATIVE_KEY);
             } else {
                 zIncremental = false;
             }
@@ -185,6 +185,5 @@ public class SoundEffect implements ConfigurationSerializable {
 
         return new SoundEffect(soundCategory, sound, volume, pitch, xIncremental, yIncremental, zIncremental, x, y, z);
     }
-
 
 }
