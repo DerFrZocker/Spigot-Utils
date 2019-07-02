@@ -95,23 +95,19 @@ public class Config extends YamlConfiguration {
 
         File file = new File(plugin.getDataFolder().getPath(), name);
 
-        Config defaults = null;
+        Config defaults = new Config(plugin.getResource(name));
 
-        if (file.exists())
-            defaults = new Config(plugin.getResource(name));
-        else
+        if (!file.exists())
             plugin.saveResource(name, true);
 
         Config config = new Config(file);
 
-        if (defaults != null) {
-            config.setDefaults(defaults);
-            config.options().copyDefaults(true);
-            try {
-                config.save(file);
-            } catch (IOException e) {
-                throw new RuntimeException("Error while save data to file: " + file, e);
-            }
+        config.setDefaults(defaults);
+        config.options().copyDefaults(true);
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while save data to file: " + file, e);
         }
 
         return config;
