@@ -30,6 +30,11 @@ public class Messages implements ReloadAble {
         return MESSAGESS.get(language);
     }
 
+    public static void unLoadMessages(Language language){
+        RELOAD_ABLES.remove(MESSAGESS.get(language));
+        MESSAGESS.remove(language);
+    }
+
     public Messages(JavaPlugin plugin, Language language) {
         this.language = language;
         this.plugin = plugin;
