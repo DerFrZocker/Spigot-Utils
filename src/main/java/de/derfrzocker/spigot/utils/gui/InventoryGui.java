@@ -1,44 +1,63 @@
 package de.derfrzocker.spigot.utils.gui;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-public interface InventoryGui extends InventoryHolder {
+@RequiredArgsConstructor
+public abstract class InventoryGui {
 
-    void onInventoryClick(InventoryClickEvent event);
+    private static final Set<HumanEntity> HUMAN_ENTITY_SET = Collections.synchronizedSet(new HashSet<>());
 
-    default void openSync(final @NonNull HumanEntity entity, final @NonNull Inventory inventory) {
+    @Getter
+    @NonNull
+    private final JavaPlugin plugin;
+
+
+    abstract Inventory getInventory();
+
+    public abstract void onClick(final @NonNull InventoryClickEvent event);
+
+    public void openSync(final @NonNull HumanEntity entity) {
         if (Bukkit.isPrimaryThread()) {
-            entity.openInventory(inventory);
+            InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(this);
+            entity.openInventory(getInventory());
             return;
         }
 
         try {
-            Bukkit.getScheduler().callSyncMethod(InventoryClickListener.getPlugin(), () -> entity.openInventory(inventory)).get();
+            Bukkit.getScheduler().callSyncMethod(getPlugin(), () -> {
+                InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(this);
+                return entity.openInventory(getInventory());
+            }).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error while open inventory Sync!", e);
         }
     }
 
-    default void closeSync(final @NonNull HumanEntity entity) {
+    public void closeSync(final @NonNull HumanEntity entity) {
         if (Bukkit.isPrimaryThread()) {
             entity.closeInventory();
             return;
         }
 
         try {
-            Bukkit.getScheduler().callSyncMethod(InventoryClickListener.getPlugin(), () -> {
+            Bukkit.getScheduler().callSyncMethod(getPlugin(), () -> {
                 entity.closeInventory();
                 return true;
             }).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error while close inventory Sync!", e);
         }
     }
 

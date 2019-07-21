@@ -4,6 +4,7 @@ import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,9 +16,9 @@ public class MessageUtil {
     private final static int DEFAULT_LORE_LENGTH = 40;
     private final static int MINIMUM_LORE_LENGTH = 15;
 
-    public static String replacePlaceHolder(@NonNull String string, @NonNull MessageValue... messageValues) {
+    public static String replacePlaceHolder(@NonNull JavaPlugin plugin, @NonNull String string, @NonNull MessageValue... messageValues) {
 
-        string = replaceTranslation(string, messageValues);
+        string = replaceTranslation(plugin, string, messageValues);
 
         string = ChatColor.translateAlternateColorCodes('&', string);
 
@@ -28,36 +29,36 @@ public class MessageUtil {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static List<String> replaceList(@NonNull List<String> strings, @NonNull MessageValue... messageValues) {
+    public static List<String> replaceList(@NonNull JavaPlugin plugin, @NonNull List<String> strings, @NonNull MessageValue... messageValues) {
         List<String> list = new LinkedList<>();
 
-        strings.forEach(value -> list.add(replacePlaceHolder(value, messageValues)));
+        strings.forEach(value -> list.add(replacePlaceHolder(plugin, value, messageValues)));
 
         return list;
     }
 
-    public static ItemStack replaceItemStack(@NonNull ItemStack itemStack, @NonNull MessageValue... messageValues) {
+    public static ItemStack replaceItemStack(@NonNull JavaPlugin plugin, @NonNull ItemStack itemStack, @NonNull MessageValue... messageValues) {
         itemStack = itemStack.clone();
 
         if (!itemStack.hasItemMeta())
             return itemStack;
 
-        itemStack.setItemMeta(replaceItemMeta(itemStack.getItemMeta(), messageValues));
+        itemStack.setItemMeta(replaceItemMeta(plugin, itemStack.getItemMeta(), messageValues));
 
         return itemStack;
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static ItemMeta replaceItemMeta(@NonNull ItemMeta itemMeta, @NonNull MessageValue... messageValues) {
+    public static ItemMeta replaceItemMeta(@NonNull JavaPlugin plugin, @NonNull ItemMeta itemMeta, @NonNull MessageValue... messageValues) {
         final ItemMeta meta = itemMeta.clone();
 
         if (meta.hasDisplayName())
-            meta.setDisplayName(replacePlaceHolder(meta.getDisplayName(), messageValues));
+            meta.setDisplayName(replacePlaceHolder(plugin, meta.getDisplayName(), messageValues));
 
         if (meta.hasLore()) {
             final List<String> lore = new LinkedList<>();
 
-            replaceList(meta.getLore(), messageValues).forEach(string -> lore.addAll(splitString(string, meta.hasDisplayName() ? meta.getDisplayName().length() < MINIMUM_LORE_LENGTH ? DEFAULT_LORE_LENGTH : meta.getDisplayName().length() : DEFAULT_LORE_LENGTH)));
+            replaceList(plugin, meta.getLore(), messageValues).forEach(string -> lore.addAll(splitString(string, meta.hasDisplayName() ? meta.getDisplayName().length() < MINIMUM_LORE_LENGTH ? DEFAULT_LORE_LENGTH : meta.getDisplayName().length() : DEFAULT_LORE_LENGTH)));
 
             meta.setLore(lore);
         }
@@ -80,10 +81,7 @@ public class MessageUtil {
 
 
     // %%translation:[example.string]%
-    public static String replaceTranslation(@NonNull String string, @NonNull MessageValue... messageValues) {
-        if (Messages.getMessages() == null)
-            return string;
-
+    public static String replaceTranslation(@NonNull JavaPlugin plugin, @NonNull String string, @NonNull MessageValue... messageValues) {
         if (!string.contains("%%translation:["))
             return string;
 
@@ -95,9 +93,9 @@ public class MessageUtil {
         while (matcher.find()) {
             String key = stringBuilder.substring(matcher.start() + 15, matcher.end() - 2);
 
-            key = replacePlaceHolder(key, messageValues);
+            key = replacePlaceHolder(plugin, key, messageValues);
 
-            stringBuilder.replace(matcher.start(), matcher.end(), new MessageKey(Messages.getMessages(), key).getMessage());
+            stringBuilder.replace(matcher.start(), matcher.end(), new MessageKey(plugin, key).getRawMessage());
 
             matcher = pattern.matcher(stringBuilder.toString());
         }

@@ -13,4 +13,10 @@ public class MessageValue {
 
     @NonNull
     private final String value;
+
+    public MessageValue(String key, Object value) {
+        this.key = key;
+        this.value = value.toString();
+    }
+
 }

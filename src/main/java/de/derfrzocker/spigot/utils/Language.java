@@ -28,14 +28,14 @@ public enum Language {
         return Stream.of(values()).filter(value -> value.getName().equalsIgnoreCase(name)).findAny().orElseThrow(IllegalArgumentException::new);
     }
 
-    public static Language getDefaultLanguage(){
-        if(languageSupplier == null)
+    public static Language getDefaultLanguage() {
+        if (languageSupplier == null)
             return CUSTOM;
 
         return languageSupplier.get();
     }
 
-    public static void setDefaultLanguage(Supplier<Language> defaultLanguage){
+    public static void setDefaultLanguage(Supplier<Language> defaultLanguage) {
         languageSupplier = defaultLanguage;
     }
 

@@ -2,21 +2,25 @@ package de.derfrzocker.spigot.utils.gui;
 
 import de.derfrzocker.spigot.utils.MessageUtil;
 import de.derfrzocker.spigot.utils.MessageValue;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-public abstract class PageGui<T> implements InventoryGui {
+public abstract class PageGui<T> extends InventoryGui {
 
     private final Map<Integer, SubPageGui> guis = new HashMap<>();
 
@@ -35,6 +39,10 @@ public abstract class PageGui<T> implements InventoryGui {
     private int previousPage;
 
     private boolean init = false;
+
+    public PageGui(JavaPlugin plugin) {
+        super(plugin);
+    }
 
     public void init(final T[] values, final IntFunction<T[]> function, final PageSettings pageSettings, final Function<T, ItemStack> itemStackFunction, BiConsumer<T, InventoryClickEvent> eventBiConsumer) {
         if (this.init)
@@ -75,18 +83,38 @@ public abstract class PageGui<T> implements InventoryGui {
     }
 
     @Override
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onClick(InventoryClickEvent event) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Inventory getInventory() {
-        return guis.get(0).getInventory();
+    Inventory getInventory() {
+        guis.values().toArray(new Object[0]);
+        throw new UnsupportedOperationException();
     }
 
-    private final class SubPageGui implements InventoryGui {
+    @Override
+    public void openSync(HumanEntity entity) {
+        final SubPageGui subPageGui = guis.get(0);
+        if (Bukkit.isPrimaryThread()) {
+            InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(subPageGui);
+            entity.openInventory(subPageGui.getInventory());
+            return;
+        }
 
-        @Getter
+        try {
+            Bukkit.getScheduler().callSyncMethod(getPlugin(), () -> {
+                InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(subPageGui);
+                return entity.openInventory(subPageGui.getInventory());
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Error while open inventory Sync!", e);
+        }
+    }
+
+    private final class SubPageGui extends InventoryGui {
+
+        @Getter(AccessLevel.PACKAGE)
         private final Inventory inventory;
 
         private final int page;
@@ -94,18 +122,19 @@ public abstract class PageGui<T> implements InventoryGui {
         private final Map<Integer, T> values = new HashMap<>();
 
         private SubPageGui(final T[] values, final int page) {
+            super(PageGui.super.getPlugin());
             this.page = page;
 
             final MessageValue[] messageValues = new MessageValue[]{new MessageValue("page", String.valueOf(page)), new MessageValue("pages", String.valueOf(pages))};
 
-            this.inventory = Bukkit.createInventory(this, pageSettings.getRows() * 9,
-                    MessageUtil.replacePlaceHolder(pageSettings.getInventoryName(), messageValues));
+            this.inventory = Bukkit.createInventory(null, pageSettings.getRows() * 9,
+                    MessageUtil.replacePlaceHolder(getPlugin(), pageSettings.getInventoryName(), messageValues));
 
             if (page + 1 != pages)
-                inventory.setItem(nextPage, MessageUtil.replaceItemStack(pageSettings.getNextPageItemStack(), messageValues));
+                inventory.setItem(nextPage, MessageUtil.replaceItemStack(getPlugin(), pageSettings.getNextPageItemStack(), messageValues));
 
             if (page != 0)
-                inventory.setItem(previousPage, MessageUtil.replaceItemStack(pageSettings.getPreviousPageItemStack(), messageValues));
+                inventory.setItem(previousPage, MessageUtil.replaceItemStack(getPlugin(), pageSettings.getPreviousPageItemStack(), messageValues));
 
             for (int i = 0; i < values.length; i++) {
                 final T value = values[i];
@@ -120,14 +149,14 @@ public abstract class PageGui<T> implements InventoryGui {
         }
 
         @Override
-        public void onInventoryClick(final InventoryClickEvent event) {
+        public void onClick(final InventoryClickEvent event) {
             if (event.getRawSlot() == previousPage && page != 0) {
-                openSync(event.getWhoClicked(), guis.get(page - 1).getInventory());
+                guis.get(page - 1).openSync(event.getWhoClicked());
                 return;
             }
 
             if (event.getRawSlot() == nextPage && page + 1 != pages) {
-                openSync(event.getWhoClicked(), guis.get(page + 1).getInventory());
+                guis.get(page + 1).openSync(event.getWhoClicked());
                 return;
             }
 
