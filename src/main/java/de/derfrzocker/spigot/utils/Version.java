@@ -28,7 +28,7 @@ public enum Version {
 
         String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf('.') + 1);
 
-        if (version.equalsIgnoreCase("codegen")) {
+        if (version.equalsIgnoreCase("codegen") || version.equalsIgnoreCase("bukkit")) { // For junit test, return sometimes "codegen" or "bukkit"
             testcase = true;
         } else {
             testcase = false;
@@ -36,7 +36,7 @@ public enum Version {
             try {
                 current = valueOf(version.trim());
             } catch (IllegalArgumentException e) {
-                throw new IllegalStateException("unknown server version: " + version);
+                throw new IllegalStateException("unknown server version: " + version + " Server class name: "+ Bukkit.getServer().getClass().toString() );
             }
         }
     }
