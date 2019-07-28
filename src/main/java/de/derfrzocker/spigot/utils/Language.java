@@ -9,10 +9,10 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public enum Language {
 
-    ENGLISH("English", "lang/en.yml"), GERMAN("Deutsch", "lang/de.yml"), CUSTOM("Custom", "messages.yml");
+    ENGLISH(new String[]{"English"}, "lang/en.yml"), GERMAN(new String[]{"Deutsch"}, "lang/de.yml"), CHINESE(new String[]{"中国", "中國"}, "lang/zh.yml") ,CUSTOM(new String[]{"Custom"}, "messages.yml");
 
     @Getter
-    private final String name;
+    private final String[] names;
 
     @Getter
     private final String fileLocation;
@@ -25,7 +25,7 @@ public enum Language {
         } catch (IllegalArgumentException ignored) {
         }
 
-        return Stream.of(values()).filter(value -> value.getName().equalsIgnoreCase(name)).findAny().orElseThrow(IllegalArgumentException::new);
+        return Stream.of(values()).filter(value -> Stream.of(value.getNames()).anyMatch(name2 -> name2.equalsIgnoreCase(name))).findAny().orElseThrow(IllegalArgumentException::new);
     }
 
     public static Language getDefaultLanguage() {
