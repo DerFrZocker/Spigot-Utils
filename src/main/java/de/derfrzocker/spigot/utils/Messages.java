@@ -28,7 +28,7 @@ public class Messages implements ReloadAble {
     public static Messages getMessages(@NonNull JavaPlugin javaPlugin, @NonNull Language language) {
         Map<Language, Messages> map = MESSAGESS.computeIfAbsent(javaPlugin, javaPlugin1 -> new HashMap<>());
 
-        return map.computeIfAbsent(Language.getDefaultLanguage(), language1 -> new Messages(javaPlugin, language));
+        return map.computeIfAbsent(language, language1 -> new Messages(javaPlugin, language));
     }
 
     public static void unLoadMessages(@NonNull JavaPlugin javaPlugin, @NonNull Language language) {
@@ -46,12 +46,11 @@ public class Messages implements ReloadAble {
         MESSAGESS.remove(messages);
     }
 
-    public Messages(@NonNull JavaPlugin plugin, @NonNull Language language) {
+    private Messages(@NonNull JavaPlugin plugin, @NonNull Language language) {
         this.language = language;
         this.plugin = plugin;
         reload();
         RELOAD_ABLES.add(this);
-        MESSAGESS.computeIfAbsent(plugin, javaPlugin -> new HashMap<>()).put(language, this);
     }
 
     void sendMessage(@NonNull MessageKey key, @NonNull CommandSender target, @NonNull MessageValue... messageValues) {
