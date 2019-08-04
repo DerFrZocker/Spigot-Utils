@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils;
+package de.derfrzocker.spigot.utils.message;
 
 import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;

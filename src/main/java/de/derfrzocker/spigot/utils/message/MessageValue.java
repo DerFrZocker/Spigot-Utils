@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils;
+package de.derfrzocker.spigot.utils.message;
 
 import lombok.Getter;
 import lombok.NonNull;

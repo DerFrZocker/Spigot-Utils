@@ -1,5 +1,6 @@
-package de.derfrzocker.spigot.utils;
+package de.derfrzocker.spigot.utils.message;
 
+import de.derfrzocker.spigot.utils.Language;
 import lombok.Data;
 import lombok.NonNull;
 import org.bukkit.command.CommandSender;

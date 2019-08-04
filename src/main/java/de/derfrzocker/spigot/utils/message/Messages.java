@@ -1,6 +1,9 @@
-package de.derfrzocker.spigot.utils;
+package de.derfrzocker.spigot.utils.message;
 
 import com.google.common.collect.Lists;
+import de.derfrzocker.spigot.utils.Config;
+import de.derfrzocker.spigot.utils.Language;
+import de.derfrzocker.spigot.utils.ReloadAble;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

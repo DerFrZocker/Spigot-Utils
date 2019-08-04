@@ -1,7 +1,7 @@
 package de.derfrzocker.spigot.utils.gui;
 
-import de.derfrzocker.spigot.utils.MessageUtil;
-import de.derfrzocker.spigot.utils.MessageValue;
+import de.derfrzocker.spigot.utils.message.MessageUtil;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
