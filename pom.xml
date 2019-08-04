@@ -6,9 +6,10 @@
 
     <groupId>de.derfrzocker</groupId>
     <artifactId>spigot-utils</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
 
     <properties>
+        <revision>dev-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
