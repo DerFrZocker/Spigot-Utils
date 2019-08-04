@@ -1,5 +1,6 @@
 package de.derfrzocker.spigot.utils;
 
+import de.derfrzocker.spigot.utils.serialize.SerializableEulerAngle;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
@@ -94,7 +95,7 @@ public class ArmorStandProperties implements ConfigurationSerializable {
     private final EulerAngle headPose;
     private final ItemStack helmet;
 
-    public ArmorStandProperties(ArmorStand armorStand, double relativeX, double relativeY, double relativeZ){
+    public ArmorStandProperties(ArmorStand armorStand, double relativeX, double relativeY, double relativeZ) {
         this.relativeX = relativeX;
         this.relativeY = relativeY;
         this.relativeZ = relativeZ;
@@ -132,11 +133,11 @@ public class ArmorStandProperties implements ConfigurationSerializable {
         this.helmet = armorStand.getHelmet();
     }
 
-    public ArmorStand spawn(Location location){
-        return location.getWorld().spawn(location.clone().add(getRelativeX(),getRelativeY(),getRelativeZ()),ArmorStand.class , this::apply);
+    public ArmorStand spawn(Location location) {
+        return location.getWorld().spawn(location.clone().add(getRelativeX(), getRelativeY(), getRelativeZ()), ArmorStand.class, this::apply);
     }
 
-    public void apply(ArmorStand armorStand){
+    public void apply(ArmorStand armorStand) {
         armorStand.setVisible(isVisible());
         armorStand.setArms(isArms());
         armorStand.setBasePlate(isBasePlate());
@@ -175,7 +176,7 @@ public class ArmorStandProperties implements ConfigurationSerializable {
         final Map<String, Object> map = new LinkedHashMap<>();
 
         map.put(RELATIVE_X_KEY, getRelativeX());
-        map.put(RELATIVE_Y_KEY,getRelativeY());
+        map.put(RELATIVE_Y_KEY, getRelativeY());
         map.put(RELATIVE_Z_KEY, getRelativeZ());
 
         map.put(VISIBLE_KEY, isVisible());
@@ -194,20 +195,20 @@ public class ArmorStandProperties implements ConfigurationSerializable {
 
         map.put(CUSTOM_NAME_KEY, getCustomName());
 
-        map.put(RIGHT_LEG_POSE_KEY, SerializableEulerAngle.toSerializableEulerAngle(getRightLegPose()));
-        map.put(LEFT_LEG_POSE_KEY, SerializableEulerAngle.toSerializableEulerAngle(getLeftLegPose()));
+        map.put(RIGHT_LEG_POSE_KEY, new SerializableEulerAngle(getRightLegPose()));
+        map.put(LEFT_LEG_POSE_KEY, new SerializableEulerAngle(getLeftLegPose()));
         map.put(BOOTS_KEY, getBoots());
         map.put(LEGGINGS_KEY, getLeggings());
 
-        map.put(RIGHT_ARM_POSE_KEY, SerializableEulerAngle.toSerializableEulerAngle(getRightArmPose()));
-        map.put(LEFT_ARM_POSE_KEY, SerializableEulerAngle.toSerializableEulerAngle(getLeftArmPose()));
+        map.put(RIGHT_ARM_POSE_KEY, new SerializableEulerAngle(getRightArmPose()));
+        map.put(LEFT_ARM_POSE_KEY, new SerializableEulerAngle(getLeftArmPose()));
         map.put(MAIN_HAND_KEY, getMainHand());
         map.put(OFF_HAND_KEY, getOffHand());
 
-        map.put(BODY_POSE_KEY, SerializableEulerAngle.toSerializableEulerAngle(getBodyPose()));
+        map.put(BODY_POSE_KEY, new SerializableEulerAngle(getBodyPose()));
         map.put(CHEST_PLATE_KEY, getChestPlate());
 
-        map.put(HEAD_POSE_KEY, SerializableEulerAngle.toSerializableEulerAngle(getHeadPose()));
+        map.put(HEAD_POSE_KEY, new SerializableEulerAngle(getHeadPose()));
         map.put(HELMET_KEY, getHelmet());
 
         return map;
@@ -234,23 +235,23 @@ public class ArmorStandProperties implements ConfigurationSerializable {
 
         final String customName = (String) map.get(CUSTOM_NAME_KEY);
 
-        final EulerAngle rightLegPose = ((SerializableEulerAngle )map.get(RIGHT_LEG_POSE_KEY)).toEulerAngle();
-        final EulerAngle leftLegPose = ((SerializableEulerAngle )map.get(LEFT_LEG_POSE_KEY)).toEulerAngle();
+        final EulerAngle rightLegPose = ((SerializableEulerAngle) map.get(RIGHT_LEG_POSE_KEY));
+        final EulerAngle leftLegPose = ((SerializableEulerAngle) map.get(LEFT_LEG_POSE_KEY));
         final ItemStack boots = (ItemStack) map.get(BOOTS_KEY);
         final ItemStack leggings = (ItemStack) map.get(LEGGINGS_KEY);
 
-        final EulerAngle rightArmPose = ((SerializableEulerAngle )map.get(RIGHT_ARM_POSE_KEY)).toEulerAngle();
-        final EulerAngle leftArmPose = ((SerializableEulerAngle )map.get(LEFT_ARM_POSE_KEY)).toEulerAngle();
+        final EulerAngle rightArmPose = ((SerializableEulerAngle) map.get(RIGHT_ARM_POSE_KEY));
+        final EulerAngle leftArmPose = ((SerializableEulerAngle) map.get(LEFT_ARM_POSE_KEY));
         final ItemStack mainHand = (ItemStack) map.get(MAIN_HAND_KEY);
         final ItemStack offHand = (ItemStack) map.get(OFF_HAND_KEY);
 
-        final EulerAngle bodyPose = ((SerializableEulerAngle )map.get(BODY_POSE_KEY)).toEulerAngle();
+        final EulerAngle bodyPose = ((SerializableEulerAngle) map.get(BODY_POSE_KEY));
         final ItemStack chestPlate = (ItemStack) map.get(CHEST_PLATE_KEY);
 
-        final EulerAngle headPose = ((SerializableEulerAngle )map.get(HEAD_POSE_KEY)).toEulerAngle();
+        final EulerAngle headPose = ((SerializableEulerAngle) map.get(HEAD_POSE_KEY));
         final ItemStack helmet = (ItemStack) map.get(HELMET_KEY);
 
-        return new ArmorStandProperties(relativeX, relativeY, relativeZ, visible,arms,basePlate, marker,small, customNameVisible, ai,canPickUpItems, collidable, glowing, gravity, invulnerable, silent, customName, rightLegPose, leftLegPose, boots, leggings, rightArmPose, leftArmPose, mainHand, offHand, bodyPose, chestPlate, headPose, helmet);
+        return new ArmorStandProperties(relativeX, relativeY, relativeZ, visible, arms, basePlate, marker, small, customNameVisible, ai, canPickUpItems, collidable, glowing, gravity, invulnerable, silent, customName, rightLegPose, leftLegPose, boots, leggings, rightArmPose, leftArmPose, mainHand, offHand, bodyPose, chestPlate, headPose, helmet);
     }
 
 }
