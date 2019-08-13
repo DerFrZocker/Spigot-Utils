@@ -14,7 +14,7 @@ import java.util.Map;
 @Data
 @RequiredArgsConstructor
 @SerializableAs("DerFrZocker#SpigotUtils#ChunkCoordIntPair")
-public class ChunkCoordIntPair implements ConfigurationSerializable {
+public class ChunkCoordIntPair implements ConfigurationSerializable, Comparable<ChunkCoordIntPair> {
 
     private final int x;
 
@@ -23,6 +23,17 @@ public class ChunkCoordIntPair implements ConfigurationSerializable {
     public ChunkCoordIntPair(final @NonNull Location location) {
         this.x = location.getBlockX() >> 4;
         this.z = location.getBlockZ() >> 4;
+    }
+
+    @Override
+    public int compareTo(ChunkCoordIntPair other) {
+        if (getX() < other.getX())
+            return 1;
+
+        if (getX() > other.getX())
+            return -1;
+
+        return Integer.compare(other.getZ(), getZ());
     }
 
     @Override
