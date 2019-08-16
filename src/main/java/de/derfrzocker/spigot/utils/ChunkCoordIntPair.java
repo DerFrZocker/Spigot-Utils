@@ -27,13 +27,16 @@ public class ChunkCoordIntPair implements ConfigurationSerializable, Comparable<
 
     @Override
     public int compareTo(ChunkCoordIntPair other) {
-        if (getX() < other.getX())
+        if (getX() == other.getX() && getZ() == other.getZ())
+            return 0;
+
+        if (getX() < other.getX() && getZ() <= other.getZ())
             return 1;
 
-        if (getX() > other.getX())
-            return -1;
+        if (getX() >= other.getX() && getZ() < other.getZ())
+            return 1;
 
-        return Integer.compare(other.getZ(), getZ());
+        return -1;
     }
 
     @Override
