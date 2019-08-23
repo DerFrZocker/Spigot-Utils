@@ -21,11 +21,12 @@ public class Permission {
     @NonNull
     private final String permission;
 
+    @NonNull
     private final JavaPlugin javaPlugin;
 
     private final boolean commandPermission;
 
-    public Permission(Permission parent, String permission, JavaPlugin javaPlugin, boolean commandPermission) {
+    public Permission(final Permission parent, final String permission, final JavaPlugin javaPlugin, final boolean commandPermission) {
         this.parent = parent;
         this.permission = permission;
         this.javaPlugin = javaPlugin;
@@ -41,11 +42,11 @@ public class Permission {
         return String.format("%s.%s", parent.getPermission(), permission);
     }
 
-    public boolean hasPermission(Permissible permissible) {
+    public boolean hasPermission(final @NonNull Permissible permissible) {
         return permissible.hasPermission(getPermission());
     }
 
-    public boolean hasPermission(Permissible permissible, int level) {
+    public boolean hasPermission(final @NonNull Permissible permissible, final int level) {
         int max = getPermissionLevel(permissible);
 
         if (max == -1)
@@ -54,15 +55,15 @@ public class Permission {
         return max >= level;
     }
 
-    public int getPermissionLevel(Permissible permissible) {
+    public int getPermissionLevel(final @NonNull Permissible permissible) {
         if (permissible.isOp())
             return -1;
 
         int max = 0;
 
-        Set<PermissionAttachmentInfo> permissionAttachmentInfos = permissible.getEffectivePermissions();
+        final Set<PermissionAttachmentInfo> permissionAttachmentInfos = permissible.getEffectivePermissions();
 
-        for (PermissionAttachmentInfo permissionAttachmentInfo : permissionAttachmentInfos) {
+        for (final PermissionAttachmentInfo permissionAttachmentInfo : permissionAttachmentInfos) {
             if (!permissionAttachmentInfo.getValue())
                 continue;
 
@@ -91,7 +92,7 @@ public class Permission {
         return max;
     }
 
-    public static boolean hasAnyCommandPermission(JavaPlugin javaPlugin, Permissible permissible) {
+    public static boolean hasAnyCommandPermission(final @NonNull JavaPlugin javaPlugin, final @NonNull Permissible permissible) {
         return PERMISSIONS.computeIfAbsent(javaPlugin, javaPlugin1 -> new HashSet<>()).stream().filter(Permission::isCommandPermission).anyMatch(permission -> permissible.hasPermission(permission.getPermission()));
     }
 

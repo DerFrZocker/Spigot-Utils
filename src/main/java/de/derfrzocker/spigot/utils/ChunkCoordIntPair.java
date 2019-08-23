@@ -26,7 +26,7 @@ public class ChunkCoordIntPair implements ConfigurationSerializable, Comparable<
     }
 
     @Override
-    public int compareTo(ChunkCoordIntPair other) {
+    public int compareTo(final @NonNull ChunkCoordIntPair other) {
         if (getX() == other.getX() && getZ() == other.getZ())
             return 0;
 
@@ -49,7 +49,7 @@ public class ChunkCoordIntPair implements ConfigurationSerializable, Comparable<
         return map;
     }
 
-    public static ChunkCoordIntPair deserialize(Map<String, Object> map) {
+    public static ChunkCoordIntPair deserialize(final @NonNull Map<String, Object> map) {
         final int x = NumberConversions.toInt(map.get("x"));
         final int z = NumberConversions.toInt(map.get("z"));
 

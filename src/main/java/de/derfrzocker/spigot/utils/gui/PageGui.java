@@ -26,10 +26,13 @@ public abstract class PageGui<T> extends InventoryGui {
 
     private final Map<Integer, Consumer<InventoryClickEvent>> button = new HashMap<>();
 
+    @NonNull
     private BiConsumer<T, InventoryClickEvent> eventBiConsumer;
 
+    @NonNull
     private Function<T, ItemStack> itemStackFunction;
 
+    @NonNull
     private PageSettings pageSettings;
 
     private int pages;
@@ -44,7 +47,7 @@ public abstract class PageGui<T> extends InventoryGui {
         super(plugin);
     }
 
-    public void init(final T[] values, final IntFunction<T[]> function, final PageSettings pageSettings, final Function<T, ItemStack> itemStackFunction, BiConsumer<T, InventoryClickEvent> eventBiConsumer) {
+    public void init(final @NonNull T[] values, final @NonNull IntFunction<T[]> function, final PageSettings pageSettings, final Function<T, ItemStack> itemStackFunction, final BiConsumer<T, InventoryClickEvent> eventBiConsumer) {
         if (this.init)
             return;
 
@@ -83,18 +86,17 @@ public abstract class PageGui<T> extends InventoryGui {
     }
 
     @Override
-    public void onClick(InventoryClickEvent event) {
+    public void onClick(final @NonNull InventoryClickEvent event) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     Inventory getInventory() {
-        guis.values().toArray(new Object[0]);
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void openSync(HumanEntity entity) {
+    public void openSync(final @NonNull HumanEntity entity) {
         final SubPageGui subPageGui = guis.get(0);
         if (Bukkit.isPrimaryThread()) {
             InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(subPageGui);
@@ -107,7 +109,7 @@ public abstract class PageGui<T> extends InventoryGui {
                 InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(subPageGui);
                 return entity.openInventory(subPageGui.getInventory());
             }).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (final InterruptedException | ExecutionException e) {
             throw new RuntimeException("Error while open inventory Sync!", e);
         }
     }
@@ -121,7 +123,7 @@ public abstract class PageGui<T> extends InventoryGui {
 
         private final Map<Integer, T> values = new HashMap<>();
 
-        private SubPageGui(final T[] values, final int page) {
+        private SubPageGui(final @NonNull T[] values, final int page) {
             super(PageGui.super.getPlugin());
             this.page = page;
 
@@ -149,7 +151,7 @@ public abstract class PageGui<T> extends InventoryGui {
         }
 
         @Override
-        public void onClick(final InventoryClickEvent event) {
+        public void onClick(final @NonNull InventoryClickEvent event) {
             if (event.getRawSlot() == previousPage && page != 0) {
                 guis.get(page - 1).openSync(event.getWhoClicked());
                 return;

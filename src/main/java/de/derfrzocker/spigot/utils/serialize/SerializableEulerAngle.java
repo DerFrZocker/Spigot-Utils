@@ -1,5 +1,6 @@
 package de.derfrzocker.spigot.utils.serialize;
 
+import lombok.NonNull;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.util.EulerAngle;
@@ -11,31 +12,31 @@ import java.util.Map;
 @SerializableAs("DerFrZocker#SpigotUtils#EulerAngle")
 public class SerializableEulerAngle extends EulerAngle implements ConfigurationSerializable {
 
-    public SerializableEulerAngle(double x, double y, double z) {
+    public SerializableEulerAngle(final double x, final double y, final double z) {
         super(x, y, z);
     }
 
-    public SerializableEulerAngle(EulerAngle eulerAngle) {
+    public SerializableEulerAngle(final @NonNull EulerAngle eulerAngle) {
         super(eulerAngle.getX(), eulerAngle.getY(), eulerAngle.getZ());
     }
 
     @Override
-    public SerializableEulerAngle setX(double x) {
+    public SerializableEulerAngle setX(final double x) {
         return new SerializableEulerAngle(x, getY(), getZ());
     }
 
     @Override
-    public SerializableEulerAngle setY(double y) {
+    public SerializableEulerAngle setY(final double y) {
         return new SerializableEulerAngle(getX(), y, getZ());
     }
 
     @Override
-    public SerializableEulerAngle setZ(double z) {
+    public SerializableEulerAngle setZ(final double z) {
         return new SerializableEulerAngle(getX(), getY(), z);
     }
 
     @Override
-    public SerializableEulerAngle add(double x, double y, double z) {
+    public SerializableEulerAngle add(final double x, final double y, final double z) {
         return new SerializableEulerAngle(
                 getX() + x,
                 getY() + y,
@@ -44,7 +45,7 @@ public class SerializableEulerAngle extends EulerAngle implements ConfigurationS
     }
 
     @Override
-    public SerializableEulerAngle subtract(double x, double y, double z) {
+    public SerializableEulerAngle subtract(final double x, final double y, final double z) {
         return add(-x, -y, -z);
     }
 
@@ -59,7 +60,7 @@ public class SerializableEulerAngle extends EulerAngle implements ConfigurationS
         return map;
     }
 
-    public static SerializableEulerAngle deserialize(Map<String, Object> map) {
+    public static SerializableEulerAngle deserialize(final @NonNull Map<String, Object> map) {
         final double x = NumberConversions.toDouble(map.get("x"));
         final double y = NumberConversions.toDouble(map.get("y"));
         final double z = NumberConversions.toDouble(map.get("z"));

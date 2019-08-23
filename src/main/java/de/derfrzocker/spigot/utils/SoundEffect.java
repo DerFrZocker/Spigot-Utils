@@ -43,7 +43,7 @@ public class SoundEffect implements ConfigurationSerializable {
     private final double z;
 
 
-    public void playSound(Player player) {
+    public void playSound(final @NonNull Player player) {
         double x = this.x;
         double y = this.y;
         double z = this.z;
@@ -57,7 +57,7 @@ public class SoundEffect implements ConfigurationSerializable {
         if (zRelative)
             z += player.getLocation().getZ();
 
-        Location location = new Location(player.getWorld(), x, y, z);
+        final Location location = new Location(player.getWorld(), x, y, z);
 
         player.playSound(location, sound, soundCategory, volume, pitch);
     }
@@ -84,7 +84,7 @@ public class SoundEffect implements ConfigurationSerializable {
         return map;
     }
 
-    public static SoundEffect deserialize(Map<String, Object> map) {
+    public static SoundEffect deserialize(final @NonNull Map<String, Object> map) {
         final SoundCategory soundCategory = SoundCategory.valueOf((String) map.get(SOUND_CATEGORY_KEY));
         final Sound sound = Sound.valueOf((String) map.get(SOUND_KEY));
         final float volume = ((Number) map.get(VOLUME_KEY)).floatValue();
@@ -99,7 +99,7 @@ public class SoundEffect implements ConfigurationSerializable {
         return new SoundEffect(soundCategory, sound, volume, pitch, xIncremental, yIncremental, zIncremental, x, y, z);
     }
 
-    public static SoundEffect deserialize(ConfigurationSection section) {
+    public static SoundEffect deserialize(final @NonNull ConfigurationSection section) {
         final SoundCategory soundCategory = SoundCategory.valueOf(section.getString(SOUND_CATEGORY_KEY).toUpperCase());
         final Sound sound = Sound.valueOf(section.getString(SOUND_KEY).toUpperCase());
         final float volume = ((Number) section.get(VOLUME_KEY)).floatValue();
@@ -126,8 +126,8 @@ public class SoundEffect implements ConfigurationSerializable {
                 string = string.substring(1);
 
                 try {
-                    x = Double.valueOf(string);
-                } catch (NumberFormatException e) {
+                    x = Double.parseDouble(string);
+                } catch (final NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid x value: " + string + " in section: " + section.getName(), e);
                 }
             } else {
@@ -150,8 +150,8 @@ public class SoundEffect implements ConfigurationSerializable {
                 string = string.substring(1);
 
                 try {
-                    y = Double.valueOf(string);
-                } catch (NumberFormatException e) {
+                    y = Double.parseDouble(string);
+                } catch (final NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid y value: " + string + " in section: " + section.getName(), e);
                 }
             } else {
@@ -174,8 +174,8 @@ public class SoundEffect implements ConfigurationSerializable {
                 string = string.substring(1);
 
                 try {
-                    z = Double.valueOf(string);
-                } catch (NumberFormatException e) {
+                    z = Double.parseDouble(string);
+                } catch (final NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid z value: " + string + " in section: " + section.getName(), e);
                 }
             } else {

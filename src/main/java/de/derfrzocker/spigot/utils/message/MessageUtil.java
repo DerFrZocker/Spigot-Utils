@@ -16,7 +16,7 @@ public class MessageUtil {
     private final static int DEFAULT_LORE_LENGTH = 40;
     private final static int MINIMUM_LORE_LENGTH = 15;
 
-    public static String replacePlaceHolder(@NonNull JavaPlugin plugin, @NonNull String string, @NonNull MessageValue... messageValues) {
+    public static String replacePlaceHolder(final @NonNull JavaPlugin plugin, @NonNull String string, final @NonNull MessageValue... messageValues) {
 
         string = replaceTranslation(plugin, string, messageValues);
 
@@ -29,7 +29,7 @@ public class MessageUtil {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static List<String> replaceList(@NonNull JavaPlugin plugin, @NonNull List<String> strings, @NonNull MessageValue... messageValues) {
+    public static List<String> replaceList(final @NonNull JavaPlugin plugin, final @NonNull List<String> strings, final @NonNull MessageValue... messageValues) {
         List<String> list = new LinkedList<>();
 
         strings.forEach(value -> list.add(replacePlaceHolder(plugin, value, messageValues)));
@@ -37,7 +37,7 @@ public class MessageUtil {
         return list;
     }
 
-    public static ItemStack replaceItemStack(@NonNull JavaPlugin plugin, @NonNull ItemStack itemStack, @NonNull MessageValue... messageValues) {
+    public static ItemStack replaceItemStack(final @NonNull JavaPlugin plugin, @NonNull ItemStack itemStack, final @NonNull MessageValue... messageValues) {
         itemStack = itemStack.clone();
 
         if (!itemStack.hasItemMeta())
@@ -49,7 +49,7 @@ public class MessageUtil {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static ItemMeta replaceItemMeta(@NonNull JavaPlugin plugin, @NonNull ItemMeta itemMeta, @NonNull MessageValue... messageValues) {
+    public static ItemMeta replaceItemMeta(final @NonNull JavaPlugin plugin, final @NonNull ItemMeta itemMeta, final @NonNull MessageValue... messageValues) {
         final ItemMeta meta = itemMeta.clone();
 
         if (meta.hasDisplayName())
@@ -63,11 +63,10 @@ public class MessageUtil {
             meta.setLore(lore);
         }
 
-
         return meta;
     }
 
-    public static List<String> splitString(String msg, int lineSize) {
+    public static List<String> splitString(final String msg, final int lineSize) {
         final List<String> strings = new LinkedList<>();
 
         final Pattern pattern = Pattern.compile("\\b.{1," + (lineSize - 1) + "}\\b\\W?");
@@ -79,16 +78,15 @@ public class MessageUtil {
         return strings;
     }
 
-
     // %%translation:[example.string]%
-    public static String replaceTranslation(@NonNull JavaPlugin plugin, @NonNull String string, @NonNull MessageValue... messageValues) {
+    public static String replaceTranslation(final @NonNull JavaPlugin plugin, final @NonNull String string, final @NonNull MessageValue... messageValues) {
         if (!string.contains("%%translation:["))
             return string;
 
-        Pattern pattern = Pattern.compile("%%translation:(.*?)]%");
+        final Pattern pattern = Pattern.compile("%%translation:(.*?)]%");
         Matcher matcher = pattern.matcher(string);
 
-        StringBuilder stringBuilder = new StringBuilder(string);
+        final StringBuilder stringBuilder = new StringBuilder(string);
 
         while (matcher.find()) {
             String key = stringBuilder.substring(matcher.start() + 15, matcher.end() - 2);

@@ -24,13 +24,13 @@ import static java.lang.String.format;
 public class Config extends YamlConfiguration {
 
     @SuppressWarnings({"UnstableApiUsage", "ResultOfMethodCallIgnored"})
-    public Config(@NonNull File file) {
+    public Config(final @NonNull File file) {
 
         if (!file.exists()) {
             try {
                 Files.createParentDirs(file);
                 file.createNewFile();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException("Error while create a new File: " + file, e);
             }
         }
@@ -38,37 +38,37 @@ public class Config extends YamlConfiguration {
         // try to load the Config file
         try {
             this.load(file);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Error while load data from file: " + file, e);
         }
 
     }
 
-    public Config(@NonNull InputStream input) {
+    public Config(final @NonNull InputStream input) {
 
         // try to load the Config file
         try {
             this.load(input);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Error while load data from InputStream: " + input, e);
         }
 
     }
 
-    public Config(@NonNull String input) {
+    public Config(final @NonNull String input) {
         try {
             this.loadFromString(input);
-        } catch (InvalidConfigurationException e) {
+        } catch (final InvalidConfigurationException e) {
             throw new RuntimeException("Error while load data from String: " + input, e);
         }
     }
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    public void save(@NonNull File file) throws IOException {
+    public void save(final @NonNull File file) throws IOException {
         Files.createParentDirs(file);
 
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
+        try (final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
                 Charsets.UTF_8)) {
 
             writer.write(this.saveToString());
@@ -76,37 +76,37 @@ public class Config extends YamlConfiguration {
     }
 
     @Override
-    public void load(@NonNull File file) throws IOException, InvalidConfigurationException {
+    public void load(final @NonNull File file) throws IOException, InvalidConfigurationException {
 
         // load the config file
         this.load(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void load(@NonNull InputStream input) throws IOException, InvalidConfigurationException {
+    public void load(final @NonNull InputStream input) throws IOException, InvalidConfigurationException {
 
         // load the config file
         this.load(new InputStreamReader(input, Charsets.UTF_8));
     }
 
-    public static Config getConfig(@NonNull JavaPlugin plugin, @NonNull String name) {
+    public static Config getConfig(final @NonNull JavaPlugin plugin, @NonNull String name) {
         if (!name.endsWith(".yml"))
             name = format("%s.yml", name);
 
-        File file = new File(plugin.getDataFolder().getPath(), name);
+        final File file = new File(plugin.getDataFolder().getPath(), name);
 
-        Config defaults = new Config(plugin.getResource(name));
+        final Config defaults = new Config(plugin.getResource(name));
 
         if (!file.exists())
             plugin.saveResource(name, true);
 
-        Config config = new Config(file);
+        final Config config = new Config(file);
 
         config.setDefaults(defaults);
         config.options().copyDefaults(true);
         try {
             config.save(file);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Error while save data to file: " + file, e);
         }
 

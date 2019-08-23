@@ -14,7 +14,7 @@ public class MessageValue {
     @NonNull
     private final String value;
 
-    public MessageValue(String key, Object value) {
+    public MessageValue(final String key, final Object value) {
         this.key = key;
         this.value = value.toString();
     }

@@ -11,7 +11,7 @@ public class CommandUtil {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 runnable.run();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 commandSender.sendMessage("§4Error while execute command, see console for more information.");
                 commandSender.sendMessage("§4Please report the error to the Developer.");
                 e.printStackTrace();

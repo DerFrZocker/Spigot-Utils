@@ -1,6 +1,7 @@
 package de.derfrzocker.spigot.utils;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -16,7 +17,7 @@ public abstract class CommandSeparator implements TabExecutor {
     private final Map<String, TabExecutor> map = new HashMap<>();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final @NonNull CommandSender sender, final @NonNull Command command, final @NonNull String label, final @NonNull String[] args) {
 
         if (args.length == 0) {
             if (map.containsKey(""))
@@ -37,10 +38,7 @@ public abstract class CommandSeparator implements TabExecutor {
         return fallBack.onCommand(sender, command, label, args);
     }
 
-    public void registerExecutor(TabExecutor executor, String key) {
-        if (executor == null)
-            return;
-
+    public void registerExecutor(final @NonNull TabExecutor executor, final String key) {
         if (key == null) {
             fallBack = executor;
             return;
@@ -49,10 +47,11 @@ public abstract class CommandSeparator implements TabExecutor {
         map.put(key.toLowerCase(), executor);
     }
 
-    private String[] buildStrings(String[] args) {
-        String[] strings = new String[args.length - 1];
+    private String[] buildStrings(final String[] args) {
+        final String[] strings = new String[args.length - 1];
 
-        if (args.length - 1 >= 0) System.arraycopy(args, 1, strings, 0, args.length - 1);
+        if (args.length - 1 > 0)
+            System.arraycopy(args, 1, strings, 0, args.length - 1);
 
         return strings;
     }

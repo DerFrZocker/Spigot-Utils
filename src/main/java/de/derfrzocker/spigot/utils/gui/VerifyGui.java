@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 
 public class VerifyGui extends BasicGui {
 
-
     public VerifyGui(final @NonNull JavaPlugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction) {
         this(plugin, acceptAction, denyAction, VerifyGuiSettings.getInstance(plugin));
     }
@@ -23,13 +22,13 @@ public class VerifyGui extends BasicGui {
         this(plugin, acceptAction, denyAction, VerifyGuiSettings.getInstance(plugin), messageValues);
     }
 
-    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final @NonNull JavaPlugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction, final T setting) {
+    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final @NonNull JavaPlugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction, final @NonNull T setting) {
         super(plugin, setting);
         addItem(setting.getAcceptSlot(), MessageUtil.replaceItemStack(plugin, setting.getAcceptItemStack()), acceptAction);
         addItem(setting.getDenySlot(), MessageUtil.replaceItemStack(plugin, setting.getDenyItemStack()), denyAction);
     }
 
-    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final @NonNull JavaPlugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction, final T setting, final @NonNull MessageValue... messageValues) {
+    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final @NonNull JavaPlugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction, final @NonNull T setting, final @NonNull MessageValue... messageValues) {
         super(plugin, setting);
         addItem(setting.getAcceptSlot(), MessageUtil.replaceItemStack(plugin, setting.getAcceptItemStack(), messageValues), acceptAction);
         addItem(setting.getDenySlot(), MessageUtil.replaceItemStack(plugin, setting.getDenyItemStack(), messageValues), denyAction);

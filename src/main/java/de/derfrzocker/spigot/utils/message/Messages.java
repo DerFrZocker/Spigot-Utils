@@ -21,26 +21,28 @@ public class Messages implements ReloadAble {
 
     @NonNull
     private YamlConfiguration yaml;
+    @NonNull
     private final Language language;
+    @NonNull
     private final JavaPlugin plugin;
 
-    public static Messages getMessages(@NonNull JavaPlugin javaPlugin) {
+    public static Messages getMessages(final @NonNull JavaPlugin javaPlugin) {
         return getMessages(javaPlugin, Language.getDefaultLanguage());
     }
 
-    public static Messages getMessages(@NonNull JavaPlugin javaPlugin, @NonNull Language language) {
-        Map<Language, Messages> map = MESSAGESS.computeIfAbsent(javaPlugin, javaPlugin1 -> new HashMap<>());
+    public static Messages getMessages(final @NonNull JavaPlugin javaPlugin, final @NonNull Language language) {
+        final Map<Language, Messages> map = MESSAGESS.computeIfAbsent(javaPlugin, javaPlugin1 -> new HashMap<>());
 
         return map.computeIfAbsent(language, language1 -> new Messages(javaPlugin, language));
     }
 
-    public static void unLoadMessages(@NonNull JavaPlugin javaPlugin, @NonNull Language language) {
-        Map<Language, Messages> map = MESSAGESS.get(javaPlugin);
+    public static void unLoadMessages(final @NonNull JavaPlugin javaPlugin, final @NonNull Language language) {
+        final Map<Language, Messages> map = MESSAGESS.get(javaPlugin);
 
         if (map == null)
             return;
 
-        Messages messages = map.get(language);
+        final Messages messages = map.get(language);
 
         if (messages == null)
             return;
@@ -49,35 +51,35 @@ public class Messages implements ReloadAble {
         MESSAGESS.remove(messages);
     }
 
-    private Messages(@NonNull JavaPlugin plugin, @NonNull Language language) {
+    private Messages(final JavaPlugin plugin, final Language language) {
         this.language = language;
         this.plugin = plugin;
         reload();
         RELOAD_ABLES.add(this);
     }
 
-    void sendMessage(@NonNull MessageKey key, @NonNull CommandSender target, @NonNull MessageValue... messageValues) {
-        List<String> stringList = getRawStringList(key);
+    void sendMessage(final @NonNull MessageKey key, final @NonNull CommandSender target, final @NonNull MessageValue... messageValues) {
+        final List<String> stringList = getRawStringList(key);
 
         stringList.forEach(value -> target.sendMessage(MessageUtil.replacePlaceHolder(plugin, value, messageValues)));
     }
 
-    void broadcastMessage(@NonNull MessageKey key, @NonNull MessageValue... messageValues) {
-        List<String> stringList = getRawStringList(key);
+    void broadcastMessage(final @NonNull MessageKey key, final @NonNull MessageValue... messageValues) {
+        final List<String> stringList = getRawStringList(key);
 
         stringList.forEach(value -> Bukkit.broadcastMessage(MessageUtil.replacePlaceHolder(plugin, value, messageValues)));
     }
 
-    void broadcastMessage(@NonNull MessageKey key, @NonNull String permission, @NonNull MessageValue... messageValues) {
-        List<String> stringList = getRawStringList(key);
+    void broadcastMessage(final @NonNull MessageKey key, final @NonNull String permission, final @NonNull MessageValue... messageValues) {
+        final List<String> stringList = getRawStringList(key);
 
         stringList.forEach(value -> Bukkit.broadcast(MessageUtil.replacePlaceHolder(plugin, value, messageValues), permission));
     }
 
-    String getRawMessages(@NonNull MessageKey key) {
-        StringBuilder stringBuilder = new StringBuilder();
+    String getRawMessages(final @NonNull MessageKey key) {
+        final StringBuilder stringBuilder = new StringBuilder();
 
-        List<String> list = getRawStringList(key);
+        final List<String> list = getRawStringList(key);
 
         for (int i = 0; i < list.size(); i++) {
             stringBuilder.append(list.get(i));
@@ -88,8 +90,8 @@ public class Messages implements ReloadAble {
         return stringBuilder.toString();
     }
 
-    List<String> getRawStringList(@NonNull MessageKey key) {
-        List<String> stringList;
+    List<String> getRawStringList(final @NonNull MessageKey key) {
+        final List<String> stringList;
 
         if (yaml.isList(key.getKey()))
             stringList = yaml.getStringList(key.getKey());
@@ -101,13 +103,13 @@ public class Messages implements ReloadAble {
         return stringList;
     }
 
-    String getMessage(@NonNull MessageKey key, @NonNull MessageValue... messageValues) {
+    String getMessage(final @NonNull MessageKey key, final @NonNull MessageValue... messageValues) {
         return MessageUtil.replacePlaceHolder(plugin, getRawMessages(key), messageValues);
     }
 
-    List<String> getStringList(@NonNull MessageKey key, @NonNull MessageValue... messageValues) {
-        List<String> stringList = getRawStringList(key);
-        List<String> newList = new ArrayList<>();
+    List<String> getStringList(final @NonNull MessageKey key, final @NonNull MessageValue... messageValues) {
+        final List<String> stringList = getRawStringList(key);
+        final List<String> newList = new ArrayList<>();
 
         stringList.stream().map(string -> MessageUtil.replacePlaceHolder(plugin, string, messageValues)).forEach(newList::add);
 

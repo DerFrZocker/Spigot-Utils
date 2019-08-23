@@ -2,6 +2,7 @@ package de.derfrzocker.spigot.utils;
 
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 
@@ -26,7 +27,7 @@ public enum Version {
     static {
         paper = Bukkit.getName().equalsIgnoreCase("Paper");
 
-        String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf('.') + 1);
+        final String version = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf('.') + 1);
 
         if (version.equalsIgnoreCase("codegen") || version.equalsIgnoreCase("bukkit")) { // For junit test, return sometimes "codegen" or "bukkit"
             testcase = true;
@@ -35,8 +36,8 @@ public enum Version {
 
             try {
                 current = valueOf(version.trim());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalStateException("unknown server version: " + version + " Server class name: "+ Bukkit.getServer().getClass().toString() );
+            } catch (final IllegalArgumentException e) {
+                throw new IllegalStateException("unknown server version: " + version + " Server class name: " + Bukkit.getServer().getClass().toString());
             }
         }
     }
@@ -46,7 +47,7 @@ public enum Version {
     }
 
     @VisibleForTesting
-    public static void setCurrentVersion(Version version) {
+    public static void setCurrentVersion(final Version version) {
         if (!testcase)
             throw new IllegalStateException("Only for Testing!");
 
@@ -61,23 +62,23 @@ public enum Version {
         list.forEach(Runnable::run);
     }
 
-    public void add(Runnable runnable) {
+    public void add(final @NonNull Runnable runnable) {
         list.add(runnable);
     }
 
-    public boolean isNewerOrSameVersion(Version version) {
+    public boolean isNewerOrSameVersion(final @NonNull Version version) {
         return version.value >= value;
     }
 
-    public boolean isNewerVersion(Version version) {
+    public boolean isNewerVersion(final @NonNull Version version) {
         return version.value > value;
     }
 
-    public boolean isOlderOrSameVersion(Version version) {
+    public boolean isOlderOrSameVersion(final @NonNull Version version) {
         return version.value <= value;
     }
 
-    public boolean isOlderVersion(Version version) {
+    public boolean isOlderVersion(final @NonNull Version version) {
         return version.value < value;
     }
 

@@ -2,6 +2,7 @@ package de.derfrzocker.spigot.utils;
 
 import de.derfrzocker.spigot.utils.serialize.SerializableEulerAngle;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -95,7 +96,7 @@ public class ArmorStandProperties implements ConfigurationSerializable {
     private final EulerAngle headPose;
     private final ItemStack helmet;
 
-    public ArmorStandProperties(ArmorStand armorStand, double relativeX, double relativeY, double relativeZ) {
+    public ArmorStandProperties(final @NonNull ArmorStand armorStand, final double relativeX, final double relativeY, final double relativeZ) {
         this.relativeX = relativeX;
         this.relativeY = relativeY;
         this.relativeZ = relativeZ;
@@ -133,11 +134,11 @@ public class ArmorStandProperties implements ConfigurationSerializable {
         this.helmet = armorStand.getHelmet();
     }
 
-    public ArmorStand spawn(Location location) {
+    public ArmorStand spawn(final @NonNull Location location) {
         return location.getWorld().spawn(location.clone().add(getRelativeX(), getRelativeY(), getRelativeZ()), ArmorStand.class, this::apply);
     }
 
-    public void apply(ArmorStand armorStand) {
+    public void apply(final @NonNull ArmorStand armorStand) {
         armorStand.setVisible(isVisible());
         armorStand.setArms(isArms());
         armorStand.setBasePlate(isBasePlate());
@@ -214,7 +215,7 @@ public class ArmorStandProperties implements ConfigurationSerializable {
         return map;
     }
 
-    public static ArmorStandProperties deserialize(Map<String, Object> map) {
+    public static ArmorStandProperties deserialize(final @NonNull Map<String, Object> map) {
         final double relativeX = ((Number) map.get(RELATIVE_X_KEY)).doubleValue();
         final double relativeY = ((Number) map.get(RELATIVE_Y_KEY)).doubleValue();
         final double relativeZ = ((Number) map.get(RELATIVE_Z_KEY)).doubleValue();

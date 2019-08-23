@@ -40,7 +40,7 @@ public abstract class InventoryGui {
                 InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(this);
                 return entity.openInventory(getInventory());
             }).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (final InterruptedException | ExecutionException e) {
             throw new RuntimeException("Error while open inventory Sync!", e);
         }
     }
@@ -56,7 +56,7 @@ public abstract class InventoryGui {
                 entity.closeInventory();
                 return true;
             }).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (final InterruptedException | ExecutionException e) {
             throw new RuntimeException("Error while close inventory Sync!", e);
         }
     }

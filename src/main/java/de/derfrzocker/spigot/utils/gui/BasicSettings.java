@@ -12,11 +12,13 @@ public class BasicSettings implements ReloadAble {
     @Getter
     private YamlConfiguration yaml;
 
+    @NonNull
     private final String file;
 
+    @NonNull
     private final JavaPlugin plugin;
 
-    public BasicSettings(final @NonNull JavaPlugin plugin, final @NonNull String file) {
+    public BasicSettings(final JavaPlugin plugin, final String file) {
         this.file = file;
         this.plugin = plugin;
         yaml = Config.getConfig(plugin, file);

@@ -1,11 +1,12 @@
 package de.derfrzocker.spigot.utils.gui;
 
+import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PageSettings extends BasicSettings {
 
-    public PageSettings(JavaPlugin plugin, String file) {
+    public PageSettings(final @NonNull JavaPlugin plugin, final @NonNull String file) {
         super(plugin, file);
     }
 

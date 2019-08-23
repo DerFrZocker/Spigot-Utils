@@ -37,7 +37,7 @@ public class InventoryGuiManager implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(final @NonNull InventoryClickEvent event) {
         final InventoryGui inventoryGui = inventoryGuiMap.get(event.getView().getTopInventory());
 
         if (inventoryGui == null)
@@ -53,7 +53,7 @@ public class InventoryGuiManager implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 inventoryGui.onClick(event);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 event.getWhoClicked().sendMessage("§4Error while execute gui action, see console for more information.");
                 event.getWhoClicked().sendMessage("§4Please report the error to the Developer.");
                 e.printStackTrace();
@@ -64,7 +64,7 @@ public class InventoryGuiManager implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
+    public void onInventoryClose(final @NonNull InventoryCloseEvent event) {
         final InventoryGui inventoryGui = inventoryGuiMap.get(event.getView().getTopInventory());
 
         if (inventoryGui == null)
