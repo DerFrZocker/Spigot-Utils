@@ -20,10 +20,10 @@ public class MessageUtil {
 
         string = replaceTranslation(plugin, string, messageValues);
 
-        string = ChatColor.translateAlternateColorCodes('&', string);
-
         for (MessageValue value : messageValues)
             string = string.replace("%" + value.getKey() + "%", value.getValue());
+
+        string = ChatColor.translateAlternateColorCodes('&', string);
 
         return string;
     }
