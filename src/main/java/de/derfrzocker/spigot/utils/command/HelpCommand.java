@@ -61,7 +61,7 @@ public class HelpCommand implements TabExecutor {
             final String commandName = command2Entry.getKey();
             final CommandSeparator.Command2 command2 = command2Entry.getValue();
 
-            if (commandName.startsWith(args[1])) {
+            if (commandName.startsWith(args[0])) {
                 if (command2.getPermission() == null) {
                     list.add(commandName);
                 } else if (command2.getPermission().hasPermission(sender)) {
