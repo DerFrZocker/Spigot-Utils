@@ -1,34 +1,52 @@
 package de.derfrzocker.spigot.utils.gui;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-@RequiredArgsConstructor
 public abstract class InventoryGui {
 
-    private static final Set<HumanEntity> HUMAN_ENTITY_SET = Collections.synchronizedSet(new HashSet<>());
-
-    @Getter
-    @NonNull
+    @NotNull
     private final JavaPlugin plugin;
 
+    public InventoryGui(@NotNull final JavaPlugin plugin) {
+        Validate.notNull(plugin, "JavaPlugin can not be null");
 
+        this.plugin = plugin;
+    }
+
+    /**
+     * @return the Bukkit Inventory of this Inventory Gui
+     */
+    @NotNull
     abstract Inventory getInventory();
 
-    public abstract void onClick(final @NonNull InventoryClickEvent event);
+    /**
+     * Execute a none specific action, when the inventory gets clicked
+     *
+     * @param event to use
+     * @throws IllegalArgumentException if event is null
+     */
+    public abstract void onClick(@NotNull final InventoryClickEvent event);
 
-    public void openSync(final @NonNull HumanEntity entity) {
+    /**
+     * Opens the Inventory gui for the given entity,
+     * If this method is called from the primary Thread, it gets
+     * executed directly.
+     * If this method is called not from the primary Thread, it post the execution to the
+     * primary Thread and waits until it gets executed.
+     *
+     * @param entity which get the Inventory gui open
+     */
+    public void openSync(@NotNull final HumanEntity entity) {
+        Validate.notNull(entity, "Entity can not be null");
+
         if (Bukkit.isPrimaryThread()) {
             InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(this);
             entity.openInventory(getInventory());
@@ -45,7 +63,19 @@ public abstract class InventoryGui {
         }
     }
 
-    public void closeSync(final @NonNull HumanEntity entity) {
+    /**
+     * Closed the Inventory of the given entity,
+     * If this method is called from the primary Thread, it gets
+     * executed directly.
+     * If this method is called not from the primary Thread, it post the execution to the
+     * primary Thread and waits until it gets executed.
+     *
+     * @param entity which get the Inventory closed
+     * @throws IllegalArgumentException if entity is null
+     */
+    public void closeSync(@NotNull final HumanEntity entity) {
+        Validate.notNull(entity, "Entity can not be null");
+
         if (Bukkit.isPrimaryThread()) {
             entity.closeInventory();
             return;
@@ -59,6 +89,14 @@ public abstract class InventoryGui {
         } catch (final InterruptedException | ExecutionException e) {
             throw new RuntimeException("Error while close inventory Sync!", e);
         }
+    }
+
+    /**
+     * @return the plugin, which create and use this InventoryGui
+     */
+    @NotNull
+    public JavaPlugin getPlugin() {
+        return plugin;
     }
 
 }

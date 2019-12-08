@@ -49,22 +49,22 @@ public class VerifyGui extends BasicGui {
 
         @Override
         public int getAcceptSlot() {
-            return getYaml().getInt("accept.slot");
+            return getSection().getInt("accept.slot");
         }
 
         @Override
         public ItemStack getAcceptItemStack() {
-            return getYaml().getItemStack("accept.item_stack").clone();
+            return getSection().getItemStack("accept.item_stack").clone();
         }
 
         @Override
         public ItemStack getDenyItemStack() {
-            return getYaml().getItemStack("deny.item_stack").clone();
+            return getSection().getItemStack("deny.item_stack").clone();
         }
 
         @Override
         public int getDenySlot() {
-            return getYaml().getInt("deny.slot");
+            return getSection().getInt("deny.slot");
         }
 
     }

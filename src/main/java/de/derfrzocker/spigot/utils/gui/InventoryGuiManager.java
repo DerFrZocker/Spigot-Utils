@@ -1,6 +1,6 @@
 package de.derfrzocker.spigot.utils.gui;
 
-import lombok.NonNull;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -18,18 +19,25 @@ public class InventoryGuiManager implements Listener {
     private final static Map<JavaPlugin, InventoryGuiManager> INVENTORY_GUI_MANAGER_MAP = new HashMap<>();
 
     private final Map<Inventory, InventoryGui> inventoryGuiMap = new HashMap<>();
+    @NotNull
     private final JavaPlugin plugin;
 
-    public static InventoryGuiManager getInventoryGuiManager(final @NonNull JavaPlugin javaPlugin) {
-        return INVENTORY_GUI_MANAGER_MAP.computeIfAbsent(javaPlugin, InventoryGuiManager::new);
-    }
+    private InventoryGuiManager(@NotNull final JavaPlugin plugin) {
+        Validate.notNull(plugin, "JavaPlugin can not be null");
 
-    private InventoryGuiManager(final @NonNull JavaPlugin plugin) {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    public void registerInventoryGui(final @NonNull InventoryGui inventoryGui) {
+    public static InventoryGuiManager getInventoryGuiManager(@NotNull final JavaPlugin javaPlugin) {
+        Validate.notNull(javaPlugin, "JavaPlugin can not be null");
+
+        return INVENTORY_GUI_MANAGER_MAP.computeIfAbsent(javaPlugin, InventoryGuiManager::new);
+    }
+
+    public void registerInventoryGui(@NotNull final InventoryGui inventoryGui) {
+        Validate.notNull(inventoryGui, "InventoryGui can not be null");
+
         if (!inventoryGui.getPlugin().equals(plugin))
             throw new IllegalArgumentException("The InventoryGui is not from the same plugin(" + inventoryGui.getPlugin() + ") as the InventoryGuiManager(" + plugin + ")");
 
@@ -37,7 +45,7 @@ public class InventoryGuiManager implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClick(final @NonNull InventoryClickEvent event) {
+    public void onInventoryClick(@NotNull final InventoryClickEvent event) {
         final InventoryGui inventoryGui = inventoryGuiMap.get(event.getView().getTopInventory());
 
         if (inventoryGui == null)
@@ -64,7 +72,7 @@ public class InventoryGuiManager implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClose(final @NonNull InventoryCloseEvent event) {
+    public void onInventoryClose(@NotNull final InventoryCloseEvent event) {
         final InventoryGui inventoryGui = inventoryGuiMap.get(event.getView().getTopInventory());
 
         if (inventoryGui == null)

@@ -2,15 +2,14 @@ package de.derfrzocker.spigot.utils.gui;
 
 import de.derfrzocker.spigot.utils.message.MessageUtil;
 import de.derfrzocker.spigot.utils.message.MessageValue;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,35 +22,30 @@ import java.util.function.IntFunction;
 public abstract class PageGui<T> extends InventoryGui {
 
     private final Map<Integer, SubPageGui> guis = new HashMap<>();
-
     private final Map<Integer, Consumer<InventoryClickEvent>> button = new HashMap<>();
-
-    @NonNull
     private BiConsumer<T, InventoryClickEvent> eventBiConsumer;
-
-    @NonNull
     private Function<T, ItemStack> itemStackFunction;
-
-    @NonNull
     private PageSettings pageSettings;
-
     private int pages;
-
     private int nextPage;
-
     private int previousPage;
-
     private boolean init = false;
 
     public PageGui(JavaPlugin plugin) {
         super(plugin);
     }
 
-    public void init(final @NonNull T[] values, final @NonNull IntFunction<T[]> function, final PageSettings pageSettings, final Function<T, ItemStack> itemStackFunction, final BiConsumer<T, InventoryClickEvent> eventBiConsumer) {
+    public void init(@NotNull final T[] values, @NotNull final IntFunction<T[]> function, @NotNull final PageSettings pageSettings, @NotNull final Function<T, ItemStack> itemStackFunction, @NotNull final BiConsumer<T, InventoryClickEvent> eventBiConsumer) {
         if (this.init)
             return;
 
         this.init = true;
+
+        Validate.notNull(values, "Values can not be null");
+        Validate.notNull(function, "IntFunction can not be null");
+        Validate.notNull(pageSettings, "PageSettings can not be null");
+        Validate.notNull(itemStackFunction, "Function for ItemStack can not be null");
+        Validate.notNull(eventBiConsumer, "BiConsumer can not be null");
 
         this.eventBiConsumer = eventBiConsumer;
         this.itemStackFunction = itemStackFunction;
@@ -59,7 +53,7 @@ public abstract class PageGui<T> extends InventoryGui {
         this.nextPage = pageSettings.getNextPageSlot();
         this.previousPage = pageSettings.getPreviousPageSlot();
 
-        final int slots = InventoryUtil.calculateSlots(pageSettings.getRows() - pageSettings.getEmptyRows(), pageSettings.getGap());
+        final int slots = InventoryUtil.calculateSlots(pageSettings.getRows() - pageSettings.getEmptyRowsBelow() - pageSettings.getEmptyRowsUp(), pageSettings.getGap());
 
         this.pages = InventoryUtil.calculatePages(slots, values.length);
         for (int i = 0; i < pages; i++) {
@@ -76,27 +70,42 @@ public abstract class PageGui<T> extends InventoryGui {
         }
     }
 
-    public void addItem(final int slot, final @NonNull ItemStack itemStack, final @NonNull Consumer<InventoryClickEvent> consumer) {
+    public void addItem(final int slot, @NotNull final ItemStack itemStack, @NotNull final Consumer<InventoryClickEvent> consumer) {
         button.put(slot, consumer);
         guis.forEach((key, value) -> value.getInventory().setItem(slot, itemStack));
     }
 
-    public void addItem(final int slot, final @NonNull ItemStack itemStack) {
+    public void addItem(final int slot, @NotNull final ItemStack itemStack) {
         guis.forEach((key, value) -> value.getInventory().setItem(slot, itemStack));
     }
 
+    /**
+     * Adds the decoration item stack from the basic settings to the inventory
+     *
+     * @param messageValues to use on the item stacks
+     */
+    public void addDecorations(@NotNull final MessageValue... messageValues) {
+        pageSettings.getDecorations().forEach(pair -> {
+            final ItemStack itemStack = MessageUtil.replaceItemStack(getPlugin(), pair.getSecond(), messageValues);
+            pair.getFirst().forEach(integer -> addItem(integer, itemStack));
+        });
+    }
+
     @Override
-    public void onClick(final @NonNull InventoryClickEvent event) {
+    public void onClick(@NotNull final InventoryClickEvent event) {
         throw new UnsupportedOperationException();
     }
 
+    @NotNull
     @Override
     Inventory getInventory() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void openSync(final @NonNull HumanEntity entity) {
+    public void openSync(@NotNull final HumanEntity entity) {
+        Validate.notNull(entity, "Entity can not be null");
+
         final SubPageGui subPageGui = guis.get(0);
         if (Bukkit.isPrimaryThread()) {
             InventoryGuiManager.getInventoryGuiManager(getPlugin()).registerInventoryGui(subPageGui);
@@ -116,14 +125,12 @@ public abstract class PageGui<T> extends InventoryGui {
 
     private final class SubPageGui extends InventoryGui {
 
-        @Getter(AccessLevel.PACKAGE)
+        @NotNull
         private final Inventory inventory;
-
         private final int page;
-
         private final Map<Integer, T> values = new HashMap<>();
 
-        private SubPageGui(final @NonNull T[] values, final int page) {
+        private SubPageGui(@NotNull final T[] values, final int page) {
             super(PageGui.super.getPlugin());
             this.page = page;
 
@@ -141,7 +148,7 @@ public abstract class PageGui<T> extends InventoryGui {
             for (int i = 0; i < values.length; i++) {
                 final T value = values[i];
 
-                final int slot = InventoryUtil.calculateSlot(i, pageSettings.getGap());
+                final int slot = InventoryUtil.calculateSlot(i, pageSettings.getGap()) + (pageSettings.getEmptyRowsUp() * 9);
 
                 inventory.setItem(slot, itemStackFunction.apply(value));
 
@@ -150,8 +157,14 @@ public abstract class PageGui<T> extends InventoryGui {
 
         }
 
+        @NotNull
         @Override
-        public void onClick(final @NonNull InventoryClickEvent event) {
+        Inventory getInventory() {
+            return inventory;
+        }
+
+        @Override
+        public void onClick(@NotNull final InventoryClickEvent event) {
             if (event.getRawSlot() == previousPage && page != 0) {
                 guis.get(page - 1).openSync(event.getWhoClicked());
                 return;
