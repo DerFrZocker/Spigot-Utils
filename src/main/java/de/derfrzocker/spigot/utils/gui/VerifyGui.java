@@ -44,7 +44,7 @@ public class VerifyGui extends BasicGui {
         }
 
         private VerifyGuiSettings(final @NonNull JavaPlugin plugin) {
-            super(plugin, "data/verify_gui.yml");
+            super(plugin, "data/gui/verify-gui.yml");
         }
 
         @Override
@@ -54,12 +54,12 @@ public class VerifyGui extends BasicGui {
 
         @Override
         public ItemStack getAcceptItemStack() {
-            return getSection().getItemStack("accept.item_stack").clone();
+            return getSection().getItemStack("accept.item-stack").clone();
         }
 
         @Override
         public ItemStack getDenyItemStack() {
-            return getSection().getItemStack("deny.item_stack").clone();
+            return getSection().getItemStack("deny.item-stack").clone();
         }
 
         @Override
