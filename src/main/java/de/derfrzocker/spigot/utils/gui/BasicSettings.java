@@ -18,6 +18,8 @@ import java.util.function.Supplier;
 public class BasicSettings implements ReloadAble {
 
     @NotNull
+    private final Set<Supplier<ConfigurationSection>> others = new LinkedHashSet<>();
+    @NotNull
     private final Supplier<ConfigurationSection> configurationSectionSupplier;
     @NotNull
     private final JavaPlugin plugin;
@@ -41,6 +43,39 @@ public class BasicSettings implements ReloadAble {
         this.section = configurationSectionSupplier.get();
         RELOAD_ABLES.add(this);
         reload();
+    }
+
+    /**
+     * Add values from a different file to this settings
+     *
+     * @param file the name to add
+     */
+    public void addValues(@NotNull final String file) {
+        addValues(file, true);
+    }
+
+    /**
+     * Add values from a different file to this settings
+     *
+     * @param file the name to add
+     * @param copy should it copy to the plugins directory
+     */
+    public void addValues(@NotNull final String file, final boolean copy) {
+        addValues(() -> copy ? Config.getConfig(plugin, file) : new Config(plugin.getResource(file)));
+    }
+
+    /**
+     * Add values from a different ConfigurationSection to this settings
+     *
+     * @param configurationSectionSupplier to add
+     */
+    public void addValues(@NotNull final Supplier<ConfigurationSection> configurationSectionSupplier) {
+        Validate.notNull(configurationSectionSupplier, "Supplier can not be null");
+
+        others.add(configurationSectionSupplier);
+
+        final ConfigurationSection configurationSection = configurationSectionSupplier.get();
+        configurationSection.getKeys(true).forEach(key -> section.addDefault(key, configurationSection.get(key)));
     }
 
     /**
@@ -97,6 +132,11 @@ public class BasicSettings implements ReloadAble {
     @Override
     public void reload() {
         section = configurationSectionSupplier.get();
+
+        others.forEach(configurationSectionSupplier -> {
+            final ConfigurationSection configurationSection = configurationSectionSupplier.get();
+            configurationSection.getKeys(true).forEach(key -> section.addDefault(key, configurationSection.get(key)));
+        });
     }
 
 }
