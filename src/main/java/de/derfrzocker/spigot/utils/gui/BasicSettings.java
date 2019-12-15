@@ -108,6 +108,10 @@ public class BasicSettings implements ReloadAble {
         final Set<Pair<Set<Integer>, ItemStack>> set = new LinkedHashSet<>();
 
         final ConfigurationSection decorationSection = getSection().getConfigurationSection("decorations");
+
+        if (decorationSection == null)
+            return set;
+
         final Set<String> keys = decorationSection.getKeys(false);
 
         keys.forEach(key -> {
