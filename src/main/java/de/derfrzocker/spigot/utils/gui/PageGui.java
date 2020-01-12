@@ -23,19 +23,23 @@ public abstract class PageGui<T> extends InventoryGui {
 
     private final Map<Integer, SubPageGui> guis = new HashMap<>();
     private final Map<Integer, Consumer<InventoryClickEvent>> button = new HashMap<>();
+    private final PageSettings pageSettings;
     private BiConsumer<T, InventoryClickEvent> eventBiConsumer;
     private Function<T, ItemStack> itemStackFunction;
-    private PageSettings pageSettings;
     private int pages;
     private int nextPage;
     private int previousPage;
     private boolean init = false;
 
-    public PageGui(JavaPlugin plugin) {
+    public PageGui(@NotNull final JavaPlugin plugin, @NotNull final PageSettings pageSettings) {
         super(plugin);
+
+        Validate.notNull(pageSettings, "PageSettings can not be null");
+
+        this.pageSettings = pageSettings;
     }
 
-    public void init(@NotNull final T[] values, @NotNull final IntFunction<T[]> function, @NotNull final PageSettings pageSettings, @NotNull final Function<T, ItemStack> itemStackFunction, @NotNull final BiConsumer<T, InventoryClickEvent> eventBiConsumer) {
+    public void init(@NotNull final T[] values, @NotNull final IntFunction<T[]> function, @NotNull final Function<T, ItemStack> itemStackFunction, @NotNull final BiConsumer<T, InventoryClickEvent> eventBiConsumer) {
         if (this.init)
             return;
 
@@ -43,13 +47,11 @@ public abstract class PageGui<T> extends InventoryGui {
 
         Validate.notNull(values, "Values can not be null");
         Validate.notNull(function, "IntFunction can not be null");
-        Validate.notNull(pageSettings, "PageSettings can not be null");
         Validate.notNull(itemStackFunction, "Function for ItemStack can not be null");
         Validate.notNull(eventBiConsumer, "BiConsumer can not be null");
 
         this.eventBiConsumer = eventBiConsumer;
         this.itemStackFunction = itemStackFunction;
-        this.pageSettings = pageSettings;
         this.nextPage = pageSettings.getNextPageSlot();
         this.previousPage = pageSettings.getPreviousPageSlot();
 
@@ -77,6 +79,23 @@ public abstract class PageGui<T> extends InventoryGui {
 
     public void addItem(final int slot, @NotNull final ItemStack itemStack) {
         guis.forEach((key, value) -> value.getInventory().setItem(slot, itemStack));
+    }
+
+    /**
+     * @param value     to update
+     * @param itemStack to set
+     * @return true if success, false if not
+     */
+    public boolean updateItemStack(@NotNull final T value, @NotNull final ItemStack itemStack) {
+        boolean update = false;
+
+        for (final SubPageGui subPageGui : guis.values()) {
+            if (subPageGui.updateItemStack(value, itemStack)) {
+                update = true;
+            }
+        }
+
+        return update;
     }
 
     /**
@@ -155,6 +174,19 @@ public abstract class PageGui<T> extends InventoryGui {
                 this.values.put(slot, value);
             }
 
+        }
+
+        public boolean updateItemStack(@NotNull final T value, @NotNull final ItemStack itemStack) {
+            boolean update = false;
+
+            for (final Map.Entry<Integer, T> entry : values.entrySet()) {
+                if (entry.getValue().equals(value)) {
+                    inventory.setItem(entry.getKey(), itemStack);
+                    update = true;
+                }
+            }
+
+            return update;
         }
 
         @NotNull
