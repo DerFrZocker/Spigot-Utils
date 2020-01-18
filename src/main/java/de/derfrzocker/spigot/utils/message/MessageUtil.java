@@ -69,6 +69,11 @@ public class MessageUtil {
     public static List<String> splitString(final String msg, final int lineSize) {
         final List<String> strings = new LinkedList<>();
 
+        if (msg.contains("%%no-split%")) {
+            strings.add(msg.replace("%%no-split%", ""));
+            return strings;
+        }
+
         final Pattern pattern = Pattern.compile("\\b.{1," + (lineSize - 1) + "}\\b\\W?");
         final Matcher matcher = pattern.matcher(msg);
 
