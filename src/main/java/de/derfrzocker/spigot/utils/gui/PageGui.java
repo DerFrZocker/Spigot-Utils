@@ -30,6 +30,8 @@ public abstract class PageGui<T> extends InventoryGui {
     private int nextPage;
     private int previousPage;
     private boolean init = false;
+    private boolean addDecorations = false;
+    private MessageValue[] decorationMessageValues;
 
     public PageGui(@NotNull final JavaPlugin plugin, @NotNull final PageSettings pageSettings) {
         super(plugin);
@@ -104,6 +106,8 @@ public abstract class PageGui<T> extends InventoryGui {
      * @param messageValues to use on the item stacks
      */
     public void addDecorations(@NotNull final MessageValue... messageValues) {
+        addDecorations = true;
+        decorationMessageValues = messageValues;
         pageSettings.getDecorations().forEach(pair -> {
             final ItemStack itemStack = MessageUtil.replaceItemStack(getPlugin(), pair.getSecond(), messageValues);
             pair.getFirst().forEach(integer -> addItem(integer, itemStack));
@@ -152,11 +156,17 @@ public abstract class PageGui<T> extends InventoryGui {
         private SubPageGui(@NotNull final T[] values, final int page) {
             super(PageGui.super.getPlugin());
             this.page = page;
-
             final MessageValue[] messageValues = new MessageValue[]{new MessageValue("page", String.valueOf(page)), new MessageValue("pages", String.valueOf(pages))};
 
             this.inventory = Bukkit.createInventory(null, pageSettings.getRows() * 9,
                     MessageUtil.replacePlaceHolder(getPlugin(), pageSettings.getInventoryName(), messageValues));
+
+            if (addDecorations) {
+                pageSettings.getDecorations().forEach(pair -> {
+                    final ItemStack itemStack = MessageUtil.replaceItemStack(getPlugin(), pair.getSecond(), decorationMessageValues);
+                    pair.getFirst().forEach(slot -> getInventory().setItem(slot, itemStack));
+                });
+            }
 
             if (page + 1 != pages)
                 inventory.setItem(nextPage, MessageUtil.replaceItemStack(getPlugin(), pageSettings.getNextPageItemStack(), messageValues));
