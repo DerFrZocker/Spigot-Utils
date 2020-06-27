@@ -75,7 +75,16 @@ public class BasicSettings implements ReloadAble {
         others.add(configurationSectionSupplier);
 
         final ConfigurationSection configurationSection = configurationSectionSupplier.get();
-        configurationSection.getKeys(true).forEach(key -> section.addDefault(key, configurationSection.get(key)));
+
+        for (final String key : configurationSection.getKeys(true)) {
+            final Object value = configurationSection.get(key);
+
+            if (value instanceof ConfigurationSection) {
+                continue;
+            }
+
+            section.addDefault(key, value);
+        }
     }
 
     /**
@@ -139,7 +148,16 @@ public class BasicSettings implements ReloadAble {
 
         others.forEach(configurationSectionSupplier -> {
             final ConfigurationSection configurationSection = configurationSectionSupplier.get();
-            configurationSection.getKeys(true).forEach(key -> section.addDefault(key, configurationSection.get(key)));
+
+            for (final String key : configurationSection.getKeys(true)) {
+                final Object value = configurationSection.get(key);
+
+                if (value instanceof ConfigurationSection) {
+                    continue;
+                }
+
+                section.addDefault(key, value);
+            }
         });
     }
 
