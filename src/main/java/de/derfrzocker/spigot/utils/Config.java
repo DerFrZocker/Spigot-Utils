@@ -5,7 +5,7 @@ import com.google.common.io.Files;
 import lombok.NonNull;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 
@@ -89,7 +89,7 @@ public class Config extends YamlConfiguration {
         this.load(new InputStreamReader(input, Charsets.UTF_8));
     }
 
-    public static Config getConfig(final @NonNull JavaPlugin plugin, @NonNull String name) {
+    public static Config getConfig(final @NonNull Plugin plugin, @NonNull String name) {
         if (!name.endsWith(".yml"))
             name = format("%s.yml", name);
 

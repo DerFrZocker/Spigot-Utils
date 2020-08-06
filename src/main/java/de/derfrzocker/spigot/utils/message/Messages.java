@@ -8,7 +8,7 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,27 +17,27 @@ import java.util.Map;
 
 public class Messages implements ReloadAble {
 
-    private final static Map<JavaPlugin, Map<Language, Messages>> MESSAGESS = new HashMap<>();
+    private final static Map<Plugin, Map<Language, Messages>> MESSAGESS = new HashMap<>();
 
     @NonNull
     private YamlConfiguration yaml;
     @NonNull
     private final Language language;
     @NonNull
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
 
-    public static Messages getMessages(final @NonNull JavaPlugin javaPlugin) {
-        return getMessages(javaPlugin, Language.getDefaultLanguage());
+    public static Messages getMessages(final @NonNull Plugin plugin) {
+        return getMessages(plugin, Language.getDefaultLanguage());
     }
 
-    public static Messages getMessages(final @NonNull JavaPlugin javaPlugin, final @NonNull Language language) {
-        final Map<Language, Messages> map = MESSAGESS.computeIfAbsent(javaPlugin, javaPlugin1 -> new HashMap<>());
+    public static Messages getMessages(final @NonNull Plugin plugin, final @NonNull Language language) {
+        final Map<Language, Messages> map = MESSAGESS.computeIfAbsent(plugin, plugin1 -> new HashMap<>());
 
-        return map.computeIfAbsent(language, language1 -> new Messages(javaPlugin, language));
+        return map.computeIfAbsent(language, language1 -> new Messages(plugin, language));
     }
 
-    public static void unLoadMessages(final @NonNull JavaPlugin javaPlugin, final @NonNull Language language) {
-        final Map<Language, Messages> map = MESSAGESS.get(javaPlugin);
+    public static void unLoadMessages(final @NonNull Plugin plugin, final @NonNull Language language) {
+        final Map<Language, Messages> map = MESSAGESS.get(plugin);
 
         if (map == null)
             return;
@@ -51,7 +51,7 @@ public class Messages implements ReloadAble {
         MESSAGESS.remove(messages);
     }
 
-    private Messages(final JavaPlugin plugin, final Language language) {
+    private Messages(final Plugin plugin, final Language language) {
         this.language = language;
         this.plugin = plugin;
         reload();

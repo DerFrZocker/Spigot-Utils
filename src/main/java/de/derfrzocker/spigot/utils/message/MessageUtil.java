@@ -4,7 +4,7 @@ import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class MessageUtil {
     private final static int DEFAULT_LORE_LENGTH = 40;
     private final static int MINIMUM_LORE_LENGTH = 15;
 
-    public static String replacePlaceHolder(final @NonNull JavaPlugin plugin, @NonNull String string, final @NonNull MessageValue... messageValues) {
+    public static String replacePlaceHolder(final @NonNull Plugin plugin, @NonNull String string, final @NonNull MessageValue... messageValues) {
 
         string = replaceTranslation(plugin, string, messageValues);
 
@@ -29,7 +29,7 @@ public class MessageUtil {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static List<String> replaceList(final @NonNull JavaPlugin plugin, final @NonNull List<String> strings, final @NonNull MessageValue... messageValues) {
+    public static List<String> replaceList(final @NonNull Plugin plugin, final @NonNull List<String> strings, final @NonNull MessageValue... messageValues) {
         List<String> list = new LinkedList<>();
 
         strings.forEach(value -> list.add(replacePlaceHolder(plugin, value, messageValues)));
@@ -37,7 +37,7 @@ public class MessageUtil {
         return list;
     }
 
-    public static ItemStack replaceItemStack(final @NonNull JavaPlugin plugin, @NonNull ItemStack itemStack, final @NonNull MessageValue... messageValues) {
+    public static ItemStack replaceItemStack(final @NonNull Plugin plugin, @NonNull ItemStack itemStack, final @NonNull MessageValue... messageValues) {
         itemStack = itemStack.clone();
 
         if (!itemStack.hasItemMeta())
@@ -49,7 +49,7 @@ public class MessageUtil {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static ItemMeta replaceItemMeta(final @NonNull JavaPlugin plugin, final @NonNull ItemMeta itemMeta, final @NonNull MessageValue... messageValues) {
+    public static ItemMeta replaceItemMeta(final @NonNull Plugin plugin, final @NonNull ItemMeta itemMeta, final @NonNull MessageValue... messageValues) {
         final ItemMeta meta = itemMeta.clone();
 
         if (meta.hasDisplayName())
@@ -84,7 +84,7 @@ public class MessageUtil {
     }
 
     // %%translation:[example.string]%
-    public static String replaceTranslation(final @NonNull JavaPlugin plugin, final @NonNull String string, final @NonNull MessageValue... messageValues) {
+    public static String replaceTranslation(final @NonNull Plugin plugin, final @NonNull String string, final @NonNull MessageValue... messageValues) {
         if (!string.contains("%%translation:["))
             return string;
 

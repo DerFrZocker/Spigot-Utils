@@ -6,7 +6,7 @@ import de.derfrzocker.spigot.utils.ReloadAble;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,20 +22,20 @@ public class BasicSettings implements ReloadAble {
     @NotNull
     private final Supplier<ConfigurationSection> configurationSectionSupplier;
     @NotNull
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     @NotNull
     private ConfigurationSection section;
 
-    public BasicSettings(@NotNull final JavaPlugin plugin, @NotNull final String file) {
+    public BasicSettings(@NotNull final Plugin plugin, @NotNull final String file) {
         this(plugin, file, true);
     }
 
-    public BasicSettings(@NotNull final JavaPlugin plugin, @NotNull final String file, final boolean copy) {
+    public BasicSettings(@NotNull final Plugin plugin, @NotNull final String file, final boolean copy) {
         this(plugin, () -> copy ? Config.getConfig(plugin, file) : new Config(plugin.getResource(file)));
     }
 
-    public BasicSettings(@NotNull final JavaPlugin plugin, @NotNull final Supplier<ConfigurationSection> configurationSectionSupplier) {
-        Validate.notNull(plugin, "JavaPlugin can not be null");
+    public BasicSettings(@NotNull final Plugin plugin, @NotNull final Supplier<ConfigurationSection> configurationSectionSupplier) {
+        Validate.notNull(plugin, "Plugin can not be null");
         Validate.notNull(configurationSectionSupplier, "Supplier can not be null");
 
         this.configurationSectionSupplier = configurationSectionSupplier;

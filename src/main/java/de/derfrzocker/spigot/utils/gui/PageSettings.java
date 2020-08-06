@@ -2,7 +2,7 @@ package de.derfrzocker.spigot.utils.gui;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
@@ -10,15 +10,15 @@ import java.util.function.Supplier;
 public class PageSettings extends BasicSettings {
 
 
-    public PageSettings(@NotNull final JavaPlugin plugin, @NotNull final String file) {
+    public PageSettings(@NotNull final Plugin plugin, @NotNull final String file) {
         super(plugin, file);
     }
 
-    public PageSettings(@NotNull final JavaPlugin plugin, @NotNull final String file, final boolean copy) {
+    public PageSettings(@NotNull final Plugin plugin, @NotNull final String file, final boolean copy) {
         super(plugin, file, copy);
     }
 
-    public PageSettings(@NotNull final JavaPlugin plugin, @NotNull final Supplier<ConfigurationSection> configurationSectionSupplier) {
+    public PageSettings(@NotNull final Plugin plugin, @NotNull final Supplier<ConfigurationSection> configurationSectionSupplier) {
         super(plugin, configurationSectionSupplier);
     }
 

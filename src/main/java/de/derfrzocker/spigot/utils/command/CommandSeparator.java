@@ -6,7 +6,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ import java.util.Map;
 public abstract class CommandSeparator implements TabExecutor {
 
     @NotNull
-    private final JavaPlugin javaPlugin;
+    private final Plugin plugin;
 
     @Nullable
     private Command2 fallBack;
@@ -29,10 +29,10 @@ public abstract class CommandSeparator implements TabExecutor {
     @NotNull
     private final Map<String, Command2> map = new HashMap<>();
 
-    public CommandSeparator(@NotNull final JavaPlugin javaPlugin) {
-        Validate.notNull(javaPlugin, "JavaPlugin can't be null");
+    public CommandSeparator(@NotNull final Plugin plugin) {
+        Validate.notNull(plugin, "Plugin can't be null");
 
-        this.javaPlugin = javaPlugin;
+        this.plugin = plugin;
     }
 
     /**

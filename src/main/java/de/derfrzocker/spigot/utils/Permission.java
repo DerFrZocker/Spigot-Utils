@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NonNull;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import java.util.Set;
 @Data
 public class Permission {
 
-    private final static Map<JavaPlugin, Set<Permission>> PERMISSIONS = new HashMap<>();
+    private final static Map<Plugin, Set<Permission>> PERMISSIONS = new HashMap<>();
 
     private final Permission parent;
 
@@ -22,17 +22,17 @@ public class Permission {
     private final String permission;
 
     @NonNull
-    private final JavaPlugin javaPlugin;
+    private final Plugin plugin;
 
     private final boolean commandPermission;
 
-    public Permission(final Permission parent, final String permission, final JavaPlugin javaPlugin, final boolean commandPermission) {
+    public Permission(final Permission parent, final String permission, final Plugin plugin, final boolean commandPermission) {
         this.parent = parent;
         this.permission = permission;
-        this.javaPlugin = javaPlugin;
+        this.plugin = plugin;
         this.commandPermission = commandPermission;
 
-        PERMISSIONS.computeIfAbsent(javaPlugin, javaPlugin1 -> new HashSet<>()).add(this);
+        PERMISSIONS.computeIfAbsent(plugin, plugin1 -> new HashSet<>()).add(this);
     }
 
     public String getPermission() {
@@ -83,8 +83,8 @@ public class Permission {
                 if (amount > max)
                     max = amount;
             } catch (NumberFormatException e) {
-                javaPlugin.getLogger().warning("Unexpected value in permission, expect a Number or '*' but got '" + permission + "'");
-                javaPlugin.getLogger().warning("Please check your permission: '" + permissionAttachmentInfo.getPermission() + "'");
+                plugin.getLogger().warning("Unexpected value in permission, expect a Number or '*' but got '" + permission + "'");
+                plugin.getLogger().warning("Please check your permission: '" + permissionAttachmentInfo.getPermission() + "'");
             }
 
         }
@@ -92,8 +92,8 @@ public class Permission {
         return max;
     }
 
-    public static boolean hasAnyCommandPermission(final @NonNull JavaPlugin javaPlugin, final @NonNull Permissible permissible) {
-        return PERMISSIONS.computeIfAbsent(javaPlugin, javaPlugin1 -> new HashSet<>()).stream().filter(Permission::isCommandPermission).anyMatch(permission -> permissible.hasPermission(permission.getPermission()));
+    public static boolean hasAnyCommandPermission(final @NonNull Plugin plugin, final @NonNull Permissible permissible) {
+        return PERMISSIONS.computeIfAbsent(plugin, plugin1 -> new HashSet<>()).stream().filter(Permission::isCommandPermission).anyMatch(permission -> permissible.hasPermission(permission.getPermission()));
     }
 
 }

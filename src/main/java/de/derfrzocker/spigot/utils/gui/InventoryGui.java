@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutionException;
@@ -13,10 +13,10 @@ import java.util.concurrent.ExecutionException;
 public abstract class InventoryGui {
 
     @NotNull
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
 
-    public InventoryGui(@NotNull final JavaPlugin plugin) {
-        Validate.notNull(plugin, "JavaPlugin can not be null");
+    public InventoryGui(@NotNull final Plugin plugin) {
+        Validate.notNull(plugin, "Plugin can not be null");
 
         this.plugin = plugin;
     }
@@ -95,8 +95,8 @@ public abstract class InventoryGui {
      * @return the plugin, which create and use this InventoryGui
      */
     @NotNull
-    public JavaPlugin getPlugin() {
-        return plugin;
+    public Plugin getPlugin() {
+        return this.plugin;
     }
 
 }

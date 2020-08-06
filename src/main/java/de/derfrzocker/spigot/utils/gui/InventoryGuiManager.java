@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -16,23 +16,23 @@ import java.util.*;
 public class InventoryGuiManager implements Listener {
 
     private static final Set<HumanEntity> HUMAN_ENTITY_SET = Collections.synchronizedSet(new HashSet<>());
-    private final static Map<JavaPlugin, InventoryGuiManager> INVENTORY_GUI_MANAGER_MAP = new HashMap<>();
+    private final static Map<Plugin, InventoryGuiManager> INVENTORY_GUI_MANAGER_MAP = new HashMap<>();
 
     private final Map<Inventory, InventoryGui> inventoryGuiMap = new HashMap<>();
     @NotNull
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
 
-    private InventoryGuiManager(@NotNull final JavaPlugin plugin) {
-        Validate.notNull(plugin, "JavaPlugin can not be null");
+    private InventoryGuiManager(@NotNull final Plugin plugin) {
+        Validate.notNull(plugin, "Plugin can not be null");
 
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    public static InventoryGuiManager getInventoryGuiManager(@NotNull final JavaPlugin javaPlugin) {
-        Validate.notNull(javaPlugin, "JavaPlugin can not be null");
+    public static InventoryGuiManager getInventoryGuiManager(@NotNull final Plugin plugin) {
+        Validate.notNull(plugin, "Plugin can not be null");
 
-        return INVENTORY_GUI_MANAGER_MAP.computeIfAbsent(javaPlugin, InventoryGuiManager::new);
+        return INVENTORY_GUI_MANAGER_MAP.computeIfAbsent(plugin, InventoryGuiManager::new);
     }
 
     public void registerInventoryGui(@NotNull final InventoryGui inventoryGui) {

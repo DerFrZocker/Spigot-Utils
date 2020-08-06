@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class BasicGui extends InventoryGui {
     @NotNull
     private final BasicSettings basicSettings;
 
-    public BasicGui(@NotNull final JavaPlugin plugin, @NotNull final BasicSettings basicSettings) {
+    public BasicGui(@NotNull final Plugin plugin, @NotNull final BasicSettings basicSettings) {
         super(plugin);
 
         Validate.notNull(basicSettings, "BasicSettings can not be null");
@@ -34,7 +34,7 @@ public class BasicGui extends InventoryGui {
         inventory = Bukkit.createInventory(null, basicSettings.getRows() * 9, MessageUtil.replacePlaceHolder(plugin, basicSettings.getInventoryName()));
     }
 
-    public BasicGui(@NotNull final JavaPlugin plugin, @NotNull final BasicSettings basicSettings, @NotNull final MessageValue... messageValue) {
+    public BasicGui(@NotNull final Plugin plugin, @NotNull final BasicSettings basicSettings, @NotNull final MessageValue... messageValue) {
         super(plugin);
 
         Validate.notNull(basicSettings, "BasicSettings can not be null");
