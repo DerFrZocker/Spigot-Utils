@@ -3,9 +3,11 @@ package de.derfrzocker.spigot.utils;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import lombok.NonNull;
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 
@@ -89,7 +91,14 @@ public class Config extends YamlConfiguration {
         this.load(new InputStreamReader(input, Charsets.UTF_8));
     }
 
-    public static Config getConfig(final @NonNull Plugin plugin, @NonNull String name) {
+    public static Config getConfig(@NotNull Plugin plugin, @NotNull String name) {
+        return getConfig(plugin, name, true);
+    }
+
+    public static Config getConfig(@NotNull Plugin plugin, @NotNull String name, boolean saveDefaults) {
+        Validate.notNull(plugin, "Plugin cannot be null");
+        Validate.notNull(name, "Name cannot be null");
+
         if (!name.endsWith(".yml"))
             name = format("%s.yml", name);
 
@@ -103,11 +112,14 @@ public class Config extends YamlConfiguration {
         final Config config = new Config(file);
 
         config.setDefaults(defaults);
-        config.options().copyDefaults(true);
-        try {
-            config.save(file);
-        } catch (final IOException e) {
-            throw new RuntimeException("Error while save data to file: " + file, e);
+
+        if (saveDefaults) {
+            config.options().copyDefaults(true);
+            try {
+                config.save(file);
+            } catch (final IOException e) {
+                throw new RuntimeException("Error while save data to file: " + file, e);
+            }
         }
 
         return config;

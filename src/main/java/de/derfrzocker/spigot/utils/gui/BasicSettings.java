@@ -31,7 +31,7 @@ public class BasicSettings implements ReloadAble {
     }
 
     public BasicSettings(@NotNull final Plugin plugin, @NotNull final String file, final boolean copy) {
-        this(plugin, () -> copy ? Config.getConfig(plugin, file) : new Config(plugin.getResource(file)));
+        this(plugin, () -> copy ? Config.getConfig(plugin, file, false) : new Config(plugin.getResource(file)));
     }
 
     public BasicSettings(@NotNull final Plugin plugin, @NotNull final Supplier<ConfigurationSection> configurationSectionSupplier) {
@@ -61,7 +61,7 @@ public class BasicSettings implements ReloadAble {
      * @param copy should it copy to the plugins directory
      */
     public void addValues(@NotNull final String file, final boolean copy) {
-        addValues(() -> copy ? Config.getConfig(plugin, file) : new Config(plugin.getResource(file)));
+        addValues(() -> copy ? Config.getConfig(plugin, file, false) : new Config(plugin.getResource(file)));
     }
 
     /**
