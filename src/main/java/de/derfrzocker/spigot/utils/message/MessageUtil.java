@@ -38,8 +38,6 @@ public class MessageUtil {
     }
 
     public static ItemStack replaceItemStack(final @NonNull Plugin plugin, @NonNull ItemStack itemStack, final @NonNull MessageValue... messageValues) {
-        itemStack = itemStack.clone();
-
         if (!itemStack.hasItemMeta())
             return itemStack;
 
@@ -50,20 +48,18 @@ public class MessageUtil {
 
     @SuppressWarnings("WeakerAccess")
     public static ItemMeta replaceItemMeta(final @NonNull Plugin plugin, final @NonNull ItemMeta itemMeta, final @NonNull MessageValue... messageValues) {
-        final ItemMeta meta = itemMeta.clone();
+        if (itemMeta.hasDisplayName())
+            itemMeta.setDisplayName(replacePlaceHolder(plugin, itemMeta.getDisplayName(), messageValues));
 
-        if (meta.hasDisplayName())
-            meta.setDisplayName(replacePlaceHolder(plugin, meta.getDisplayName(), messageValues));
-
-        if (meta.hasLore()) {
+        if (itemMeta.hasLore()) {
             final List<String> lore = new LinkedList<>();
 
-            replaceList(plugin, meta.getLore(), messageValues).forEach(string -> lore.addAll(splitString(string, meta.hasDisplayName() ? meta.getDisplayName().length() < MINIMUM_LORE_LENGTH ? DEFAULT_LORE_LENGTH : meta.getDisplayName().length() : DEFAULT_LORE_LENGTH)));
+            replaceList(plugin, itemMeta.getLore(), messageValues).forEach(string -> lore.addAll(splitString(string, itemMeta.hasDisplayName() ? itemMeta.getDisplayName().length() < MINIMUM_LORE_LENGTH ? DEFAULT_LORE_LENGTH : itemMeta.getDisplayName().length() : DEFAULT_LORE_LENGTH)));
 
-            meta.setLore(lore);
+            itemMeta.setLore(lore);
         }
 
-        return meta;
+        return itemMeta;
     }
 
     public static List<String> splitString(final String msg, final int lineSize) {
