@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class MessageUtil {
 
@@ -32,7 +33,12 @@ public class MessageUtil {
     public static List<String> replaceList(final @NonNull Plugin plugin, final @NonNull List<String> strings, final @NonNull MessageValue... messageValues) {
         List<String> list = new LinkedList<>();
 
-        strings.forEach(value -> list.add(replacePlaceHolder(plugin, value, messageValues)));
+        strings.stream().flatMap(line -> {
+            if (line.contains("\n") || line.contains("%%new-line%")) {
+                return Stream.of(line.split("(\\n|%%new-line%)"));
+            }
+            return Stream.of(line);
+        }).forEach(value -> list.add(replacePlaceHolder(plugin, value, messageValues)));
 
         return list;
     }
