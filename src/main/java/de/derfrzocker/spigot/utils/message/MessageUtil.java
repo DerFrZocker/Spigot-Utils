@@ -33,12 +33,15 @@ public class MessageUtil {
     public static List<String> replaceList(final @NonNull Plugin plugin, final @NonNull List<String> strings, final @NonNull MessageValue... messageValues) {
         List<String> list = new LinkedList<>();
 
-        strings.stream().flatMap(line -> {
-            if (line.contains("\n") || line.contains("%%new-line%")) {
-                return Stream.of(line.split("(\\n|%%new-line%)"));
-            }
-            return Stream.of(line);
-        }).forEach(value -> list.add(replacePlaceHolder(plugin, value, messageValues)));
+        strings.stream().
+                map(line -> replacePlaceHolder(plugin, line, messageValues)).
+                flatMap(line -> {
+                    if (line.contains("\n") || line.contains("%%new-line%")) {
+                        return Stream.of(line.split("(\\n|%%new-line%)"));
+                    }
+                    return Stream.of(line);
+                }).
+                forEach(list::add);
 
         return list;
     }
