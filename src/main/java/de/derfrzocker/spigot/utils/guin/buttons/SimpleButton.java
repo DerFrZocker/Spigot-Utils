@@ -13,15 +13,15 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class SimpleButton<S extends Setting<S>> implements Button {
+public class SimpleButton implements Button {
 
-    private final S setting;
-    private final BiFunction<S, GuiInfo, ItemStack> itemStackFunction;
+    private final Setting setting;
+    private final BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction;
     private final List<Consumer<ClickAction>> actions = new LinkedList<>();
-    private final List<BiPredicate<S, GuiInfo>> conditions = new LinkedList<>();
-    private final List<Function<S, ClickType>> clickTypes = new LinkedList<>();
+    private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
+    private final List<Function<Setting, ClickType>> clickTypes = new LinkedList<>();
 
-    public SimpleButton(S setting, BiFunction<S, GuiInfo, ItemStack> itemStackFunction, List<Consumer<ClickAction>> actions, List<BiPredicate<S, GuiInfo>> conditions, List<Function<S, ClickType>> clickTypes) {
+    public SimpleButton(Setting setting, BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction, List<Consumer<ClickAction>> actions, List<BiPredicate<Setting, GuiInfo>> conditions, List<Function<Setting, ClickType>> clickTypes) {
         this.setting = setting;
         this.itemStackFunction = itemStackFunction;
         this.actions.addAll(actions);

@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-public class SingleInventoryGui<S extends Setting<S>> implements InventoryGui, Listener {
+public class SingleInventoryGui implements InventoryGui, Listener {
 
     private final Map<HumanEntity, InventoryGui> previous = new LinkedHashMap<>();
 
-    private final S setting;
-    private final BiFunction<S, GuiInfo, Integer> rows;
-    private final BiFunction<S, GuiInfo, String> name;
-    private final BiFunction<S, GuiInfo, Boolean> allowBottomPickUp;
+    private final Setting setting;
+    private final BiFunction<Setting, GuiInfo, Integer> rows;
+    private final BiFunction<Setting, GuiInfo, String> name;
+    private final BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
     private final List<Decoration> decorations = new LinkedList<>();
     private final Map<Object, InventoryGui> inventoryGuiMap = new LinkedHashMap<>();
@@ -41,7 +41,7 @@ public class SingleInventoryGui<S extends Setting<S>> implements InventoryGui, L
 
     private boolean registered = false;
 
-    public SingleInventoryGui(S setting, BiFunction<S, GuiInfo, Integer> rows, BiFunction<S, GuiInfo, String> name, BiFunction<S, GuiInfo, Boolean> allowBottomPickUp) {
+    public SingleInventoryGui(Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp) {
         this.setting = setting;
         this.rows = rows;
         this.name = name;

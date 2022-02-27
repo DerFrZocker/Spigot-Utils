@@ -26,17 +26,17 @@ import java.util.OptionalInt;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 
-public class PagedInventoryGui<S extends Setting<S>, D> implements InventoryGui, Listener {
+public class PagedInventoryGui<D> implements InventoryGui, Listener {
 
     private final Map<HumanEntity, InventoryGui> previous = new LinkedHashMap<>();
 
-    private final S setting;
-    private final BiFunction<S, GuiInfo, Integer> rows;
-    private final BiFunction<S, GuiInfo, String> name;
-    private final BiFunction<S, GuiInfo, Integer> upperGap;
-    private final BiFunction<S, GuiInfo, Integer> lowerGap;
-    private final BiFunction<S, GuiInfo, Integer> sideGap;
-    private final BiFunction<S, GuiInfo, Boolean> allowBottomPickUp;
+    private final Setting setting;
+    private final BiFunction<Setting, GuiInfo, Integer> rows;
+    private final BiFunction<Setting, GuiInfo, String> name;
+    private final BiFunction<Setting, GuiInfo, Integer> upperGap;
+    private final BiFunction<Setting, GuiInfo, Integer> lowerGap;
+    private final BiFunction<Setting, GuiInfo, Integer> sideGap;
+    private final BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
     private final PageContent<D> pageContent;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
     private final List<Decoration> decorations = new LinkedList<>();
@@ -47,7 +47,7 @@ public class PagedInventoryGui<S extends Setting<S>, D> implements InventoryGui,
 
     private boolean registered = false;
 
-    public PagedInventoryGui(S setting, BiFunction<S, GuiInfo, Integer> rows, BiFunction<S, GuiInfo, String> name, BiFunction<S, GuiInfo, Integer> upperGap, BiFunction<S, GuiInfo, Integer> lowerGap, BiFunction<S, GuiInfo, Integer> sideGap, BiFunction<S, GuiInfo, Boolean> allowBottomPickUp, PageContent<D> pageContent) {
+    public PagedInventoryGui(Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Integer> upperGap, BiFunction<Setting, GuiInfo, Integer> lowerGap, BiFunction<Setting, GuiInfo, Integer> sideGap, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, PageContent<D> pageContent) {
         this.setting = setting;
         this.rows = rows;
         this.name = name;

@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-public class SimpleButtonContext<S extends Setting<S>> implements ButtonContext {
+public class SimpleButtonContext implements ButtonContext {
 
-    private final S setting;
-    private final BiFunction<S, GuiInfo, Integer> slotFunction;
+    private final Setting setting;
+    private final BiFunction<Setting, GuiInfo, Integer> slotFunction;
     private final Button button;
-    private final List<BiPredicate<S, GuiInfo>> conditions = new LinkedList<>();
+    private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
 
-    public SimpleButtonContext(S setting, BiFunction<S, GuiInfo, Integer> slotFunction, Button button, List<BiPredicate<S, GuiInfo>> conditions) {
+    public SimpleButtonContext(Setting setting, BiFunction<Setting, GuiInfo, Integer> slotFunction, Button button, List<BiPredicate<Setting, GuiInfo>> conditions) {
         this.setting = setting;
         this.slotFunction = slotFunction;
         this.button = button;

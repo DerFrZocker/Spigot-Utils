@@ -20,114 +20,112 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-public final class PageContentBuilder<S extends Setting<S>, D> {
+public final class PageContentBuilder<D> {
 
-    private final List<BiConsumer<GuiBuilder<?>, PageContentData>> records = new LinkedList<>();
-    private final BiFunction<Setting<?>, S, S> settingSFunction;
+    private final List<BiConsumer<GuiBuilder, PageContentData>> records = new LinkedList<>();
 
-    private PageContentBuilder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        this.settingSFunction = settingSFunction;
+    private PageContentBuilder() {
     }
 
-    public static <S extends Setting<S>, D> PageContentBuilder<S, D> builder(BiFunction<Setting<?>, S, S> settingSFunction, Class<D> dClass) {
-        return new PageContentBuilder<>(settingSFunction);
+    public static <D> PageContentBuilder<D> builder(Class<D> dClass) {
+        return new PageContentBuilder<>();
     }
 
-    public PageContentBuilder<S, D> withSetting(Setting<?> setting) {
-        records.add((parent, data) -> data.setting = settingSFunction.apply(setting, data.setting));
+    public PageContentBuilder<D> withSetting(Setting setting) {
+        records.add((parent, data) -> data.setting = data.setting.withSetting(setting));
         return this;
     }
 
-    public PageContentBuilder<S, D> data(List<D> data) {
+    public PageContentBuilder<D> data(List<D> data) {
         data((setting, humanEntity) -> data);
         return this;
     }
 
-    public PageContentBuilder<S, D> data(BiFunction<S, GuiInfo, List<D>> dataFunction) {
+    public PageContentBuilder<D> data(BiFunction<Setting, GuiInfo, List<D>> dataFunction) {
         records.add((parent, data) -> data.dataFunction = dataFunction);
         return this;
     }
 
-    public PageContentBuilder<S, D> itemStack(Function<D, ItemStack> itemStackFunction) {
+    public PageContentBuilder<D> itemStack(Function<D, ItemStack> itemStackFunction) {
         itemStack((setting, humanEntity, data) -> itemStackFunction.apply(data));
         return this;
     }
 
-    public PageContentBuilder<S, D> itemStack(TripleFunction<S, GuiInfo, D, ItemStack> itemStackFunction) {
+    public PageContentBuilder<D> itemStack(TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction) {
         records.add((parent, data) -> data.itemStackFunction = itemStackFunction);
         return this;
     }
 
-    public PageContentBuilder<S, D> slot(Function<D, OptionalInt> slotFunction) {
+    public PageContentBuilder<D> slot(Function<D, OptionalInt> slotFunction) {
         slot((setting, humanEntity, data) -> slotFunction.apply(data));
         return this;
     }
 
-    public PageContentBuilder<S, D> slot(TripleFunction<S, GuiInfo, D, OptionalInt> slotFunction) {
+    public PageContentBuilder<D> slot(TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction) {
         records.add((parent, data) -> data.slotFunction = slotFunction);
         return this;
     }
 
-    public PageContentBuilder<S, D> withAction(BiConsumer<ClickAction, D> consumer) {
+    public PageContentBuilder<D> withAction(BiConsumer<ClickAction, D> consumer) {
         records.add((gui, data) -> data.actions.add(consumer));
         return this;
     }
 
-    public PageContentBuilder<S, D> withPermission(Function<D, String> permission) {
+    public PageContentBuilder<D> withPermission(Function<D, String> permission) {
         withPermission((setting, data) -> permission.apply(data));
         return this;
     }
 
-    public PageContentBuilder<S, D> withPermission(BiFunction<S, D, String> permissionFunction) {
+    public PageContentBuilder<D> withPermission(BiFunction<Setting, D, String> permissionFunction) {
         withCondition((setting, guiInfo, data) -> guiInfo.getEntity().hasPermission(permissionFunction.apply(setting, data)));
         return this;
     }
 
-    public PageContentBuilder<S, D> withCondition(BiPredicate<GuiInfo, D> predicate) {
+    public PageContentBuilder<D> withCondition(BiPredicate<GuiInfo, D> predicate) {
         withCondition((setting, guiInfo, data) -> predicate.test(guiInfo, data));
         return this;
     }
 
-    public PageContentBuilder<S, D> withCondition(TriplePredicate<S, GuiInfo, D> predicate) {
+    public PageContentBuilder<D> withCondition(TriplePredicate<Setting, GuiInfo, D> predicate) {
         records.add((gui, data) -> data.conditions.add(predicate));
         return this;
     }
 
-    public PageContentBuilder<S, D> withClickType(ClickType clickType) {
+    public PageContentBuilder<D> withClickType(ClickType clickType) {
         withClickType(setting -> clickType);
         return this;
     }
 
 
-    public PageContentBuilder<S, D> withClickType(Function<S, ClickType> clickType) {
+    public PageContentBuilder<D> withClickType(Function<Setting, ClickType> clickType) {
         records.add((gui, data) -> data.clickTypes.add(clickType));
         return this;
     }
 
-    PageContent<D> build(GuiBuilder<?> parent) {
+    PageContent<D> build(GuiBuilder parent) {
         PageContentData data = new PageContentData();
 
-        parent.copy(data, settingSFunction);
+        parent.copy(data);
 
-        for (BiConsumer<GuiBuilder<?>, PageContentData> consumer : records) {
+        for (BiConsumer<GuiBuilder, PageContentData> consumer : records) {
             consumer.accept(parent, data);
         }
 
         return data.build();
     }
 
-    private final class PageContentData extends GuiBuilder<S> {
+    private final class PageContentData extends GuiBuilder {
         protected final List<BiConsumer<ClickAction, D>> actions = new LinkedList<>();
-        protected final List<TriplePredicate<S, GuiInfo, D>> conditions = new LinkedList<>();
-        private final List<Function<S, ClickType>> clickTypes = new LinkedList<>();
-        protected BiFunction<S, GuiInfo, List<D>> dataFunction;
-        protected TripleFunction<S, GuiInfo, D, ItemStack> itemStackFunction;
-        protected TripleFunction<S, GuiInfo, D, OptionalInt> slotFunction;
+        protected final List<TriplePredicate<Setting, GuiInfo, D>> conditions = new LinkedList<>();
+        private final List<Function<Setting, ClickType>> clickTypes = new LinkedList<>();
+        protected BiFunction<Setting, GuiInfo, List<D>> dataFunction;
+        protected TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction;
+        protected TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
 
         PageContent<D> build() {
-            TripleFunction<S, GuiInfo, D, ItemStack> itemStackFunction = this.itemStackFunction;
-            TripleFunction<S, GuiInfo, D, OptionalInt> slotFunction = this.slotFunction;
-            BiFunction<S, GuiInfo, List<D>> dataFunction = this.dataFunction;
+            TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction = this.itemStackFunction;
+            TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction = this.slotFunction;
+            BiFunction<Setting, GuiInfo, List<D>> dataFunction = this.dataFunction;
 
             if (loadMissingFromConfig) {
                 if (itemStackFunction == null) {

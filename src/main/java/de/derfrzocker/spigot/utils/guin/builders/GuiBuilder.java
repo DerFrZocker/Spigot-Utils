@@ -3,35 +3,35 @@ package de.derfrzocker.spigot.utils.guin.builders;
 import de.derfrzocker.spigot.utils.guin.InventoryGui;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
+import de.derfrzocker.spigot.utils.guin.settings.DummySetting;
 import de.derfrzocker.spigot.utils.guin.settings.Setting;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class GuiBuilder<S extends Setting<S>> {
+public abstract class GuiBuilder {
 
     protected boolean loadMissingFromConfig = true;
 
     protected boolean copySetting = true;
-    protected S setting;
+    protected Setting setting = new DummySetting();
 
     protected boolean copyButtonIdentifier = true;
-    protected Map<Object, Function<GuiBuilder<?>, Button>> buttons = new LinkedHashMap<>();
+    protected Map<Object, Function<GuiBuilder, Button>> buttons = new LinkedHashMap<>();
 
     protected boolean copyButtonContextIdentifier = true;
-    protected Map<Object, Function<GuiBuilder<?>, ButtonContext>> buttonContexts = new LinkedHashMap<>();
+    protected Map<Object, Function<GuiBuilder, ButtonContext>> buttonContexts = new LinkedHashMap<>();
 
     protected boolean copyInventoryGuiIdentifier = true;
     protected Map<Object, InventoryGui> inventoryGuis = new LinkedHashMap<>();
 
-    protected <SO extends Setting<SO>> void copy(GuiBuilder<SO> other, BiFunction<Setting<?>, SO, SO> settingSFunction) {
+    protected void copy(GuiBuilder other) {
         other.loadMissingFromConfig = loadMissingFromConfig;
 
         other.copySetting = copySetting;
         if (copySetting) {
-            other.setting = settingSFunction.apply(setting, null);
+            other.setting = setting;
         }
 
         other.copyButtonIdentifier = copyButtonIdentifier;

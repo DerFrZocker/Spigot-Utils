@@ -18,97 +18,95 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class ButtonBuilder<S extends Setting<S>> {
+public final class ButtonBuilder {
 
-    private final List<BiConsumer<GuiBuilder<?>, ButtonBuilderData>> records = new LinkedList<>();
-    private final BiFunction<Setting<?>, S, S> settingSFunction;
+    private final List<BiConsumer<GuiBuilder, ButtonBuilderData>> records = new LinkedList<>();
     protected Object identifier;
 
-    private ButtonBuilder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        this.settingSFunction = settingSFunction;
+    private ButtonBuilder() {
     }
 
-    public static <S extends Setting<S>> ButtonBuilder<S> builder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        return new ButtonBuilder<>(settingSFunction);
+    public static ButtonBuilder builder() {
+        return new ButtonBuilder();
     }
 
-    public ButtonBuilder<S> withSetting(Setting<?> setting) {
-        records.add((parent, data) -> data.setting = settingSFunction.apply(setting, data.setting));
+    public ButtonBuilder withSetting(Setting setting) {
+        records.add((parent, data) -> data.setting = data.setting.withSetting(setting));
         return this;
     }
 
-    public ButtonBuilder<S> itemStack(ItemStack itemStack) {
+    public ButtonBuilder itemStack(ItemStack itemStack) {
         itemStack((setting, guiInfo) -> itemStack);
         return this;
     }
 
-    public ButtonBuilder<S> itemStack(BiFunction<S, GuiInfo, ItemStack> itemStackFunction) {
+    public ButtonBuilder itemStack(BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction) {
         records.add((gui, data) -> data.itemStackFunction = itemStackFunction);
         return this;
     }
 
-    public ButtonBuilder<S> identifier(Object identifier) {
+    public ButtonBuilder identifier(Object identifier) {
         this.identifier = identifier;
         return this;
     }
 
-    public ButtonBuilder<S> withAction(Consumer<ClickAction> consumer) {
+    public ButtonBuilder withAction(Consumer<ClickAction> consumer) {
         records.add((gui, data) -> data.actions.add(consumer));
         return this;
     }
 
-    public ButtonBuilder<S> withPermission(String permission) {
+    public ButtonBuilder withPermission(String permission) {
         withPermission(s -> permission);
         return this;
     }
 
-    public ButtonBuilder<S> withPermission(Function<S, String> permissionFunction) {
+    public ButtonBuilder withPermission(Function<Setting, String> permissionFunction) {
         withCondition((setting, guiInfo) -> guiInfo.getEntity().hasPermission(permissionFunction.apply(setting)));
         return this;
     }
 
-    public ButtonBuilder<S> withCondition(Predicate<GuiInfo> predicate) {
+    public ButtonBuilder withCondition(Predicate<GuiInfo> predicate) {
         withCondition((setting, guiInfo) -> predicate.test(guiInfo));
         return this;
     }
 
-    public ButtonBuilder<S> withCondition(BiPredicate<S, GuiInfo> predicate) {
+    public ButtonBuilder withCondition(BiPredicate<Setting, GuiInfo> predicate) {
         records.add((gui, data) -> data.conditions.add(predicate));
         return this;
     }
 
-    public ButtonBuilder<S> withClickType(ClickType clickType) {
+    public ButtonBuilder withClickType(ClickType clickType) {
         withClickType(setting -> clickType);
         return this;
     }
 
 
-    public ButtonBuilder<S> withClickType(Function<S, ClickType> clickType) {
+    public ButtonBuilder withClickType(Function<Setting, ClickType> clickType) {
         records.add((gui, data) -> data.clickTypes.add(clickType));
         return this;
     }
 
-    Button build(GuiBuilder<?> parent) {
+    Button build(GuiBuilder parent) {
         ButtonBuilderData data = new ButtonBuilderData();
 
-        parent.copy(data, settingSFunction);
+        parent.copy(data);
 
-        for (BiConsumer<GuiBuilder<?>, ButtonBuilderData> consumer : records) {
+        for (BiConsumer<GuiBuilder, ButtonBuilderData> consumer : records) {
             consumer.accept(parent, data);
         }
 
         return data.build();
     }
 
-    private final class ButtonBuilderData extends GuiBuilder<S> {
+    private final class ButtonBuilderData extends GuiBuilder {
         private final List<Consumer<ClickAction>> actions = new LinkedList<>();
-        private final List<BiPredicate<S, GuiInfo>> conditions = new LinkedList<>();
-        private final List<Function<S, ClickType>> clickTypes = new LinkedList<>();
-        private BiFunction<S, GuiInfo, ItemStack> itemStackFunction;
+        private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
+        private final List<Function<Setting, ClickType>> clickTypes = new LinkedList<>();
+        private BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction;
 
         Button build() {
             Object identifier = ButtonBuilder.this.identifier;
-            BiFunction<S, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
+            BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
 
             if (loadMissingFromConfig) {
                 if (itemStackFunction == null) {
@@ -120,7 +118,7 @@ public final class ButtonBuilder<S extends Setting<S>> {
                 }
             }
 
-            return new SimpleButton<>(setting, itemStackFunction, actions, conditions, clickTypes);
+            return new SimpleButton(setting, itemStackFunction, actions, conditions, clickTypes);
         }
     }
 

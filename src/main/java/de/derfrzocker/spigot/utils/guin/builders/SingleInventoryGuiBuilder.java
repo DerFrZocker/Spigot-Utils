@@ -11,50 +11,48 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends InventoryGuiBuilder<S> {
+public final class SingleInventoryGuiBuilder extends InventoryGuiBuilder {
 
     private final List<Consumer<SingleInventoryGuiData>> records = new LinkedList<>();
-    private final BiFunction<Setting<?>, S, S> settingSFunction;
 
-    private SingleInventoryGuiBuilder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        this.settingSFunction = settingSFunction;
+    private SingleInventoryGuiBuilder() {
     }
 
-    public static <S extends Setting<S>> SingleInventoryGuiBuilder<S> builder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        return new SingleInventoryGuiBuilder<>(settingSFunction);
+    public static SingleInventoryGuiBuilder builder() {
+        return new SingleInventoryGuiBuilder();
     }
 
-    public SingleInventoryGuiBuilder<S> withSetting(Setting<?> setting) {
-        records.add(data -> data.setting = settingSFunction.apply(setting, data.setting));
+    public SingleInventoryGuiBuilder withSetting(Setting setting) {
+        records.add(data -> data.setting = data.setting.withSetting(setting));
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> identifier(Object identifier) {
+    public SingleInventoryGuiBuilder identifier(Object identifier) {
         this.identifier = identifier;
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> name(String name) {
+    public SingleInventoryGuiBuilder name(String name) {
         name((setting, humanEntity) -> name);
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> name(BiFunction<S, GuiInfo, String> name) {
+    public SingleInventoryGuiBuilder name(BiFunction<Setting, GuiInfo, String> name) {
         records.add(data -> data.inventoryName = name);
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> rows(Integer rows) {
+    public SingleInventoryGuiBuilder rows(Integer rows) {
         rows((setting, humanEntity) -> rows);
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> rows(BiFunction<S, GuiInfo, Integer> rows) {
+    public SingleInventoryGuiBuilder rows(BiFunction<Setting, GuiInfo, Integer> rows) {
         records.add(data -> data.rows = rows);
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> add(ButtonBuilder<?> buttonBuilder) {
+    public SingleInventoryGuiBuilder add(ButtonBuilder buttonBuilder) {
         records.add(data -> {
             if (buttonBuilder.identifier != null) {
                 data.buttons.put(buttonBuilder.identifier, buttonBuilder::build);
@@ -63,7 +61,7 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> add(InventoryGuiBuilder<?> inventoryGuiBuilder) {
+    public SingleInventoryGuiBuilder add(InventoryGuiBuilder inventoryGuiBuilder) {
         records.add(data -> {
             if (inventoryGuiBuilder.identifier != null) {
                 data.inventoryGuis.put(inventoryGuiBuilder.identifier, inventoryGuiBuilder.build(data));
@@ -72,7 +70,7 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> add(ButtonContextBuilder<?> contextBuilder) {
+    public SingleInventoryGuiBuilder add(ButtonContextBuilder contextBuilder) {
         records.add(data -> {
             if (contextBuilder.identifier != null) {
                 data.buttonContexts.put(contextBuilder.identifier, contextBuilder::build);
@@ -81,7 +79,7 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> addButtonContext(ButtonContextBuilder<?> contextBuilder) {
+    public SingleInventoryGuiBuilder addButtonContext(ButtonContextBuilder contextBuilder) {
         records.add(data -> {
             if (contextBuilder.identifier != null) {
                 data.buttonContexts.put(contextBuilder.identifier, contextBuilder::build);
@@ -91,22 +89,22 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> addButtonContext(Object identifier) {
+    public SingleInventoryGuiBuilder addButtonContext(Object identifier) {
         records.add(data -> data.buttonContextsPlace.add(data.buttonContexts.get(identifier).apply(data)));
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> allowBottomPickUp(boolean allow) {
+    public SingleInventoryGuiBuilder allowBottomPickUp(boolean allow) {
         allowBottomPickUp((setting, guiInfo) -> allow);
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> allowBottomPickUp(BiFunction<S, GuiInfo, Boolean> allow) {
+    public SingleInventoryGuiBuilder allowBottomPickUp(BiFunction<Setting, GuiInfo, Boolean> allow) {
         records.add(data -> data.allowBottomPickUp = allow);
         return this;
     }
 
-    public SingleInventoryGuiBuilder<S> addConfigDecorations() {
+    public SingleInventoryGuiBuilder addConfigDecorations() {
         records.add(data -> {
             Set<String> keys = data.setting.getKeys(identifier, "decorations");
 
@@ -115,7 +113,7 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
             }
 
             for (String key : keys) {
-                data.decorationsPlace.add(DecorationBuilder.builder(settingSFunction).identifier(identifier).key(key).build(data));
+                data.decorationsPlace.add(DecorationBuilder.builder().identifier(identifier).key(key).build(data));
             }
 
         });
@@ -123,10 +121,10 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
     }
 
     @Override
-    protected InventoryGui build(GuiBuilder<?> parent) {
+    protected InventoryGui build(GuiBuilder parent) {
         SingleInventoryGuiData data = new SingleInventoryGuiData();
 
-        parent.copy(data, settingSFunction);
+        parent.copy(data);
 
         for (Consumer<SingleInventoryGuiData> consumer : records) {
             consumer.accept(data);
@@ -146,14 +144,14 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
     }
 
     private final class SingleInventoryGuiData extends InventoryGuiData {
-        protected BiFunction<S, GuiInfo, Boolean> allowBottomPickUp;
+        protected BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
 
         @Override
         protected InventoryGui build() {
             Object identifier = SingleInventoryGuiBuilder.this.identifier;
-            BiFunction<S, GuiInfo, Integer> rows = this.rows;
-            BiFunction<S, GuiInfo, String> inventoryName = this.inventoryName;
-            BiFunction<S, GuiInfo, Boolean> allowBottomPickUp = this.allowBottomPickUp;
+            BiFunction<Setting, GuiInfo, Integer> rows = this.rows;
+            BiFunction<Setting, GuiInfo, String> inventoryName = this.inventoryName;
+            BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp = this.allowBottomPickUp;
 
             if (loadMissingFromConfig) {
                 if (rows == null) {
@@ -169,7 +167,7 @@ public final class SingleInventoryGuiBuilder<S extends Setting<S>> extends Inven
                 }
             }
 
-            SingleInventoryGui<S> gui = new SingleInventoryGui<>(setting, rows, inventoryName, allowBottomPickUp);
+            SingleInventoryGui gui = new SingleInventoryGui(setting, rows, inventoryName, allowBottomPickUp);
 
             inventoryGuis.forEach(gui::addInventoryGui);
             buttonContextsPlace.forEach(gui::addButtonContext);

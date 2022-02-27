@@ -10,17 +10,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-public abstract class InventoryGuiBuilder<S extends Setting<S>> {
+public abstract class InventoryGuiBuilder {
 
     protected Object identifier;
 
-    protected abstract InventoryGui build(GuiBuilder<?> parent);
+    protected abstract InventoryGui build(GuiBuilder parent);
 
-    protected abstract class InventoryGuiData extends GuiBuilder<S> {
+    protected abstract class InventoryGuiData extends GuiBuilder {
         protected List<ButtonContext> buttonContextsPlace = new LinkedList<>();
         protected List<Decoration> decorationsPlace = new LinkedList<>();
-        protected BiFunction<S, GuiInfo, String> inventoryName;
-        protected BiFunction<S, GuiInfo, Integer> rows;
+        protected BiFunction<Setting, GuiInfo, String> inventoryName;
+        protected BiFunction<Setting, GuiInfo, Integer> rows;
 
         protected abstract InventoryGui build();
     }

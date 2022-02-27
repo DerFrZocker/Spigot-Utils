@@ -15,85 +15,83 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class DecorationBuilder<S extends Setting<S>> {
+public class DecorationBuilder {
 
-    private final List<BiConsumer<GuiBuilder<?>, DecorationData>> records = new LinkedList<>();
-    private final BiFunction<Setting<?>, S, S> settingSFunction;
+    private final List<BiConsumer<GuiBuilder, DecorationData>> records = new LinkedList<>();
     protected Object identifier;
     protected Object key;
 
-    private DecorationBuilder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        this.settingSFunction = settingSFunction;
+    private DecorationBuilder() {
     }
 
-    public static <S extends Setting<S>> DecorationBuilder<S> builder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        return new DecorationBuilder<>(settingSFunction);
+    public static DecorationBuilder builder() {
+        return new DecorationBuilder();
     }
 
-    public DecorationBuilder<S> withSetting(Setting<?> setting) {
-        records.add((parent, data) -> data.setting = settingSFunction.apply(setting, data.setting));
+    public DecorationBuilder withSetting(Setting setting) {
+        records.add((parent, data) -> data.setting = data.setting.withSetting(setting));
         return this;
     }
 
-    public DecorationBuilder<S> itemStack(ItemStack itemStack) {
+    public DecorationBuilder itemStack(ItemStack itemStack) {
         itemStack((setting, guiInfo) -> itemStack);
         return this;
     }
 
-    public DecorationBuilder<S> itemStack(BiFunction<S, GuiInfo, ItemStack> itemStackFunction) {
+    public DecorationBuilder itemStack(BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction) {
         records.add((gui, data) -> data.itemStackFunction = itemStackFunction);
         return this;
     }
 
-    public DecorationBuilder<S> identifier(Object identifier) {
+    public DecorationBuilder identifier(Object identifier) {
         this.identifier = identifier;
         return this;
     }
 
-    public DecorationBuilder<S> key(Object key) {
+    public DecorationBuilder key(Object key) {
         this.key = key;
         return this;
     }
 
-    public DecorationBuilder<S> withSlot(int slot) {
+    public DecorationBuilder withSlot(int slot) {
         withSlot((setting, guiInfo) -> slot);
         return this;
     }
 
-    public DecorationBuilder<S> withSlot(BiFunction<S, GuiInfo, Integer> slot) {
+    public DecorationBuilder withSlot(BiFunction<Setting, GuiInfo, Integer> slot) {
         withSlots((setting, guiInfo) -> Collections.singletonList(slot.apply(setting, guiInfo)));
         return this;
     }
 
-    public DecorationBuilder<S> withSlots(List<Integer> slots) {
+    public DecorationBuilder withSlots(List<Integer> slots) {
         withSlots((setting, guiInfo) -> slots);
         return this;
     }
 
-    public DecorationBuilder<S> withSlots(BiFunction<S, GuiInfo, List<Integer>> slots) {
+    public DecorationBuilder withSlots(BiFunction<Setting, GuiInfo, List<Integer>> slots) {
         records.add((gui, data) -> data.slots.add(slots));
         return this;
     }
 
-    Decoration build(GuiBuilder<?> parent) {
+    Decoration build(GuiBuilder parent) {
         DecorationData data = new DecorationData();
 
-        parent.copy(data, settingSFunction);
+        parent.copy(data);
 
-        for (BiConsumer<GuiBuilder<?>, DecorationData> consumer : records) {
+        for (BiConsumer<GuiBuilder, DecorationData> consumer : records) {
             consumer.accept(parent, data);
         }
 
         return data.build();
     }
 
-    private final class DecorationData extends GuiBuilder<S> {
-        private final List<BiFunction<S, GuiInfo, List<Integer>>> slots = new LinkedList<>();
-        private BiFunction<S, GuiInfo, ItemStack> itemStackFunction;
+    private final class DecorationData extends GuiBuilder {
+        private final List<BiFunction<Setting, GuiInfo, List<Integer>>> slots = new LinkedList<>();
+        private BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction;
 
         Decoration build() {
             Object identifier = DecorationBuilder.this.identifier;
-            BiFunction<S, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
+            BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
 
             if (loadMissingFromConfig) {
                 if (itemStackFunction == null) {
@@ -105,7 +103,7 @@ public class DecorationBuilder<S extends Setting<S>> {
                 }
             }
 
-            return new SimpleDecoration<>(setting, itemStackFunction, slots);
+            return new SimpleDecoration(setting, itemStackFunction, slots);
         }
     }
 }

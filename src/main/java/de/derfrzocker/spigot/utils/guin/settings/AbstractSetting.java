@@ -3,10 +3,10 @@ package de.derfrzocker.spigot.utils.guin.settings;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public abstract class AbstractSetting<R extends AbstractSetting<R>> implements Setting<R> {
+public abstract class AbstractSetting<R extends AbstractSetting<R>> implements Setting {
 
-    protected final Set<Setting<?>> list = new LinkedHashSet<>();
-    protected Setting<?> parent;
+    protected final Set<Setting> list = new LinkedHashSet<>();
+    protected Setting parent;
 
     protected abstract Object get0(String key);
 
@@ -18,7 +18,7 @@ public abstract class AbstractSetting<R extends AbstractSetting<R>> implements S
     public Object get(String key) {
         Object result;
 
-        for (Setting<?> setting : list) {
+        for (Setting setting : list) {
             result = setting.get(key);
             if (result != null) {
                 return result;
@@ -56,7 +56,7 @@ public abstract class AbstractSetting<R extends AbstractSetting<R>> implements S
     }
 
     @Override
-    public R withSetting(Setting<?> setting) {
+    public R withSetting(Setting setting) {
         R newSetting = createEmptySetting();
         newSetting.parent = this;
 
@@ -81,7 +81,7 @@ public abstract class AbstractSetting<R extends AbstractSetting<R>> implements S
             keys = new LinkedHashSet<>(result);
         }
 
-        for (Setting<?> setting : list) {
+        for (Setting setting : list) {
             result = setting.getKeys(key);
             if (result != null) {
                 if (keys == null) {

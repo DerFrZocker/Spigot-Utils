@@ -14,41 +14,39 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class ButtonContextBuilder<S extends Setting<S>> {
+public final class ButtonContextBuilder {
 
-    private final List<BiConsumer<GuiBuilder<?>, ButtonContextData>> records = new LinkedList<>();
-    private final BiFunction<Setting<?>, S, S> settingSFunction;
+    private final List<BiConsumer<GuiBuilder, ButtonContextData>> records = new LinkedList<>();
     protected Object identifier;
 
-    private ButtonContextBuilder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        this.settingSFunction = settingSFunction;
+    private ButtonContextBuilder() {
     }
 
-    public static <S extends Setting<S>> ButtonContextBuilder<S> builder(BiFunction<Setting<?>, S, S> settingSFunction) {
-        return new ButtonContextBuilder<>(settingSFunction);
+    public static ButtonContextBuilder builder() {
+        return new ButtonContextBuilder();
     }
 
-    public ButtonContextBuilder<S> withSetting(Setting<?> setting) {
-        records.add((parent, data) -> data.setting = settingSFunction.apply(setting, data.setting));
+    public ButtonContextBuilder withSetting(Setting setting) {
+        records.add((parent, data) -> data.setting = data.setting.withSetting(setting));
         return this;
     }
 
-    public ButtonContextBuilder<S> identifier(Object identifier) {
+    public ButtonContextBuilder identifier(Object identifier) {
         this.identifier = identifier;
         return this;
     }
 
-    public ButtonContextBuilder<S> slot(int slot) {
+    public ButtonContextBuilder slot(int slot) {
         slot((setting, guiInfo) -> slot);
         return this;
     }
 
-    public ButtonContextBuilder<S> slot(BiFunction<S, GuiInfo, Integer> slotFunction) {
+    public ButtonContextBuilder slot(BiFunction<Setting, GuiInfo, Integer> slotFunction) {
         records.add((gui, data) -> data.slotFunction = slotFunction);
         return this;
     }
 
-    public ButtonContextBuilder<S> button(ButtonBuilder<?> buttonBuilder) {
+    public ButtonContextBuilder button(ButtonBuilder buttonBuilder) {
         records.add((gui, data) -> {
             if (buttonBuilder.identifier != null) {
                 data.buttons.put(buttonBuilder.identifier, buttonBuilder::build);
@@ -58,51 +56,51 @@ public final class ButtonContextBuilder<S extends Setting<S>> {
         return this;
     }
 
-    public ButtonContextBuilder<S> button(Object identifier) {
+    public ButtonContextBuilder button(Object identifier) {
         records.add((gui, data) -> data.button = data.buttons.get(identifier).apply(data));
         return this;
     }
 
-    public ButtonContextBuilder<S> withPermission(String permission) {
+    public ButtonContextBuilder withPermission(String permission) {
         withPermission(s -> permission);
         return this;
     }
 
-    public ButtonContextBuilder<S> withPermission(Function<S, String> permissionFunction) {
+    public ButtonContextBuilder withPermission(Function<Setting, String> permissionFunction) {
         withCondition((setting, guiInfo) -> guiInfo.getEntity().hasPermission(permissionFunction.apply(setting)));
         return this;
     }
 
-    public ButtonContextBuilder<S> withCondition(Predicate<GuiInfo> predicate) {
+    public ButtonContextBuilder withCondition(Predicate<GuiInfo> predicate) {
         withCondition((setting, guiInfo) -> predicate.test(guiInfo));
         return this;
     }
 
-    public ButtonContextBuilder<S> withCondition(BiPredicate<S, GuiInfo> predicate) {
+    public ButtonContextBuilder withCondition(BiPredicate<Setting, GuiInfo> predicate) {
         records.add((gui, data) -> data.conditions.add(predicate));
         return this;
     }
 
-    ButtonContext build(GuiBuilder<?> parent) {
+    ButtonContext build(GuiBuilder parent) {
         ButtonContextData data = new ButtonContextData();
 
-        parent.copy(data, settingSFunction);
+        parent.copy(data);
 
-        for (BiConsumer<GuiBuilder<?>, ButtonContextData> consumer : records) {
+        for (BiConsumer<GuiBuilder, ButtonContextData> consumer : records) {
             consumer.accept(parent, data);
         }
 
         return data.build();
     }
 
-    private final class ButtonContextData extends GuiBuilder<S> {
-        private final List<BiPredicate<S, GuiInfo>> conditions = new LinkedList<>();
-        private BiFunction<S, GuiInfo, Integer> slotFunction;
+    private final class ButtonContextData extends GuiBuilder {
+        private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
+        private BiFunction<Setting, GuiInfo, Integer> slotFunction;
         private Button button;
 
         ButtonContext build() {
             Object identifier = ButtonContextBuilder.this.identifier;
-            BiFunction<S, GuiInfo, Integer> slotFunction = this.slotFunction;
+            BiFunction<Setting, GuiInfo, Integer> slotFunction = this.slotFunction;
             Button button = this.button;
 
             if (loadMissingFromConfig) {
@@ -111,11 +109,11 @@ public final class ButtonContextBuilder<S extends Setting<S>> {
                 }
 
                 if (button == null) {
-                    button = ButtonBuilder.builder(settingSFunction).build(this);
+                    button = ButtonBuilder.builder().build(this);
                 }
             }
 
-            return new SimpleButtonContext<>(setting, slotFunction, button, conditions);
+            return new SimpleButtonContext(setting, slotFunction, button, conditions);
         }
     }
 
