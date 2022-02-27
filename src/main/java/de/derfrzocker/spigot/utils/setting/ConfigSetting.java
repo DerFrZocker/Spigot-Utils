@@ -21,6 +21,7 @@ public class ConfigSetting extends AbstractSetting<ConfigSetting> {
         reload();
     }
 
+    @Override
     public void reload() {
         if (sectionSupplier != null) {
             configuration = sectionSupplier.get();

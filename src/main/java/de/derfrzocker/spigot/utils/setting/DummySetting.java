@@ -17,4 +17,8 @@ public class DummySetting extends AbstractSetting<DummySetting> {
     protected DummySetting createEmptySetting() {
         return new DummySetting();
     }
+
+    @Override
+    public void reload() {
+    }
 }

@@ -1,8 +1,10 @@
 package de.derfrzocker.spigot.utils.setting;
 
+import de.derfrzocker.spigot.utils.ReloadAble;
+
 import java.util.Set;
 
-public interface Setting {
+public interface Setting extends ReloadAble {
 
     Object get(String key);
 
