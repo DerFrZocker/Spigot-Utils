@@ -2,7 +2,6 @@ package de.derfrzocker.spigot.utils.dao.yaml;
 
 import de.derfrzocker.spigot.utils.ReloadAble;
 import de.derfrzocker.spigot.utils.dao.BasicDao;
-import lombok.NonNull;
 
 import java.io.File;
 import java.util.HashSet;
@@ -10,7 +9,7 @@ import java.util.Set;
 
 public abstract class BasicYamlDao<K, V> extends YamlDao<V> implements BasicDao<K, V>, ReloadAble {
 
-    public BasicYamlDao(final @NonNull File file) {
+    public BasicYamlDao(final File file) {
         super(file);
     }
 

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import de.derfrzocker.spigot.utils.Config;
 import de.derfrzocker.spigot.utils.Language;
 import de.derfrzocker.spigot.utils.ReloadAble;
-import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -19,24 +18,21 @@ public class Messages implements ReloadAble {
 
     private final static Map<Plugin, Map<Language, Messages>> MESSAGESS = new HashMap<>();
 
-    @NonNull
     private YamlConfiguration yaml;
-    @NonNull
     private final Language language;
-    @NonNull
     private final Plugin plugin;
 
-    public static Messages getMessages(final @NonNull Plugin plugin) {
+    public static Messages getMessages(final Plugin plugin) {
         return getMessages(plugin, Language.getDefaultLanguage());
     }
 
-    public static Messages getMessages(final @NonNull Plugin plugin, final @NonNull Language language) {
+    public static Messages getMessages(final Plugin plugin, final Language language) {
         final Map<Language, Messages> map = MESSAGESS.computeIfAbsent(plugin, plugin1 -> new HashMap<>());
 
         return map.computeIfAbsent(language, language1 -> new Messages(plugin, language));
     }
 
-    public static void unLoadMessages(final @NonNull Plugin plugin, final @NonNull Language language) {
+    public static void unLoadMessages(final Plugin plugin, final Language language) {
         final Map<Language, Messages> map = MESSAGESS.get(plugin);
 
         if (map == null)
@@ -58,25 +54,25 @@ public class Messages implements ReloadAble {
         RELOAD_ABLES.add(this);
     }
 
-    void sendMessage(final @NonNull MessageKey key, final @NonNull CommandSender target, final @NonNull MessageValue... messageValues) {
+    void sendMessage(final MessageKey key, final CommandSender target, final MessageValue... messageValues) {
         final List<String> stringList = getRawStringList(key);
 
         stringList.forEach(value -> target.sendMessage(MessageUtil.replacePlaceHolder(plugin, value, messageValues)));
     }
 
-    void broadcastMessage(final @NonNull MessageKey key, final @NonNull MessageValue... messageValues) {
+    void broadcastMessage(final MessageKey key, final MessageValue... messageValues) {
         final List<String> stringList = getRawStringList(key);
 
         stringList.forEach(value -> Bukkit.broadcastMessage(MessageUtil.replacePlaceHolder(plugin, value, messageValues)));
     }
 
-    void broadcastMessage(final @NonNull MessageKey key, final @NonNull String permission, final @NonNull MessageValue... messageValues) {
+    void broadcastMessage(final MessageKey key, final String permission, final MessageValue... messageValues) {
         final List<String> stringList = getRawStringList(key);
 
         stringList.forEach(value -> Bukkit.broadcast(MessageUtil.replacePlaceHolder(plugin, value, messageValues), permission));
     }
 
-    String getRawMessages(final @NonNull MessageKey key) {
+    String getRawMessages(final MessageKey key) {
         final StringBuilder stringBuilder = new StringBuilder();
 
         final List<String> list = getRawStringList(key);
@@ -90,7 +86,7 @@ public class Messages implements ReloadAble {
         return stringBuilder.toString();
     }
 
-    List<String> getRawStringList(final @NonNull MessageKey key) {
+    List<String> getRawStringList(final MessageKey key) {
         final List<String> stringList;
 
         if (yaml.isList(key.getKey()))
@@ -103,11 +99,11 @@ public class Messages implements ReloadAble {
         return stringList;
     }
 
-    String getMessage(final @NonNull MessageKey key, final @NonNull MessageValue... messageValues) {
+    String getMessage(final MessageKey key, final MessageValue... messageValues) {
         return MessageUtil.replacePlaceHolder(plugin, getRawMessages(key), messageValues);
     }
 
-    List<String> getStringList(final @NonNull MessageKey key, final @NonNull MessageValue... messageValues) {
+    List<String> getStringList(final MessageKey key, final MessageValue... messageValues) {
         final List<String> stringList = getRawStringList(key);
         final List<String> newList = new ArrayList<>();
 

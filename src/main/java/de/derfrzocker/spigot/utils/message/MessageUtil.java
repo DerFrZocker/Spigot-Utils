@@ -1,6 +1,5 @@
 package de.derfrzocker.spigot.utils.message;
 
-import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,7 +16,7 @@ public class MessageUtil {
     private final static int DEFAULT_LORE_LENGTH = 40;
     private final static int MINIMUM_LORE_LENGTH = 15;
 
-    public static String replacePlaceHolder(final @NonNull Plugin plugin, @NonNull String string, final @NonNull MessageValue... messageValues) {
+    public static String replacePlaceHolder(final Plugin plugin, String string, final MessageValue... messageValues) {
 
         string = replaceTranslation(plugin, string, messageValues);
 
@@ -30,7 +29,7 @@ public class MessageUtil {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static List<String> replaceList(final @NonNull Plugin plugin, final @NonNull List<String> strings, final @NonNull MessageValue... messageValues) {
+    public static List<String> replaceList(final Plugin plugin, final List<String> strings, final MessageValue... messageValues) {
         List<String> list = new LinkedList<>();
 
         strings.stream().
@@ -46,7 +45,7 @@ public class MessageUtil {
         return list;
     }
 
-    public static ItemStack replaceItemStack(final @NonNull Plugin plugin, @NonNull ItemStack itemStack, final @NonNull MessageValue... messageValues) {
+    public static ItemStack replaceItemStack(final Plugin plugin, ItemStack itemStack, final MessageValue... messageValues) {
         if (!itemStack.hasItemMeta())
             return itemStack;
 
@@ -56,7 +55,7 @@ public class MessageUtil {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static ItemMeta replaceItemMeta(final @NonNull Plugin plugin, final @NonNull ItemMeta itemMeta, final @NonNull MessageValue... messageValues) {
+    public static ItemMeta replaceItemMeta(final Plugin plugin, final ItemMeta itemMeta, final MessageValue... messageValues) {
         if (itemMeta.hasDisplayName())
             itemMeta.setDisplayName(replacePlaceHolder(plugin, itemMeta.getDisplayName(), messageValues));
 
@@ -89,7 +88,7 @@ public class MessageUtil {
     }
 
     // %%translation:[example.string]%
-    public static String replaceTranslation(final @NonNull Plugin plugin, final @NonNull String string, final @NonNull MessageValue... messageValues) {
+    public static String replaceTranslation(final Plugin plugin, final String string, final MessageValue... messageValues) {
         if (!string.contains("%%translation:["))
             return string;
 

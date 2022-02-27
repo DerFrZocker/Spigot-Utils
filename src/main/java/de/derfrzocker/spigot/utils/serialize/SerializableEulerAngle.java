@@ -1,6 +1,5 @@
 package de.derfrzocker.spigot.utils.serialize;
 
-import lombok.NonNull;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.util.EulerAngle;
@@ -16,7 +15,7 @@ public class SerializableEulerAngle extends EulerAngle implements ConfigurationS
         super(x, y, z);
     }
 
-    public SerializableEulerAngle(final @NonNull EulerAngle eulerAngle) {
+    public SerializableEulerAngle(final EulerAngle eulerAngle) {
         super(eulerAngle.getX(), eulerAngle.getY(), eulerAngle.getZ());
     }
 
@@ -60,7 +59,7 @@ public class SerializableEulerAngle extends EulerAngle implements ConfigurationS
         return map;
     }
 
-    public static SerializableEulerAngle deserialize(final @NonNull Map<String, Object> map) {
+    public static SerializableEulerAngle deserialize(final Map<String, Object> map) {
         final double x = NumberConversions.toDouble(map.get("x"));
         final double y = NumberConversions.toDouble(map.get("y"));
         final double z = NumberConversions.toDouble(map.get("z"));

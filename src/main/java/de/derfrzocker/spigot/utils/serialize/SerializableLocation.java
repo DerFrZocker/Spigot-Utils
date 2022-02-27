@@ -1,6 +1,5 @@
 package de.derfrzocker.spigot.utils.serialize;
 
-import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -24,11 +23,11 @@ public class SerializableLocation extends Location {
         super(world, x, y, z, yaw, pitch);
     }
 
-    public SerializableLocation(final @NonNull Location location) {
+    public SerializableLocation(final Location location) {
         super(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
-    private SerializableLocation(final @NonNull String world, final double x, final double y, final double z, final float yaw, final float pitch) {
+    private SerializableLocation(final String world, final double x, final double y, final double z, final float yaw, final float pitch) {
         super(null, x, y, z, yaw, pitch);
         this.world = world;
 
@@ -73,7 +72,7 @@ public class SerializableLocation extends Location {
         return getWorld().getBlockAt(this);
     }
 
-    public static SerializableLocation deserialize(final @NonNull Map<String, Object> map) {
+    public static SerializableLocation deserialize(final Map<String, Object> map) {
         final double x = NumberConversions.toDouble(map.get("x"));
         final double y = NumberConversions.toDouble(map.get("y"));
         final double z = NumberConversions.toDouble(map.get("z"));

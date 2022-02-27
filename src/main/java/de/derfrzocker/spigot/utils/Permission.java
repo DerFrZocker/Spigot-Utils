@@ -1,7 +1,5 @@
 package de.derfrzocker.spigot.utils;
 
-import lombok.Data;
-import lombok.NonNull;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
@@ -11,17 +9,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Data
 public class Permission {
 
     private final static Map<Plugin, Set<Permission>> PERMISSIONS = new HashMap<>();
 
     private final Permission parent;
 
-    @NonNull
     private final String permission;
 
-    @NonNull
     private final Plugin plugin;
 
     private final boolean commandPermission;
@@ -42,11 +37,15 @@ public class Permission {
         return String.format("%s.%s", parent.getPermission(), permission);
     }
 
-    public boolean hasPermission(final @NonNull Permissible permissible) {
+    public static boolean hasAnyCommandPermission(final Plugin plugin, final Permissible permissible) {
+        return PERMISSIONS.computeIfAbsent(plugin, plugin1 -> new HashSet<>()).stream().filter(Permission::isCommandPermission).anyMatch(permission -> permissible.hasPermission(permission.getPermission()));
+    }
+
+    public boolean hasPermission(final Permissible permissible) {
         return permissible.hasPermission(getPermission());
     }
 
-    public boolean hasPermission(final @NonNull Permissible permissible, final int level) {
+    public boolean hasPermission(final Permissible permissible, final int level) {
         int max = getPermissionLevel(permissible);
 
         if (max == -1)
@@ -55,7 +54,7 @@ public class Permission {
         return max >= level;
     }
 
-    public int getPermissionLevel(final @NonNull Permissible permissible) {
+    public int getPermissionLevel(final Permissible permissible) {
         if (permissible.isOp())
             return -1;
 
@@ -92,8 +91,7 @@ public class Permission {
         return max;
     }
 
-    public static boolean hasAnyCommandPermission(final @NonNull Plugin plugin, final @NonNull Permissible permissible) {
-        return PERMISSIONS.computeIfAbsent(plugin, plugin1 -> new HashSet<>()).stream().filter(Permission::isCommandPermission).anyMatch(permission -> permissible.hasPermission(permission.getPermission()));
+    public boolean isCommandPermission() {
+        return commandPermission;
     }
-
 }

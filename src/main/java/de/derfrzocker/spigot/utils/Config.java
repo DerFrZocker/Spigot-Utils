@@ -2,14 +2,19 @@ package de.derfrzocker.spigot.utils;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import lombok.NonNull;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import static java.lang.String.format;
 
@@ -26,7 +31,7 @@ import static java.lang.String.format;
 public class Config extends YamlConfiguration {
 
     @SuppressWarnings({"UnstableApiUsage", "ResultOfMethodCallIgnored"})
-    public Config(final @NonNull File file) {
+    public Config(final File file) {
 
         if (!file.exists()) {
             try {
@@ -46,7 +51,7 @@ public class Config extends YamlConfiguration {
 
     }
 
-    public Config(final @NonNull InputStream input) {
+    public Config(final InputStream input) {
 
         // try to load the Config file
         try {
@@ -57,7 +62,7 @@ public class Config extends YamlConfiguration {
 
     }
 
-    public Config(final @NonNull String input) {
+    public Config(final String input) {
         try {
             this.loadFromString(input);
         } catch (final InvalidConfigurationException e) {
@@ -67,7 +72,7 @@ public class Config extends YamlConfiguration {
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    public void save(final @NonNull File file) throws IOException {
+    public void save(final File file) throws IOException {
         Files.createParentDirs(file);
 
         try (final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
@@ -78,14 +83,14 @@ public class Config extends YamlConfiguration {
     }
 
     @Override
-    public void load(final @NonNull File file) throws IOException, InvalidConfigurationException {
+    public void load(final File file) throws IOException, InvalidConfigurationException {
 
         // load the config file
         this.load(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void load(final @NonNull InputStream input) throws IOException, InvalidConfigurationException {
+    public void load(final InputStream input) throws IOException, InvalidConfigurationException {
 
         // load the config file
         this.load(new InputStreamReader(input, Charsets.UTF_8));

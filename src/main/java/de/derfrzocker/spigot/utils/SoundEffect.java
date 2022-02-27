@@ -1,7 +1,5 @@
 package de.derfrzocker.spigot.utils;
 
-import lombok.Data;
-import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -14,7 +12,6 @@ import org.bukkit.entity.Player;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Data
 @SerializableAs("DerFrZocker#SpigotUtils#SoundEffect")
 public class SoundEffect implements ConfigurationSerializable {
 
@@ -29,9 +26,7 @@ public class SoundEffect implements ConfigurationSerializable {
     private final static String Y_KEY = "y";
     private final static String Z_KEY = "z";
 
-    @NonNull
     private final SoundCategory soundCategory;
-    @NonNull
     private final Sound sound;
     private final float volume;
     private final float pitch;
@@ -42,49 +37,20 @@ public class SoundEffect implements ConfigurationSerializable {
     private final double y;
     private final double z;
 
-
-    public void playSound(final @NonNull Player player) {
-        double x = this.x;
-        double y = this.y;
-        double z = this.z;
-
-        if (xRelative)
-            x += player.getLocation().getX();
-
-        if (yRelative)
-            y += player.getLocation().getY();
-
-        if (zRelative)
-            z += player.getLocation().getZ();
-
-        final Location location = new Location(player.getWorld(), x, y, z);
-
-        player.playSound(location, sound, soundCategory, volume, pitch);
+    public SoundEffect(SoundCategory soundCategory, Sound sound, float volume, float pitch, boolean xRelative, boolean yRelative, boolean zRelative, double x, double y, double z) {
+        this.soundCategory = soundCategory;
+        this.sound = sound;
+        this.volume = volume;
+        this.pitch = pitch;
+        this.xRelative = xRelative;
+        this.yRelative = yRelative;
+        this.zRelative = zRelative;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    public void playSound() {
-        Bukkit.getOnlinePlayers().forEach(this::playSound);
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
-        final Map<String, Object> map = new LinkedHashMap<>();
-
-        map.put(SOUND_CATEGORY_KEY, getSoundCategory().toString());
-        map.put(SOUND_KEY, getSound().toString());
-        map.put(VOLUME_KEY, getVolume());
-        map.put(PITCH_KEY, getPitch());
-        map.put(X_RELATIVE_KEY, isXRelative());
-        map.put(Y_RELATIVE_KEY, isYRelative());
-        map.put(Z_RELATIVE_KEY, isZRelative());
-        map.put(X_KEY, getX());
-        map.put(Y_KEY, getY());
-        map.put(Z_KEY, getZ());
-
-        return map;
-    }
-
-    public static SoundEffect deserialize(final @NonNull Map<String, Object> map) {
+    public static SoundEffect deserialize(final Map<String, Object> map) {
         final SoundCategory soundCategory = SoundCategory.valueOf((String) map.get(SOUND_CATEGORY_KEY));
         final Sound sound = Sound.valueOf((String) map.get(SOUND_KEY));
         final float volume = ((Number) map.get(VOLUME_KEY)).floatValue();
@@ -99,7 +65,7 @@ public class SoundEffect implements ConfigurationSerializable {
         return new SoundEffect(soundCategory, sound, volume, pitch, xIncremental, yIncremental, zIncremental, x, y, z);
     }
 
-    public static SoundEffect deserialize(final @NonNull ConfigurationSection section) {
+    public static SoundEffect deserialize(final ConfigurationSection section) {
         final SoundCategory soundCategory = SoundCategory.valueOf(section.getString(SOUND_CATEGORY_KEY).toUpperCase());
         final Sound sound = Sound.valueOf(section.getString(SOUND_KEY).toUpperCase());
         final float volume = ((Number) section.get(VOLUME_KEY)).floatValue();
@@ -184,6 +150,87 @@ public class SoundEffect implements ConfigurationSerializable {
         }
 
         return new SoundEffect(soundCategory, sound, volume, pitch, xIncremental, yIncremental, zIncremental, x, y, z);
+    }
+
+    public SoundCategory getSoundCategory() {
+        return soundCategory;
+    }
+
+    public Sound getSound() {
+        return sound;
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public boolean isXRelative() {
+        return xRelative;
+    }
+
+    public boolean isYRelative() {
+        return yRelative;
+    }
+
+    public boolean isZRelative() {
+        return zRelative;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void playSound() {
+        Bukkit.getOnlinePlayers().forEach(this::playSound);
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> map = new LinkedHashMap<>();
+
+        map.put(SOUND_CATEGORY_KEY, getSoundCategory().toString());
+        map.put(SOUND_KEY, getSound().toString());
+        map.put(VOLUME_KEY, getVolume());
+        map.put(PITCH_KEY, getPitch());
+        map.put(X_RELATIVE_KEY, isXRelative());
+        map.put(Y_RELATIVE_KEY, isYRelative());
+        map.put(Z_RELATIVE_KEY, isZRelative());
+        map.put(X_KEY, getX());
+        map.put(Y_KEY, getY());
+        map.put(Z_KEY, getZ());
+
+        return map;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public void playSound(final Player player) {
+        double x = this.x;
+        double y = this.y;
+        double z = this.z;
+
+        if (xRelative)
+            x += player.getLocation().getX();
+
+        if (yRelative)
+            y += player.getLocation().getY();
+
+        if (zRelative)
+            z += player.getLocation().getZ();
+
+        final Location location = new Location(player.getWorld(), x, y, z);
+
+        player.playSound(location, sound, soundCategory, volume, pitch);
     }
 
 }

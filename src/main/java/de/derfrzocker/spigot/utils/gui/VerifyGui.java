@@ -2,7 +2,6 @@ package de.derfrzocker.spigot.utils.gui;
 
 import de.derfrzocker.spigot.utils.message.MessageUtil;
 import de.derfrzocker.spigot.utils.message.MessageValue;
-import lombok.NonNull;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -14,21 +13,21 @@ import java.util.function.Consumer;
 
 public class VerifyGui extends BasicGui {
 
-    public VerifyGui(final @NonNull Plugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction) {
+    public VerifyGui(final Plugin plugin, final Consumer<InventoryClickEvent> acceptAction, final Consumer<InventoryClickEvent> denyAction) {
         this(plugin, acceptAction, denyAction, VerifyGuiSettings.getInstance(plugin));
     }
 
-    public VerifyGui(final @NonNull Plugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction, final @NonNull MessageValue... messageValues) {
+    public VerifyGui(final Plugin plugin, final Consumer<InventoryClickEvent> acceptAction, final Consumer<InventoryClickEvent> denyAction, final MessageValue... messageValues) {
         this(plugin, acceptAction, denyAction, VerifyGuiSettings.getInstance(plugin), messageValues);
     }
 
-    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final @NonNull Plugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction, final @NonNull T setting) {
+    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final Plugin plugin, final Consumer<InventoryClickEvent> acceptAction, final Consumer<InventoryClickEvent> denyAction, final T setting) {
         super(plugin, setting);
         addItem(setting.getAcceptSlot(), MessageUtil.replaceItemStack(plugin, setting.getAcceptItemStack()), acceptAction);
         addItem(setting.getDenySlot(), MessageUtil.replaceItemStack(plugin, setting.getDenyItemStack()), denyAction);
     }
 
-    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final @NonNull Plugin plugin, final @NonNull Consumer<InventoryClickEvent> acceptAction, final @NonNull Consumer<InventoryClickEvent> denyAction, final @NonNull T setting, final @NonNull MessageValue... messageValues) {
+    public <T extends BasicSettings & VerifyGui.VerifyGuiSettingsInterface> VerifyGui(final Plugin plugin, final Consumer<InventoryClickEvent> acceptAction, final Consumer<InventoryClickEvent> denyAction, final T setting, final MessageValue... messageValues) {
         super(plugin, setting);
         addItem(setting.getAcceptSlot(), MessageUtil.replaceItemStack(plugin, setting.getAcceptItemStack(), messageValues), acceptAction);
         addItem(setting.getDenySlot(), MessageUtil.replaceItemStack(plugin, setting.getDenyItemStack(), messageValues), denyAction);
@@ -39,12 +38,12 @@ public class VerifyGui extends BasicGui {
 
         private final static Map<Plugin, VerifyGuiSettings> VERIFY_GUI_SETTINGS_MAP = new HashMap<>();
 
-        public static VerifyGuiSettings getInstance(final @NonNull Plugin plugin) {
-            return VERIFY_GUI_SETTINGS_MAP.computeIfAbsent(plugin, VerifyGuiSettings::new);
+        private VerifyGuiSettings(final Plugin plugin) {
+            super(plugin, "data/gui/verify-gui.yml");
         }
 
-        private VerifyGuiSettings(final @NonNull Plugin plugin) {
-            super(plugin, "data/gui/verify-gui.yml");
+        public static VerifyGuiSettings getInstance(final Plugin plugin) {
+            return VERIFY_GUI_SETTINGS_MAP.computeIfAbsent(plugin, VerifyGuiSettings::new);
         }
 
         @Override
