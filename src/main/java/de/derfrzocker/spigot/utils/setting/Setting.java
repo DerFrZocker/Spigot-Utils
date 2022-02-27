@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils.guin.settings;
+package de.derfrzocker.spigot.utils.setting;
 
 import java.util.Set;
 
@@ -15,5 +15,4 @@ public interface Setting {
     Set<String> getKeys(String key);
 
     Set<String> getKeys(Object identifier, String key);
-
 }

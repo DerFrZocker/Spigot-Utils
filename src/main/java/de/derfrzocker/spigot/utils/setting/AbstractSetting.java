@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils.guin.settings;
+package de.derfrzocker.spigot.utils.setting;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

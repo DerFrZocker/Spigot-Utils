@@ -3,8 +3,8 @@ package de.derfrzocker.spigot.utils.guin.builders;
 import de.derfrzocker.spigot.utils.guin.InventoryGui;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
-import de.derfrzocker.spigot.utils.guin.settings.DummySetting;
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.DummySetting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

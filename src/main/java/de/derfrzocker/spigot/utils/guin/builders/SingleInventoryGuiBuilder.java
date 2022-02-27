@@ -3,7 +3,7 @@ package de.derfrzocker.spigot.utils.guin.builders;
 import de.derfrzocker.spigot.utils.guin.GuiInfo;
 import de.derfrzocker.spigot.utils.guin.InventoryGui;
 import de.derfrzocker.spigot.utils.guin.SingleInventoryGui;
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedList;
 import java.util.List;

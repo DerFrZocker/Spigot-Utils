@@ -1,6 +1,6 @@
 package de.derfrzocker.spigot.utils.guin;
 
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;

@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;

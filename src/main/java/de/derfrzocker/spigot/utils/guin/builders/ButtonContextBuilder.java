@@ -4,7 +4,7 @@ import de.derfrzocker.spigot.utils.guin.GuiInfo;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.guin.buttons.SimpleButtonContext;
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedList;
 import java.util.List;

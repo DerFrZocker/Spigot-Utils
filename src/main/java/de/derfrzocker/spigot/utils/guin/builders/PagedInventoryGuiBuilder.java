@@ -5,7 +5,7 @@ import de.derfrzocker.spigot.utils.guin.InventoryGui;
 import de.derfrzocker.spigot.utils.guin.PagedGuiInfo;
 import de.derfrzocker.spigot.utils.guin.PagedInventoryGui;
 import de.derfrzocker.spigot.utils.guin.buttons.PageContent;
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedList;
 import java.util.List;

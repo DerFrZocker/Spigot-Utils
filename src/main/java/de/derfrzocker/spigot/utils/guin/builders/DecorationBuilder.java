@@ -3,7 +3,7 @@ package de.derfrzocker.spigot.utils.guin.builders;
 import de.derfrzocker.spigot.utils.guin.Decoration;
 import de.derfrzocker.spigot.utils.guin.GuiInfo;
 import de.derfrzocker.spigot.utils.guin.SimpleDecoration;
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;

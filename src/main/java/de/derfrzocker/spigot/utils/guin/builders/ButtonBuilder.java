@@ -4,7 +4,7 @@ import de.derfrzocker.spigot.utils.guin.ClickAction;
 import de.derfrzocker.spigot.utils.guin.GuiInfo;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.SimpleButton;
-import de.derfrzocker.spigot.utils.guin.settings.Setting;
+import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
