@@ -43,7 +43,6 @@ public class Messages implements ReloadAble {
         if (messages == null)
             return;
 
-        RELOAD_ABLES.remove(messages);
         MESSAGESS.remove(messages);
     }
 
@@ -51,7 +50,6 @@ public class Messages implements ReloadAble {
         this.language = language;
         this.plugin = plugin;
         reload();
-        RELOAD_ABLES.add(this);
     }
 
     void sendMessage(final MessageKey key, final CommandSender target, final MessageValue... messageValues) {

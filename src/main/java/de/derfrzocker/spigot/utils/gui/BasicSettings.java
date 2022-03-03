@@ -41,7 +41,6 @@ public class BasicSettings implements ReloadAble {
         this.configurationSectionSupplier = configurationSectionSupplier;
         this.plugin = plugin;
         this.section = configurationSectionSupplier.get();
-        RELOAD_ABLES.add(this);
         reload();
     }
 
