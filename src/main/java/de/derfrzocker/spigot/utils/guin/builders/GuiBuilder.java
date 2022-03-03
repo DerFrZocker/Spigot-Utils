@@ -1,6 +1,5 @@
 package de.derfrzocker.spigot.utils.guin.builders;
 
-import de.derfrzocker.spigot.utils.guin.InventoryGui;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.setting.DummySetting;
@@ -23,9 +22,6 @@ public abstract class GuiBuilder {
     protected boolean copyButtonContextIdentifier = true;
     protected Map<Object, Function<GuiBuilder, ButtonContext>> buttonContexts = new LinkedHashMap<>();
 
-    protected boolean copyInventoryGuiIdentifier = true;
-    protected Map<Object, InventoryGui> inventoryGuis = new LinkedHashMap<>();
-
     protected void copy(GuiBuilder other) {
         other.loadMissingFromConfig = loadMissingFromConfig;
 
@@ -42,11 +38,6 @@ public abstract class GuiBuilder {
         other.copyButtonContextIdentifier = copyButtonContextIdentifier;
         if (copyButtonContextIdentifier) {
             other.buttonContexts.putAll(buttonContexts);
-        }
-
-        other.copyInventoryGuiIdentifier = copyInventoryGuiIdentifier;
-        if (copyInventoryGuiIdentifier) {
-            other.inventoryGuis.putAll(inventoryGuis);
         }
     }
 

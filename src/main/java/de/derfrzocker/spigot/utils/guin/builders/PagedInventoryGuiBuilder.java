@@ -63,15 +63,6 @@ public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
         return this;
     }
 
-    public PagedInventoryGuiBuilder add(InventoryGuiBuilder inventoryGuiBuilder) {
-        records.add(data -> {
-            if (inventoryGuiBuilder.identifier != null) {
-                data.inventoryGuis.put(inventoryGuiBuilder.identifier, inventoryGuiBuilder.build(data));
-            }
-        });
-        return this;
-    }
-
     public PagedInventoryGuiBuilder add(ButtonContextBuilder contextBuilder) {
         records.add(data -> {
             if (contextBuilder.identifier != null) {
@@ -235,13 +226,8 @@ public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
 
             PagedInventoryGui<?> gui = new PagedInventoryGui<>(setting, rows, inventoryName, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContent);
 
-            inventoryGuis.forEach(gui::addInventoryGui);
             buttonContextsPlace.forEach(gui::addButtonContext);
             decorationsPlace.forEach(gui::addDecoration);
-
-            if (identifier != null) {
-                inventoryGuis.forEach((id, inventoryGui) -> inventoryGui.addInventoryGui(identifier, gui));
-            }
 
             return gui;
         }

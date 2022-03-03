@@ -33,7 +33,6 @@ public class SingleInventoryGui implements InventoryGui, Listener {
     private final BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
     private final List<Decoration> decorations = new LinkedList<>();
-    private final Map<Object, InventoryGui> inventoryGuiMap = new LinkedHashMap<>();
 
     private final Map<Inventory, Map<Integer, Button>> buttons = new LinkedHashMap<>();
     private final Map<Inventory, Boolean> allowBottomPickUps = new LinkedHashMap<>();
@@ -48,32 +47,12 @@ public class SingleInventoryGui implements InventoryGui, Listener {
         this.allowBottomPickUp = allowBottomPickUp;
     }
 
-    @Override
-    public void addInventoryGui(Object identifier, InventoryGui inventoryGui) {
-        inventoryGuiMap.put(identifier, inventoryGui);
-    }
-
     public void addButtonContext(ButtonContext buttonContext) {
         buttonContexts.add(buttonContext);
     }
 
     public void addDecoration(Decoration decoration) {
         decorations.add(decoration);
-    }
-
-    @Override
-    public InventoryGui getInventoryGui(Object identifier) {
-        return inventoryGuiMap.get(identifier);
-    }
-
-    @Override
-    public void setPreviousGui(HumanEntity humanEntity, InventoryGui inventoryGui) {
-        previous.put(humanEntity, inventoryGui);
-    }
-
-    @Override
-    public InventoryGui getPreviousGui(HumanEntity humanEntity) {
-        return previous.get(humanEntity);
     }
 
     @EventHandler

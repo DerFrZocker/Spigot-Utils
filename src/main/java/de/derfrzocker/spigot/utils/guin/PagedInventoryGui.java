@@ -40,7 +40,6 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
     private final PageContent<D> pageContent;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
     private final List<Decoration> decorations = new LinkedList<>();
-    private final Map<Object, InventoryGui> inventoryGuiMap = new LinkedHashMap<>();
 
     private final Map<Inventory, HumanEntity> inventoryHuman = new LinkedHashMap<>();
     private final Map<HumanEntity, PagedInventoryGuiData> guiDatas = new LinkedHashMap<>();
@@ -58,32 +57,12 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
         this.pageContent = pageContent;
     }
 
-    @Override
-    public void addInventoryGui(Object identifier, InventoryGui inventoryGui) {
-        inventoryGuiMap.put(identifier, inventoryGui);
-    }
-
     public void addButtonContext(ButtonContext buttonContext) {
         buttonContexts.add(buttonContext);
     }
 
     public void addDecoration(Decoration decoration) {
         decorations.add(decoration);
-    }
-
-    @Override
-    public InventoryGui getInventoryGui(Object identifier) {
-        return inventoryGuiMap.get(identifier);
-    }
-
-    @Override
-    public void setPreviousGui(HumanEntity humanEntity, InventoryGui inventoryGui) {
-        previous.put(humanEntity, inventoryGui);
-    }
-
-    @Override
-    public InventoryGui getPreviousGui(HumanEntity humanEntity) {
-        return previous.get(humanEntity);
     }
 
     public void openNextInventory(Inventory inventory, HumanEntity humanEntity) {
