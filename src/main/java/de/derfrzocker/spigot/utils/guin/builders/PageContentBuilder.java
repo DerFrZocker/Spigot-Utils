@@ -8,7 +8,6 @@ import de.derfrzocker.spigot.utils.guin.buttons.PageContent;
 import de.derfrzocker.spigot.utils.guin.buttons.SimplePageContent;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -20,9 +19,13 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-public final class PageContentBuilder<D> {
+public final class PageContentBuilder<D> extends GuiBuilder {
 
-    private final List<BiConsumer<GuiBuilder, PageContentData>> records = new LinkedList<>();
+    private final List<BiConsumer<ClickAction, D>> actions = new LinkedList<>();
+    private final List<TriplePredicate<Setting, GuiInfo, D>> conditions = new LinkedList<>();
+    private BiFunction<Setting, GuiInfo, List<D>> dataFunction;
+    private TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction;
+    private TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
 
     private PageContentBuilder() {
     }
@@ -32,7 +35,7 @@ public final class PageContentBuilder<D> {
     }
 
     public PageContentBuilder<D> withSetting(Setting setting) {
-        records.add((parent, data) -> data.setting = data.setting.withSetting(setting));
+        this.setting = this.setting.withSetting(setting);
         return this;
     }
 
@@ -42,7 +45,7 @@ public final class PageContentBuilder<D> {
     }
 
     public PageContentBuilder<D> data(BiFunction<Setting, GuiInfo, List<D>> dataFunction) {
-        records.add((parent, data) -> data.dataFunction = dataFunction);
+        this.dataFunction = dataFunction;
         return this;
     }
 
@@ -52,7 +55,7 @@ public final class PageContentBuilder<D> {
     }
 
     public PageContentBuilder<D> itemStack(TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction) {
-        records.add((parent, data) -> data.itemStackFunction = itemStackFunction);
+        this.itemStackFunction = itemStackFunction;
         return this;
     }
 
@@ -62,12 +65,12 @@ public final class PageContentBuilder<D> {
     }
 
     public PageContentBuilder<D> slot(TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction) {
-        records.add((parent, data) -> data.slotFunction = slotFunction);
+        this.slotFunction = slotFunction;
         return this;
     }
 
     public PageContentBuilder<D> withAction(BiConsumer<ClickAction, D> consumer) {
-        records.add((gui, data) -> data.actions.add(consumer));
+        actions.add(consumer);
         return this;
     }
 
@@ -87,73 +90,35 @@ public final class PageContentBuilder<D> {
     }
 
     public PageContentBuilder<D> withCondition(TriplePredicate<Setting, GuiInfo, D> predicate) {
-        records.add((gui, data) -> data.conditions.add(predicate));
+        conditions.add(predicate);
         return this;
     }
 
-    public PageContentBuilder<D> withClickType(ClickType clickType) {
-        withClickType(setting -> clickType);
-        return this;
-    }
+    PageContent<D> build(Setting parent) {
+        BiFunction<Setting, GuiInfo, List<D>> dataFunction = this.dataFunction;
+        TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction = this.itemStackFunction;
+        TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction = this.slotFunction;
+        parent = parent.withSetting(setting);
 
-
-    public PageContentBuilder<D> withClickType(Function<Setting, ClickType> clickType) {
-        records.add((gui, data) -> data.clickTypes.add(clickType));
-        return this;
-    }
-
-    PageContent<D> build(GuiBuilder parent) {
-        PageContentData data = new PageContentData();
-
-        parent.copy(data);
-
-        for (BiConsumer<GuiBuilder, PageContentData> consumer : records) {
-            consumer.accept(parent, data);
+        if (itemStackFunction == null) {
+            itemStackFunction = (setting, guiInfo, data) -> setting.get(data, "item-stack", new ItemStack(Material.STONE));
         }
 
-        return data.build();
-    }
-
-    private final class PageContentData extends GuiBuilder {
-        protected final List<BiConsumer<ClickAction, D>> actions = new LinkedList<>();
-        protected final List<TriplePredicate<Setting, GuiInfo, D>> conditions = new LinkedList<>();
-        private final List<Function<Setting, ClickType>> clickTypes = new LinkedList<>();
-        protected BiFunction<Setting, GuiInfo, List<D>> dataFunction;
-        protected TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction;
-        protected TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
-
-        PageContent<D> build() {
-            TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction = this.itemStackFunction;
-            TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction = this.slotFunction;
-            BiFunction<Setting, GuiInfo, List<D>> dataFunction = this.dataFunction;
-
-            if (loadMissingFromConfig) {
-                if (itemStackFunction == null) {
-                    itemStackFunction = (setting, guiInfo, data) -> setting.get(data, "item-stack", new ItemStack(Material.STONE));
+        if (slotFunction == null) {
+            slotFunction = (setting, guiInfo, data) -> {
+                Integer slot = setting.get(data, "slot", null);
+                if (slot == null) {
+                    return OptionalInt.empty();
+                } else {
+                    return OptionalInt.of(slot);
                 }
-
-                if (slotFunction == null) {
-                    slotFunction = (setting, guiInfo, data) -> {
-                        Integer slot = setting.get(data, "slot", null);
-                        if (slot == null) {
-                            return OptionalInt.empty();
-                        } else {
-                            return OptionalInt.of(slot);
-                        }
-                    };
-                }
-
-                if (dataFunction == null) {
-                    dataFunction = (setting, guiInfo) -> new ArrayList<>();
-                }
-
-                if (clickTypes.isEmpty()) {
-                    clickTypes.add(setting -> ClickType.LEFT);
-                }
-            }
-
-            return new SimplePageContent<>(setting, dataFunction, itemStackFunction, slotFunction, actions, conditions, clickTypes);
+            };
         }
-    }
 
+        if (dataFunction == null) {
+            dataFunction = (setting, guiInfo) -> new ArrayList<>();
+        }
+
+        return new SimplePageContent<>(parent, dataFunction, itemStackFunction, slotFunction, actions, conditions);
+    }
 }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class SimpleButton implements Button {
 
@@ -19,14 +18,12 @@ public class SimpleButton implements Button {
     private final BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction;
     private final List<Consumer<ClickAction>> actions = new LinkedList<>();
     private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
-    private final List<Function<Setting, ClickType>> clickTypes = new LinkedList<>();
 
-    public SimpleButton(Setting setting, BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction, List<Consumer<ClickAction>> actions, List<BiPredicate<Setting, GuiInfo>> conditions, List<Function<Setting, ClickType>> clickTypes) {
+    public SimpleButton(Setting setting, BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction, List<Consumer<ClickAction>> actions, List<BiPredicate<Setting, GuiInfo>> conditions) {
         this.setting = setting;
         this.itemStackFunction = itemStackFunction;
         this.actions.addAll(actions);
         this.conditions.addAll(conditions);
-        this.clickTypes.addAll(clickTypes);
     }
 
     @Override
@@ -37,7 +34,7 @@ public class SimpleButton implements Button {
     @Override
     public void onClick(ClickAction event) {
         ClickType clickType = event.getClickEvent().getClick();
-        if (clickTypes.stream().map(clickFunction -> clickFunction.apply(setting)).anyMatch(clickType::equals)) {
+        if (clickType == ClickType.LEFT) {
             actions.forEach(consumer -> consumer.accept(event));
         } else {
             event.getClickEvent().setCancelled(true);

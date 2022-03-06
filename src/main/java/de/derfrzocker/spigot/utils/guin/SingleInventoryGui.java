@@ -6,6 +6,7 @@ import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.NumberConversions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,18 +23,21 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class SingleInventoryGui implements InventoryGui, Listener {
 
     private final Map<HumanEntity, InventoryGui> previous = new LinkedHashMap<>();
 
+    private final BiFunction<Setting, GuiInfo, Boolean> decorations;
     private final Setting setting;
     private final BiFunction<Setting, GuiInfo, Integer> rows;
     private final BiFunction<Setting, GuiInfo, String> name;
     private final BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
+    private String identifier;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
-    private final List<Decoration> decorations = new LinkedList<>();
 
     private final Map<Inventory, Map<Integer, Button>> buttons = new LinkedHashMap<>();
     private final Map<Inventory, Boolean> allowBottomPickUps = new LinkedHashMap<>();
@@ -40,19 +45,17 @@ public class SingleInventoryGui implements InventoryGui, Listener {
 
     private boolean registered = false;
 
-    public SingleInventoryGui(Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp) {
+    public SingleInventoryGui(String identifier, Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, BiFunction<Setting, GuiInfo, Boolean> decorations) {
+        this.identifier = identifier;
         this.setting = setting;
         this.rows = rows;
         this.name = name;
         this.allowBottomPickUp = allowBottomPickUp;
+        this.decorations = decorations;
     }
 
     public void addButtonContext(ButtonContext buttonContext) {
         buttonContexts.add(buttonContext);
-    }
-
-    public void addDecoration(Decoration decoration) {
-        decorations.add(decoration);
     }
 
     @EventHandler
@@ -98,7 +101,6 @@ public class SingleInventoryGui implements InventoryGui, Listener {
 
         buttons.remove(oldInv);
         allowBottomPickUps.remove(oldInv);
-
     }
 
     @Override
@@ -125,11 +127,20 @@ public class SingleInventoryGui implements InventoryGui, Listener {
 
         inventory.clear();
 
-        for (Decoration decoration : decorations) {
-            ItemStack itemStack = decoration.getItemStack(guiInfo);
-            for (int slot : decoration.getSlots(guiInfo)) {
-                if (slot < inventory.getSize()) {
-                    inventory.setItem(slot, itemStack);
+        if (decorations.apply(setting, guiInfo)) {
+            Set<String> keys = setting.getKeys(identifier, "decorations");
+
+            if (keys == null) {
+                return;
+            }
+
+            for (String key : keys) {
+                ItemStack itemStack = setting.get(identifier, key == null ? "decorations.item-stack" : "decorations." + key + ".item-stack", new ItemStack(Material.STONE));
+                List<Integer> slots = setting.get(identifier, key == null ? "decorations.slots" : "decorations." + key + ".slots", (List<Object>) new LinkedList<>()).stream().map(NumberConversions::toInt).collect(Collectors.toList());
+                for (int slot : slots) {
+                    if (slot < inventory.getSize()) {
+                        inventory.setItem(slot, itemStack);
+                    }
                 }
             }
         }

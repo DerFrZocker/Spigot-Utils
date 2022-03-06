@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class SimplePageContent<D> implements PageContent<D> {
 
@@ -23,16 +22,14 @@ public class SimplePageContent<D> implements PageContent<D> {
     private final TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
     private final List<BiConsumer<ClickAction, D>> actions = new LinkedList<>();
     private final List<TriplePredicate<Setting, GuiInfo, D>> conditions = new LinkedList<>();
-    private final List<Function<Setting, ClickType>> clickTypes = new LinkedList<>();
 
-    public SimplePageContent(Setting setting, BiFunction<Setting, GuiInfo, List<D>> dataFunction, TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction, TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction, List<BiConsumer<ClickAction, D>> actions, List<TriplePredicate<Setting, GuiInfo, D>> conditions, List<Function<Setting, ClickType>> clickTypes) {
+    public SimplePageContent(Setting setting, BiFunction<Setting, GuiInfo, List<D>> dataFunction, TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction, TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction, List<BiConsumer<ClickAction, D>> actions, List<TriplePredicate<Setting, GuiInfo, D>> conditions) {
         this.setting = setting;
         this.dataFunction = dataFunction;
         this.itemStackFunction = itemStackFunction;
         this.slotFunction = slotFunction;
         this.actions.addAll(actions);
         this.conditions.addAll(conditions);
-        this.clickTypes.addAll(clickTypes);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class SimplePageContent<D> implements PageContent<D> {
     @Override
     public void onClick(ClickAction event, D data) {
         ClickType clickType = event.getClickEvent().getClick();
-        if (clickTypes.stream().map(clickFunction -> clickFunction.apply(setting)).anyMatch(clickType::equals)) {
+        if (clickType == ClickType.LEFT) {
             actions.forEach(consumer -> consumer.accept(event, data));
         } else {
             event.getClickEvent().setCancelled(true);

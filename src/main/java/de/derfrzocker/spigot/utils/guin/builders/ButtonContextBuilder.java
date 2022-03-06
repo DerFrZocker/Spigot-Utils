@@ -1,23 +1,22 @@
 package de.derfrzocker.spigot.utils.guin.builders;
 
 import de.derfrzocker.spigot.utils.guin.GuiInfo;
-import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.guin.buttons.SimpleButtonContext;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class ButtonContextBuilder {
+public final class ButtonContextBuilder extends GuiBuilder {
 
-    private final List<BiConsumer<GuiBuilder, ButtonContextData>> records = new LinkedList<>();
-    protected Object identifier;
+    private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
+    private BiFunction<Setting, GuiInfo, Integer> slotFunction;
+    private ButtonBuilder button;
 
     private ButtonContextBuilder() {
     }
@@ -27,11 +26,11 @@ public final class ButtonContextBuilder {
     }
 
     public ButtonContextBuilder withSetting(Setting setting) {
-        records.add((parent, data) -> data.setting = data.setting.withSetting(setting));
+        this.setting = this.setting.withSetting(setting);
         return this;
     }
 
-    public ButtonContextBuilder identifier(Object identifier) {
+    public ButtonContextBuilder identifier(String identifier) {
         this.identifier = identifier;
         return this;
     }
@@ -42,22 +41,12 @@ public final class ButtonContextBuilder {
     }
 
     public ButtonContextBuilder slot(BiFunction<Setting, GuiInfo, Integer> slotFunction) {
-        records.add((gui, data) -> data.slotFunction = slotFunction);
+        this.slotFunction = slotFunction;
         return this;
     }
 
     public ButtonContextBuilder button(ButtonBuilder buttonBuilder) {
-        records.add((gui, data) -> {
-            if (buttonBuilder.identifier != null) {
-                data.buttons.put(buttonBuilder.identifier, buttonBuilder::build);
-            }
-            data.button = buttonBuilder.build(data);
-        });
-        return this;
-    }
-
-    public ButtonContextBuilder button(Object identifier) {
-        records.add((gui, data) -> data.button = data.buttons.get(identifier).apply(data));
+        this.button = buttonBuilder;
         return this;
     }
 
@@ -77,44 +66,24 @@ public final class ButtonContextBuilder {
     }
 
     public ButtonContextBuilder withCondition(BiPredicate<Setting, GuiInfo> predicate) {
-        records.add((gui, data) -> data.conditions.add(predicate));
+        conditions.add(predicate);
         return this;
     }
 
-    ButtonContext build(GuiBuilder parent) {
-        ButtonContextData data = new ButtonContextData();
+    ButtonContext build(Setting parent) {
+        BiFunction<Setting, GuiInfo, Integer> slotFunction = this.slotFunction;
+        ButtonBuilder button = this.button;
+        String identifier = this.identifier;
+        parent = parent.withSetting(setting);
 
-        parent.copy(data);
-
-        for (BiConsumer<GuiBuilder, ButtonContextData> consumer : records) {
-            consumer.accept(parent, data);
+        if (slotFunction == null) {
+            slotFunction = (setting, guiInfo) -> setting.get(identifier, "slot", 0);
         }
 
-        return data.build();
-    }
-
-    private final class ButtonContextData extends GuiBuilder {
-        private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
-        private BiFunction<Setting, GuiInfo, Integer> slotFunction;
-        private Button button;
-
-        ButtonContext build() {
-            Object identifier = ButtonContextBuilder.this.identifier;
-            BiFunction<Setting, GuiInfo, Integer> slotFunction = this.slotFunction;
-            Button button = this.button;
-
-            if (loadMissingFromConfig) {
-                if (slotFunction == null) {
-                    slotFunction = (setting, guiInfo) -> setting.get(identifier, "slot", 0);
-                }
-
-                if (button == null) {
-                    button = ButtonBuilder.builder().build(this);
-                }
-            }
-
-            return new SimpleButtonContext(setting, slotFunction, button, conditions);
+        if (button == null) {
+            button = ButtonBuilder.builder().identifier(identifier);
         }
-    }
 
+        return new SimpleButtonContext(parent, slotFunction, button.build(parent), conditions);
+    }
 }

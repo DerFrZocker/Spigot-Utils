@@ -6,22 +6,21 @@ import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.SimpleButton;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class ButtonBuilder {
+public final class ButtonBuilder extends GuiBuilder {
 
-    private final List<BiConsumer<GuiBuilder, ButtonBuilderData>> records = new LinkedList<>();
-    protected Object identifier;
+    private final List<Consumer<ClickAction>> actions = new LinkedList<>();
+    private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
+    private BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction;
 
     private ButtonBuilder() {
     }
@@ -31,7 +30,7 @@ public final class ButtonBuilder {
     }
 
     public ButtonBuilder withSetting(Setting setting) {
-        records.add((parent, data) -> data.setting = data.setting.withSetting(setting));
+        this.setting = this.setting.withSetting(setting);
         return this;
     }
 
@@ -41,17 +40,17 @@ public final class ButtonBuilder {
     }
 
     public ButtonBuilder itemStack(BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction) {
-        records.add((gui, data) -> data.itemStackFunction = itemStackFunction);
+        this.itemStackFunction = itemStackFunction;
         return this;
     }
 
-    public ButtonBuilder identifier(Object identifier) {
+    public ButtonBuilder identifier(String identifier) {
         this.identifier = identifier;
         return this;
     }
 
     public ButtonBuilder withAction(Consumer<ClickAction> consumer) {
-        records.add((gui, data) -> data.actions.add(consumer));
+        actions.add(consumer);
         return this;
     }
 
@@ -71,55 +70,19 @@ public final class ButtonBuilder {
     }
 
     public ButtonBuilder withCondition(BiPredicate<Setting, GuiInfo> predicate) {
-        records.add((gui, data) -> data.conditions.add(predicate));
+        conditions.add(predicate);
         return this;
     }
 
-    public ButtonBuilder withClickType(ClickType clickType) {
-        withClickType(setting -> clickType);
-        return this;
-    }
+    Button build(Setting parent) {
+        BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
+        String identifier = this.identifier;
+        parent = parent.withSetting(setting);
 
-
-    public ButtonBuilder withClickType(Function<Setting, ClickType> clickType) {
-        records.add((gui, data) -> data.clickTypes.add(clickType));
-        return this;
-    }
-
-    Button build(GuiBuilder parent) {
-        ButtonBuilderData data = new ButtonBuilderData();
-
-        parent.copy(data);
-
-        for (BiConsumer<GuiBuilder, ButtonBuilderData> consumer : records) {
-            consumer.accept(parent, data);
+        if (itemStackFunction == null) {
+            itemStackFunction = (setting, guiInfo) -> setting.get(identifier, "item-stack", new ItemStack(Material.STONE));
         }
 
-        return data.build();
+        return new SimpleButton(parent, itemStackFunction, actions, conditions);
     }
-
-    private final class ButtonBuilderData extends GuiBuilder {
-        private final List<Consumer<ClickAction>> actions = new LinkedList<>();
-        private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
-        private final List<Function<Setting, ClickType>> clickTypes = new LinkedList<>();
-        private BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction;
-
-        Button build() {
-            Object identifier = ButtonBuilder.this.identifier;
-            BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
-
-            if (loadMissingFromConfig) {
-                if (itemStackFunction == null) {
-                    itemStackFunction = (setting, guiInfo) -> setting.get(identifier, "item-stack", new ItemStack(Material.STONE));
-                }
-
-                if (clickTypes.isEmpty()) {
-                    clickTypes.add(setting -> ClickType.LEFT);
-                }
-            }
-
-            return new SimpleButton(setting, itemStackFunction, actions, conditions, clickTypes);
-        }
-    }
-
 }

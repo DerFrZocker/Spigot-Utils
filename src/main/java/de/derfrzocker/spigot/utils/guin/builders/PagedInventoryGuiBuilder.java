@@ -4,18 +4,25 @@ import de.derfrzocker.spigot.utils.guin.GuiInfo;
 import de.derfrzocker.spigot.utils.guin.InventoryGui;
 import de.derfrzocker.spigot.utils.guin.PagedGuiInfo;
 import de.derfrzocker.spigot.utils.guin.PagedInventoryGui;
-import de.derfrzocker.spigot.utils.guin.buttons.PageContent;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
-public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
+public final class PagedInventoryGuiBuilder extends GuiBuilder {
 
-    private final List<Consumer<PagedInventoryGuiData>> records = new LinkedList<>();
+    private final static String NEXT = "next";
+    private final static String PREVIOUS = "previous";
+    private final Set<ButtonContextBuilder> buttonContextBuilders = new LinkedHashSet<>();
+    private BiFunction<Setting, GuiInfo, String> name;
+    private BiFunction<Setting, GuiInfo, Integer> rows;
+    private BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
+    private BiFunction<Setting, GuiInfo, Boolean> decorations;
+    private PageContentBuilder<?> pageContentBuilder;
+    private BiFunction<Setting, GuiInfo, Integer> upperGap;
+    private BiFunction<Setting, GuiInfo, Integer> lowerGap;
+    private BiFunction<Setting, GuiInfo, Integer> sideGap;
 
     private PagedInventoryGuiBuilder() {
     }
@@ -25,11 +32,11 @@ public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
     }
 
     public PagedInventoryGuiBuilder withSetting(Setting setting) {
-        records.add(data -> data.setting = data.setting.withSetting(setting));
+        this.setting = this.setting.withSetting(setting);
         return this;
     }
 
-    public PagedInventoryGuiBuilder identifier(Object identifier) {
+    public PagedInventoryGuiBuilder identifier(String identifier) {
         this.identifier = identifier;
         return this;
     }
@@ -40,7 +47,7 @@ public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
     }
 
     public PagedInventoryGuiBuilder name(BiFunction<Setting, GuiInfo, String> name) {
-        records.add(data -> data.inventoryName = name);
+        this.name = name;
         return this;
     }
 
@@ -50,45 +57,17 @@ public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
     }
 
     public PagedInventoryGuiBuilder rows(BiFunction<Setting, GuiInfo, Integer> rows) {
-        records.add(data -> data.rows = rows);
-        return this;
-    }
-
-    public PagedInventoryGuiBuilder add(ButtonBuilder buttonBuilder) {
-        records.add(data -> {
-            if (buttonBuilder.identifier != null) {
-                data.buttons.put(buttonBuilder.identifier, buttonBuilder::build);
-            }
-        });
-        return this;
-    }
-
-    public PagedInventoryGuiBuilder add(ButtonContextBuilder contextBuilder) {
-        records.add(data -> {
-            if (contextBuilder.identifier != null) {
-                data.buttonContexts.put(contextBuilder.identifier, contextBuilder::build);
-            }
-        });
+        this.rows = rows;
         return this;
     }
 
     public PagedInventoryGuiBuilder addButtonContext(ButtonContextBuilder contextBuilder) {
-        records.add(data -> {
-            if (contextBuilder.identifier != null) {
-                data.buttonContexts.put(contextBuilder.identifier, contextBuilder::build);
-            }
-            data.buttonContextsPlace.add(contextBuilder.build(data));
-        });
-        return this;
-    }
-
-    public PagedInventoryGuiBuilder addButtonContext(Object identifier) {
-        records.add(data -> data.buttonContextsPlace.add(data.buttonContexts.get(identifier).apply(data)));
+        buttonContextBuilders.add(contextBuilder);
         return this;
     }
 
     public PagedInventoryGuiBuilder pageContent(PageContentBuilder<?> pageContentBuilder) {
-        records.add(data -> data.pageContent = pageContentBuilder.build(data));
+        this.pageContentBuilder = pageContentBuilder;
         return this;
     }
 
@@ -98,18 +77,18 @@ public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
     }
 
     public PagedInventoryGuiBuilder allowBottomPickUp(BiFunction<Setting, GuiInfo, Boolean> allow) {
-        records.add(data -> data.allowBottomPickUp = allow);
+        this.allowBottomPickUp = allow;
         return this;
     }
 
     public PagedInventoryGuiBuilder addDefaultNextButton() {
         addButtonContext(ButtonContextBuilder.
                 builder().
-                identifier(Controls.NEXT).
+                identifier(NEXT).
                 withCondition(guiInfo -> ((PagedGuiInfo) guiInfo).getCurrentPage() < (((PagedGuiInfo) guiInfo).getMaxPages() - 1)).
                 button(ButtonBuilder.
                         builder().
-                        identifier(Controls.NEXT).
+                        identifier(NEXT).
                         withAction(clickAction -> clickAction.getClickEvent().setCancelled(true)).
                         withAction(clickAction -> ((PagedInventoryGui<?>) clickAction.getInventoryGui()).openNextInventory(clickAction.getClickEvent().getView().getTopInventory(), clickAction.getClickEvent().getWhoClicked()))));
         return this;
@@ -118,119 +97,58 @@ public final class PagedInventoryGuiBuilder extends InventoryGuiBuilder {
     public PagedInventoryGuiBuilder addDefaultPreviousButton() {
         addButtonContext(ButtonContextBuilder.
                 builder().
-                identifier(Controls.PREVIOUS).
+                identifier(PREVIOUS).
                 withCondition(guiInfo -> ((PagedGuiInfo) guiInfo).getCurrentPage() > 0).
                 button(ButtonBuilder.
                         builder().
-                        identifier(Controls.PREVIOUS).
+                        identifier(PREVIOUS).
                         withAction(clickAction -> clickAction.getClickEvent().setCancelled(true)).
                         withAction(clickAction -> ((PagedInventoryGui<?>) clickAction.getInventoryGui()).openPreviousInventory(clickAction.getClickEvent().getView().getTopInventory(), clickAction.getClickEvent().getWhoClicked()))));
         return this;
     }
 
-    public PagedInventoryGuiBuilder addConfigDecorations() {
-        records.add(data -> {
-            Set<String> keys = data.setting.getKeys(identifier, "decorations");
-
-            if (keys == null) {
-                return;
-            }
-
-            for (String key : keys) {
-                data.decorationsPlace.add(DecorationBuilder.builder().identifier(identifier).key(key).build(data));
-            }
-
-        });
-        return this;
-    }
-
-    @Override
-    protected InventoryGui build(GuiBuilder parent) {
-        PagedInventoryGuiData data = new PagedInventoryGuiData();
-
-        parent.copy(data);
-
-        for (Consumer<PagedInventoryGuiData> consumer : records) {
-            consumer.accept(data);
-        }
-
-        return data.build();
-    }
-
     public InventoryGui build() {
-        PagedInventoryGuiData data = new PagedInventoryGuiData();
+        BiFunction<Setting, GuiInfo, String> name = this.name;
+        BiFunction<Setting, GuiInfo, Integer> rows = this.rows;
+        BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp = this.allowBottomPickUp;
+        BiFunction<Setting, GuiInfo, Boolean> decorations = this.decorations;
+        PageContentBuilder<?> pageContentBuilder = this.pageContentBuilder;
+        BiFunction<Setting, GuiInfo, Integer> upperGap = this.upperGap;
+        BiFunction<Setting, GuiInfo, Integer> lowerGap = this.lowerGap;
+        BiFunction<Setting, GuiInfo, Integer> sideGap = this.sideGap;
 
-        for (Consumer<PagedInventoryGuiData> consumer : records) {
-            consumer.accept(data);
+        if (rows == null) {
+            rows = (setting, guiInfo) -> setting.get(identifier, "rows", 1);
         }
 
-        return data.build();
-    }
-
-    private enum Controls {
-        NEXT, PREVIOUS;
-
-        @Override
-        public String toString() {
-            return super.toString().toLowerCase();
+        if (name == null) {
+            name = (setting, guiInfo) -> setting.get(identifier, "name", "Not present");
         }
-    }
 
-    private final class PagedInventoryGuiData extends InventoryGuiData {
-        protected PageContent<?> pageContent;
-        protected BiFunction<Setting, GuiInfo, Integer> upperGap;
-        protected BiFunction<Setting, GuiInfo, Integer> lowerGap;
-        protected BiFunction<Setting, GuiInfo, Integer> sideGap;
-        protected BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
-
-        @Override
-        protected InventoryGui build() {
-            Object identifier = PagedInventoryGuiBuilder.this.identifier;
-            BiFunction<Setting, GuiInfo, Integer> rows = this.rows;
-            BiFunction<Setting, GuiInfo, String> inventoryName = this.inventoryName;
-            BiFunction<Setting, GuiInfo, Integer> upperGap = this.upperGap;
-            BiFunction<Setting, GuiInfo, Integer> lowerGap = this.lowerGap;
-            BiFunction<Setting, GuiInfo, Integer> sideGap = this.sideGap;
-            PageContent<?> pageContent = this.pageContent;
-            BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp = this.allowBottomPickUp;
-
-            if (loadMissingFromConfig) {
-                if (rows == null) {
-                    rows = (setting, guiInfo) -> setting.get(identifier, "rows", 1);
-                }
-
-                if (inventoryName == null) {
-                    inventoryName = (setting, guiInfo) -> setting.get(identifier, "name", "Not present");
-                }
-
-                if (upperGap == null) {
-                    upperGap = (setting, guiInfo) -> setting.get(identifier, "gap.upper", 1);
-                }
-
-                if (lowerGap == null) {
-                    lowerGap = (setting, guiInfo) -> setting.get(identifier, "gap.lower", 1);
-                }
-
-                if (sideGap == null) {
-                    sideGap = (setting, guiInfo) -> setting.get(identifier, "gap.side", 1);
-                }
-
-                if (pageContent == null) {
-                    pageContent = PageContentBuilder.builder(Object.class).withSetting(setting).build(this);
-                }
-
-                if (allowBottomPickUp == null) {
-                    allowBottomPickUp = (setting, guiInfo) -> setting.get(identifier, "allow-bottom-pickup", false);
-                }
-            }
-
-            PagedInventoryGui<?> gui = new PagedInventoryGui<>(setting, rows, inventoryName, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContent);
-
-            buttonContextsPlace.forEach(gui::addButtonContext);
-            decorationsPlace.forEach(gui::addDecoration);
-
-            return gui;
+        if (upperGap == null) {
+            upperGap = (setting, guiInfo) -> setting.get(identifier, "gap.upper", 1);
         }
-    }
 
+        if (lowerGap == null) {
+            lowerGap = (setting, guiInfo) -> setting.get(identifier, "gap.lower", 1);
+        }
+
+        if (sideGap == null) {
+            sideGap = (setting, guiInfo) -> setting.get(identifier, "gap.side", 1);
+        }
+
+        if (pageContentBuilder == null) {
+            pageContentBuilder = PageContentBuilder.builder(Object.class);
+        }
+
+        if (allowBottomPickUp == null) {
+            allowBottomPickUp = (setting, guiInfo) -> setting.get(identifier, "allow-bottom-pickup", false);
+        }
+
+        PagedInventoryGui<?> gui = new PagedInventoryGui<>(identifier, setting, rows, name, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContentBuilder.build(setting), decorations);
+
+        buttonContextBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addButtonContext);
+
+        return gui;
+    }
 }
