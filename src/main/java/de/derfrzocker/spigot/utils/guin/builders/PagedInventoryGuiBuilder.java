@@ -151,6 +151,10 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
             allowBottomPickUp = (setting, guiInfo) -> setting.get(identifier, "allow-bottom-pickup", false);
         }
 
+        if (decorations == null) {
+            decorations = (setting, guiInfo) -> setting.get(identifier, "place-decorations", true);
+        }
+
         PagedInventoryGui<?> gui = new PagedInventoryGui<>(identifier, setting, rows, name, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContentBuilder.build(setting), decorations);
 
         buttonContextBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addButtonContext);
