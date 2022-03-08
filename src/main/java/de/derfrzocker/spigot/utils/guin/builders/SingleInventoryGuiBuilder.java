@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
 public final class SingleInventoryGuiBuilder extends GuiBuilder {
 
     private final Set<ButtonContextBuilder> buttonContextBuilders = new LinkedHashSet<>();
+    private final Set<ListButtonBuilder> listButtonBuilders = new LinkedHashSet<>();
     private BiFunction<Setting, GuiInfo, String> name;
     private BiFunction<Setting, GuiInfo, Integer> rows;
     private BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
@@ -59,6 +60,11 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
         return this;
     }
 
+    public SingleInventoryGuiBuilder addListButton(ListButtonBuilder buttonBuilder) {
+        listButtonBuilders.add(buttonBuilder);
+        return this;
+    }
+
     public SingleInventoryGuiBuilder allowBottomPickUp(boolean allow) {
         allowBottomPickUp((setting, guiInfo) -> allow);
         return this;
@@ -94,6 +100,7 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
         SingleInventoryGui gui = new SingleInventoryGui(identifier, setting, rows, name, allowBottomPickUp, decorations);
 
         buttonContextBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addButtonContext);
+        listButtonBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addListButton);
 
         return gui;
     }

@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
+import de.derfrzocker.spigot.utils.guin.buttons.ListButton;
 import de.derfrzocker.spigot.utils.guin.buttons.PageContent;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
@@ -45,6 +46,7 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
     private final BiFunction<Setting, GuiInfo, Boolean> decorations;
     private final PageContent<D> pageContent;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
+    private final List<ListButton> listButtons = new LinkedList<>();
 
     private final Map<Inventory, HumanEntity> inventoryHuman = new LinkedHashMap<>();
     private final Map<HumanEntity, PagedInventoryGuiData> guiDatas = new LinkedHashMap<>();
@@ -66,6 +68,10 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
 
     public void addButtonContext(ButtonContext buttonContext) {
         buttonContexts.add(buttonContext);
+    }
+
+    public void addListButton(ListButton listButton) {
+        listButtons.add(listButton);
     }
 
     public void openNextInventory(Inventory inventory, HumanEntity humanEntity) {
@@ -208,6 +214,19 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
             }
 
             Map<Integer, Button> newButtons = new LinkedHashMap<>();
+            for (ListButton listButton : listButtons) {
+                for (ButtonContext buttonContext : listButton.getButtons()) {
+                    Button button = buttonContext.getButton();
+                    if (buttonContext.shouldPlace(guiInfo) && button.shouldPlace(guiInfo)) {
+                        int slot = buttonContext.getSlot(guiInfo);
+                        ItemStack itemStack = button.getItemStack(guiInfo);
+
+                        subInventory.setItem(slot, itemStack);
+                        newButtons.put(slot, button);
+                    }
+                }
+            }
+
             for (ButtonContext buttonContext : buttonContexts) {
                 Button button = buttonContext.getButton();
                 if (buttonContext.shouldPlace(guiInfo) && button.shouldPlace(guiInfo)) {

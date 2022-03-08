@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import de.derfrzocker.spigot.utils.guin.buttons.Button;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
+import de.derfrzocker.spigot.utils.guin.buttons.ListButton;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,6 +39,7 @@ public class SingleInventoryGui implements InventoryGui, Listener {
     private final BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
     private String identifier;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
+    private final List<ListButton> listButtons = new LinkedList<>();
 
     private final Map<Inventory, Map<Integer, Button>> buttons = new LinkedHashMap<>();
     private final Map<Inventory, Boolean> allowBottomPickUps = new LinkedHashMap<>();
@@ -56,6 +58,10 @@ public class SingleInventoryGui implements InventoryGui, Listener {
 
     public void addButtonContext(ButtonContext buttonContext) {
         buttonContexts.add(buttonContext);
+    }
+
+    public void addListButton(ListButton listButton) {
+        listButtons.add(listButton);
     }
 
     @EventHandler
@@ -141,6 +147,19 @@ public class SingleInventoryGui implements InventoryGui, Listener {
                     if (slot < inventory.getSize()) {
                         inventory.setItem(slot, itemStack);
                     }
+                }
+            }
+        }
+
+        for (ListButton listButton : listButtons) {
+            for (ButtonContext buttonContext : listButton.getButtons()) {
+                Button button = buttonContext.getButton();
+                if (buttonContext.shouldPlace(guiInfo) && button.shouldPlace(guiInfo)) {
+                    int slot = buttonContext.getSlot(guiInfo);
+                    ItemStack itemStack = button.getItemStack(guiInfo);
+
+                    inventory.setItem(slot, itemStack);
+                    newButtons.put(slot, button);
                 }
             }
         }

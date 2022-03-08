@@ -15,6 +15,7 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
     private final static String NEXT = "next";
     private final static String PREVIOUS = "previous";
     private final Set<ButtonContextBuilder> buttonContextBuilders = new LinkedHashSet<>();
+    private final Set<ListButtonBuilder> listButtonBuilders = new LinkedHashSet<>();
     private BiFunction<Setting, GuiInfo, String> name;
     private BiFunction<Setting, GuiInfo, Integer> rows;
     private BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
@@ -63,6 +64,11 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
 
     public PagedInventoryGuiBuilder addButtonContext(ButtonContextBuilder contextBuilder) {
         buttonContextBuilders.add(contextBuilder);
+        return this;
+    }
+
+    public PagedInventoryGuiBuilder addListButton(ListButtonBuilder buttonBuilder) {
+        listButtonBuilders.add(buttonBuilder);
         return this;
     }
 
@@ -148,6 +154,7 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
         PagedInventoryGui<?> gui = new PagedInventoryGui<>(identifier, setting, rows, name, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContentBuilder.build(setting), decorations);
 
         buttonContextBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addButtonContext);
+        listButtonBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addListButton);
 
         return gui;
     }

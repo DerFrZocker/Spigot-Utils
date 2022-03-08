@@ -3,6 +3,7 @@ package de.derfrzocker.spigot.utils.guin.builders;
 import de.derfrzocker.spigot.utils.guin.GuiInfo;
 import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.guin.buttons.SimpleButtonContext;
+import de.derfrzocker.spigot.utils.setting.DummySetting;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedList;
@@ -68,6 +69,10 @@ public final class ButtonContextBuilder extends GuiBuilder {
     public ButtonContextBuilder withCondition(BiPredicate<Setting, GuiInfo> predicate) {
         conditions.add(predicate);
         return this;
+    }
+
+    public ButtonContext build() {
+        return build(new DummySetting());
     }
 
     ButtonContext build(Setting parent) {
