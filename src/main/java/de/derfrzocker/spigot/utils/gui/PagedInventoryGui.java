@@ -6,6 +6,8 @@ import de.derfrzocker.spigot.utils.gui.buttons.Button;
 import de.derfrzocker.spigot.utils.gui.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.gui.buttons.ListButton;
 import de.derfrzocker.spigot.utils.gui.buttons.PageContent;
+import de.derfrzocker.spigot.utils.message.MessageUtil;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -47,13 +49,14 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
     private final PageContent<D> pageContent;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
     private final List<ListButton> listButtons = new LinkedList<>();
+    private final List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues = new LinkedList<>();
 
     private final Map<Inventory, HumanEntity> inventoryHuman = new LinkedHashMap<>();
     private final Map<HumanEntity, PagedInventoryGuiData> guiDatas = new LinkedHashMap<>();
 
     private boolean registered = false;
 
-    public PagedInventoryGui(String identifier, Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Integer> upperGap, BiFunction<Setting, GuiInfo, Integer> lowerGap, BiFunction<Setting, GuiInfo, Integer> sideGap, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, PageContent<D> pageContent, BiFunction<Setting, GuiInfo, Boolean> decorations) {
+    public PagedInventoryGui(String identifier, Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Integer> upperGap, BiFunction<Setting, GuiInfo, Integer> lowerGap, BiFunction<Setting, GuiInfo, Integer> sideGap, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, PageContent<D> pageContent, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues) {
         this.identifier = identifier;
         this.setting = setting;
         this.rows = rows;
@@ -64,6 +67,7 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
         this.allowBottomPickUp = allowBottomPickUp;
         this.pageContent = pageContent;
         this.decorations = decorations;
+        this.messageValues.addAll(messageValues);
     }
 
     public void addButtonContext(ButtonContext buttonContext) {
@@ -192,10 +196,10 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
         Map<Integer, Map<Integer, Button>> inventoryButtons = new LinkedHashMap<>();
         Map<Integer, Map<Integer, Integer>> inventoryDatas = new LinkedHashMap<>();
         for (int page = 0; page < pages; page++) {
-            guiInfo = new PagedGuiInfo(this, humanEntity, pages, page);
-            Inventory subInventory = Bukkit.createInventory(null, rows * 9, this.name.apply(setting, guiInfo));
+            GuiInfo pagedGuiInfo = new PagedGuiInfo(this, humanEntity, pages, page);
+            Inventory subInventory = Bukkit.createInventory(null, rows * 9, MessageUtil.formatToString(null, this.name.apply(setting, pagedGuiInfo), messageValues.stream().map(function -> function.apply(setting, guiInfo)).toArray(MessageValue[]::new)));
 
-            if (decorations.apply(setting, guiInfo)) {
+            if (decorations.apply(setting, pagedGuiInfo)) {
                 Set<String> keys = setting.getKeys(identifier, "decorations");
 
                 if (keys == null) {
@@ -217,9 +221,9 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
             for (ListButton listButton : listButtons) {
                 for (ButtonContext buttonContext : listButton.getButtons()) {
                     Button button = buttonContext.getButton();
-                    if (buttonContext.shouldPlace(guiInfo) && button.shouldPlace(guiInfo)) {
-                        int slot = buttonContext.getSlot(guiInfo);
-                        ItemStack itemStack = button.getItemStack(guiInfo);
+                    if (buttonContext.shouldPlace(pagedGuiInfo) && button.shouldPlace(pagedGuiInfo)) {
+                        int slot = buttonContext.getSlot(pagedGuiInfo);
+                        ItemStack itemStack = button.getItemStack(pagedGuiInfo);
 
                         subInventory.setItem(slot, itemStack);
                         newButtons.put(slot, button);
@@ -229,9 +233,9 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
 
             for (ButtonContext buttonContext : buttonContexts) {
                 Button button = buttonContext.getButton();
-                if (buttonContext.shouldPlace(guiInfo) && button.shouldPlace(guiInfo)) {
-                    int slot = buttonContext.getSlot(guiInfo);
-                    ItemStack itemStack = button.getItemStack(guiInfo);
+                if (buttonContext.shouldPlace(pagedGuiInfo) && button.shouldPlace(pagedGuiInfo)) {
+                    int slot = buttonContext.getSlot(pagedGuiInfo);
+                    ItemStack itemStack = button.getItemStack(pagedGuiInfo);
 
                     subInventory.setItem(slot, itemStack);
                     newButtons.put(slot, button);
@@ -245,7 +249,7 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
                 D data = sortedData.get(position);
                 if (data != null) {
                     int slotToPlace = InventoryUtil.calculateSlot(slot, sideGap) + (upperGap * 9);
-                    subInventory.setItem(slotToPlace, pageContent.getItemStack(guiInfo, data));
+                    subInventory.setItem(slotToPlace, pageContent.getItemStack(pagedGuiInfo, data));
                     slotToPosition.put(slotToPlace, position);
                 }
             }

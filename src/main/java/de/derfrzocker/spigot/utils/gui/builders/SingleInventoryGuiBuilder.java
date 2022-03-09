@@ -3,9 +3,12 @@ package de.derfrzocker.spigot.utils.gui.builders;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.InventoryGui;
 import de.derfrzocker.spigot.utils.gui.SingleInventoryGui;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -13,6 +16,7 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
 
     private final Set<ButtonContextBuilder> buttonContextBuilders = new LinkedHashSet<>();
     private final Set<ListButtonBuilder> listButtonBuilders = new LinkedHashSet<>();
+    private final List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues = new LinkedList<>();
     private BiFunction<Setting, GuiInfo, String> name;
     private BiFunction<Setting, GuiInfo, Integer> rows;
     private BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
@@ -72,6 +76,11 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
 
     public SingleInventoryGuiBuilder allowBottomPickUp(BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp) {
         this.allowBottomPickUp = allowBottomPickUp;
+        return this;
+    }
+
+    public SingleInventoryGuiBuilder withMessageValue(BiFunction<Setting, GuiInfo, MessageValue> messageValue) {
+        messageValues.add(messageValue);
         return this;
     }
 

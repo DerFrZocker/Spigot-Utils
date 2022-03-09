@@ -4,6 +4,7 @@ import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.buttons.Button;
 import de.derfrzocker.spigot.utils.gui.buttons.SimpleButton;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +21,7 @@ public final class ButtonBuilder extends GuiBuilder {
 
     private final List<Consumer<ClickAction>> actions = new LinkedList<>();
     private final List<BiPredicate<Setting, GuiInfo>> conditions = new LinkedList<>();
+    private final List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues = new LinkedList<>();
     private BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction;
 
     private ButtonBuilder() {
@@ -74,6 +76,11 @@ public final class ButtonBuilder extends GuiBuilder {
         return this;
     }
 
+    public ButtonBuilder withMessageValue(BiFunction<Setting, GuiInfo, MessageValue> messageValue) {
+        messageValues.add(messageValue);
+        return this;
+    }
+
     Button build(Setting parent) {
         BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
         String identifier = this.identifier;
@@ -83,6 +90,6 @@ public final class ButtonBuilder extends GuiBuilder {
             itemStackFunction = (setting, guiInfo) -> setting.get(identifier, "item-stack", new ItemStack(Material.STONE));
         }
 
-        return new SimpleButton(parent, itemStackFunction, actions, conditions);
+        return new SimpleButton(parent, itemStackFunction, actions, conditions, messageValues);
     }
 }

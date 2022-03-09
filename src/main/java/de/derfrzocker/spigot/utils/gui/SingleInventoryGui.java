@@ -5,6 +5,8 @@ import com.google.common.collect.HashBiMap;
 import de.derfrzocker.spigot.utils.gui.buttons.Button;
 import de.derfrzocker.spigot.utils.gui.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.gui.buttons.ListButton;
+import de.derfrzocker.spigot.utils.message.MessageUtil;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -37,9 +39,10 @@ public class SingleInventoryGui implements InventoryGui, Listener {
     private final BiFunction<Setting, GuiInfo, Integer> rows;
     private final BiFunction<Setting, GuiInfo, String> name;
     private final BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
-    private String identifier;
+    private final String identifier;
     private final List<ButtonContext> buttonContexts = new LinkedList<>();
     private final List<ListButton> listButtons = new LinkedList<>();
+    private final List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues = new LinkedList<>();
 
     private final Map<Inventory, Map<Integer, Button>> buttons = new LinkedHashMap<>();
     private final Map<Inventory, Boolean> allowBottomPickUps = new LinkedHashMap<>();
@@ -47,13 +50,14 @@ public class SingleInventoryGui implements InventoryGui, Listener {
 
     private boolean registered = false;
 
-    public SingleInventoryGui(String identifier, Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, BiFunction<Setting, GuiInfo, Boolean> decorations) {
+    public SingleInventoryGui(String identifier, Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues) {
         this.identifier = identifier;
         this.setting = setting;
         this.rows = rows;
         this.name = name;
         this.allowBottomPickUp = allowBottomPickUp;
         this.decorations = decorations;
+        this.messageValues.addAll(messageValues);
     }
 
     public void addButtonContext(ButtonContext buttonContext) {
@@ -97,7 +101,7 @@ public class SingleInventoryGui implements InventoryGui, Listener {
     public void createGui(Plugin plugin, HumanEntity humanEntity) {
         GuiInfo guiInfo = new SimpleGuiInfo(this, humanEntity);
         Inventory oldInv = inventorys.get(humanEntity);
-        Inventory newInv = Bukkit.createInventory(null, rows.apply(setting, guiInfo) * 9, name.apply(setting, guiInfo));
+        Inventory newInv = Bukkit.createInventory(null, rows.apply(setting, guiInfo) * 9, MessageUtil.formatToString(null, name.apply(setting, guiInfo), messageValues.stream().map(function -> function.apply(setting, guiInfo)).toArray(MessageValue[]::new)));
 
         fillInventory(newInv, humanEntity);
 

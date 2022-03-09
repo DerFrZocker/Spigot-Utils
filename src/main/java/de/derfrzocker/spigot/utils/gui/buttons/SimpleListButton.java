@@ -1,10 +1,12 @@
 package de.derfrzocker.spigot.utils.gui.buttons;
 
+import de.derfrzocker.spigot.utils.TripleFunction;
 import de.derfrzocker.spigot.utils.TriplePredicate;
 import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.builders.ButtonBuilder;
 import de.derfrzocker.spigot.utils.gui.builders.ButtonContextBuilder;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedList;
@@ -18,12 +20,14 @@ public class SimpleListButton implements ListButton {
     private final Setting setting;
     private final List<BiConsumer<ClickAction, Object>> actions = new LinkedList<>();
     private final List<TriplePredicate<Setting, GuiInfo, Object>> conditions = new LinkedList<>();
+    private final List<TripleFunction<Setting, GuiInfo, Object, MessageValue>> messageValues = new LinkedList<>();
 
-    public SimpleListButton(String identifier, Setting setting, List<BiConsumer<ClickAction, Object>> actions, List<TriplePredicate<Setting, GuiInfo, Object>> conditions) {
+    public SimpleListButton(String identifier, Setting setting, List<BiConsumer<ClickAction, Object>> actions, List<TriplePredicate<Setting, GuiInfo, Object>> conditions, List<TripleFunction<Setting, GuiInfo, Object, MessageValue>> messageValues) {
         this.identifier = identifier;
         this.setting = setting;
         this.actions.addAll(actions);
         this.conditions.addAll(conditions);
+        this.messageValues.addAll(messageValues);
     }
 
     @Override
@@ -42,6 +46,10 @@ public class SimpleListButton implements ListButton {
 
             for (BiConsumer<ClickAction, Object> action : actions) {
                 buttonBuilder.withAction(clickAction -> action.accept(clickAction, value));
+            }
+
+            for (TripleFunction<Setting, GuiInfo, Object, MessageValue> messageValue : messageValues) {
+                buttonBuilder.withMessageValue((setting, guiInfo) -> messageValue.apply(setting, guiInfo, value));
             }
 
             builder.button(buttonBuilder);

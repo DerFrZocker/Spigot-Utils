@@ -4,9 +4,12 @@ import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.InventoryGui;
 import de.derfrzocker.spigot.utils.gui.PagedGuiInfo;
 import de.derfrzocker.spigot.utils.gui.PagedInventoryGui;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -16,6 +19,7 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
     private final static String PREVIOUS = "previous";
     private final Set<ButtonContextBuilder> buttonContextBuilders = new LinkedHashSet<>();
     private final Set<ListButtonBuilder> listButtonBuilders = new LinkedHashSet<>();
+    private final List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues = new LinkedList<>();
     private BiFunction<Setting, GuiInfo, String> name;
     private BiFunction<Setting, GuiInfo, Integer> rows;
     private BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
@@ -87,6 +91,11 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
         return this;
     }
 
+    public PagedInventoryGuiBuilder withMessageValue(BiFunction<Setting, GuiInfo, MessageValue> messageValue) {
+        messageValues.add(messageValue);
+        return this;
+    }
+
     public PagedInventoryGuiBuilder addDefaultNextButton() {
         addButtonContext(ButtonContextBuilder.
                 builder().
@@ -155,7 +164,7 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
             decorations = (setting, guiInfo) -> setting.get(identifier, "place-decorations", true);
         }
 
-        PagedInventoryGui<?> gui = new PagedInventoryGui<>(identifier, setting, rows, name, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContentBuilder.build(setting), decorations);
+        PagedInventoryGui<?> gui = new PagedInventoryGui<>(identifier, setting, rows, name, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContentBuilder.build(setting), decorations, messageValues);
 
         buttonContextBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addButtonContext);
         listButtonBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addListButton);

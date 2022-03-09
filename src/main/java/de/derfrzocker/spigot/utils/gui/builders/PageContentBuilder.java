@@ -6,6 +6,7 @@ import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.buttons.PageContent;
 import de.derfrzocker.spigot.utils.gui.buttons.SimplePageContent;
+import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,7 @@ public final class PageContentBuilder<D> extends GuiBuilder {
     private BiFunction<Setting, GuiInfo, List<D>> dataFunction;
     private TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction;
     private TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
+    private final List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues = new LinkedList<>();
 
     private PageContentBuilder() {
     }
@@ -94,6 +96,11 @@ public final class PageContentBuilder<D> extends GuiBuilder {
         return this;
     }
 
+    public PageContentBuilder<D> withMessageValue(TripleFunction<Setting, GuiInfo, D, MessageValue> messageValue) {
+        messageValues.add(messageValue);
+        return this;
+    }
+
     PageContent<D> build(Setting parent) {
         BiFunction<Setting, GuiInfo, List<D>> dataFunction = this.dataFunction;
         TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction = this.itemStackFunction;
@@ -119,6 +126,6 @@ public final class PageContentBuilder<D> extends GuiBuilder {
             dataFunction = (setting, guiInfo) -> new ArrayList<>();
         }
 
-        return new SimplePageContent<>(parent, dataFunction, itemStackFunction, slotFunction, actions, conditions);
+        return new SimplePageContent<>(parent, dataFunction, itemStackFunction, slotFunction, actions, conditions, messageValues);
     }
 }
