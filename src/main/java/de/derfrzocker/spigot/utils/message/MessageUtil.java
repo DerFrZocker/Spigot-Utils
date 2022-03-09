@@ -1,9 +1,11 @@
 package de.derfrzocker.spigot.utils.message;
 
+import de.derfrzocker.spigot.utils.language.Language;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,104 +13,173 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class MessageUtil {
+public final class MessageUtil {
 
-    private final static int DEFAULT_LORE_LENGTH = 40;
-    private final static int MINIMUM_LORE_LENGTH = 15;
+    private static final Pattern TRANSLATION_PATTERN = Pattern.compile("%%translation:(.*?)]%");
 
-    public static String replacePlaceHolder(final Plugin plugin, String string, final MessageValue... messageValues) {
-
-        string = replaceTranslation(plugin, string, messageValues);
-
-        for (MessageValue value : messageValues)
-            string = string.replace("%" + value.getKey() + "%", value.getValue());
-
-        string = ChatColor.translateAlternateColorCodes('&', string);
-
-        return string;
+    private MessageUtil() {
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public static List<String> replaceList(final Plugin plugin, final List<String> strings, final MessageValue... messageValues) {
+    @NotNull
+    public static String formatToString(@Nullable Language language, @NotNull String message, @NotNull MessageValue... messageValues) {
+        return toString(format(language, List.of(message), messageValues));
+    }
+
+    @NotNull
+    public static String formatToString(@Nullable Language language, @NotNull String message, @NotNull StringSeparator stringSeparator, @NotNull MessageValue... messageValues) {
+        return toString(format(language, List.of(message), messageValues), stringSeparator);
+    }
+
+    @NotNull
+    public static List<String> format(@Nullable Language language, @NotNull String message, @NotNull MessageValue... messageValues) {
+        return format(language, List.of(message), messageValues);
+    }
+
+    @NotNull
+    public static List<String> format(@Nullable Language language, @NotNull List<String> messages, @NotNull MessageValue... messageValues) {
         List<String> list = new LinkedList<>();
 
-        strings.stream().
-                map(line -> replacePlaceHolder(plugin, line, messageValues)).
-                flatMap(line -> {
+        messages
+                .stream()
+                .map(line -> {
+                    if (language != null) {
+                        return replaceTranslation(language, line, messageValues);
+                    }
+                    return line;
+                })
+                .map(line -> replacePlaceHolder(line, messageValues))
+                .map(MessageUtil::color)
+                .flatMap(line -> {
                     if (line.contains("\n") || line.contains("%%new-line%")) {
                         return Stream.of(line.split("(\\n|%%new-line%)"));
                     }
                     return Stream.of(line);
-                }).
-                forEach(list::add);
+                })
+                .forEach(list::add);
 
         return list;
     }
 
-    public static ItemStack replaceItemStack(final Plugin plugin, ItemStack itemStack, final MessageValue... messageValues) {
-        if (!itemStack.hasItemMeta())
-            return itemStack;
+    @NotNull
+    public static String color(@NotNull String message) {
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
 
-        itemStack.setItemMeta(replaceItemMeta(plugin, itemStack.getItemMeta(), messageValues));
+    @NotNull
+    public static String replacePlaceHolder(@NotNull String message, @NotNull MessageValue... messageValues) {
+        for (MessageValue value : messageValues) {
+            message = message.replace("%" + value.getKey() + "%", value.getValue());
+        }
+
+        return message;
+    }
+
+    @NotNull
+    public static String toString(@NotNull List<?> messages) {
+        return toString(messages, StringSeparator.SPACE);
+    }
+
+    @NotNull
+    public static String toString(@NotNull List<?> messages, @NotNull StringSeparator stringSeparator) {
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+
+        for (Object message : messages) {
+            if (first) {
+                first = false;
+            } else {
+                builder.append(stringSeparator.getSeparator());
+            }
+
+            builder.append(message);
+        }
+
+        return builder.toString();
+    }
+
+    @NotNull
+    public static ItemStack format(@Nullable Language language, @NotNull ItemStack itemStack, @NotNull MessageValue... messageValues) {
+        itemStack = itemStack.clone();
+
+        if (!itemStack.hasItemMeta()) {
+            return itemStack;
+        }
+
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
+        if (itemMeta == null) {
+            return itemStack;
+        }
+
+        itemStack.setItemMeta(format(language, itemMeta, messageValues));
 
         return itemStack;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public static ItemMeta replaceItemMeta(final Plugin plugin, final ItemMeta itemMeta, final MessageValue... messageValues) {
-        if (itemMeta.hasDisplayName())
-            itemMeta.setDisplayName(replacePlaceHolder(plugin, itemMeta.getDisplayName(), messageValues));
+    public static ItemMeta format(@Nullable Language language, @NotNull ItemMeta itemMeta, @NotNull MessageValue... messageValues) {
+        if (itemMeta.hasDisplayName()) {
+            itemMeta.setDisplayName(formatToString(language, itemMeta.getDisplayName(), StringSeparator.SPACE, messageValues));
+        }
 
         if (itemMeta.hasLore()) {
-            final List<String> lore = new LinkedList<>();
-
-            replaceList(plugin, itemMeta.getLore(), messageValues).forEach(string -> lore.addAll(splitString(string, itemMeta.hasDisplayName() ? itemMeta.getDisplayName().length() < MINIMUM_LORE_LENGTH ? DEFAULT_LORE_LENGTH : itemMeta.getDisplayName().length() : DEFAULT_LORE_LENGTH)));
-
-            itemMeta.setLore(lore);
+            List<String> lore = itemMeta.getLore();
+            if (lore != null) {
+                itemMeta.setLore(format(language, lore, messageValues));
+            }
         }
 
         return itemMeta;
     }
 
-    public static List<String> splitString(final String msg, final int lineSize) {
-        final List<String> strings = new LinkedList<>();
-
-        if (!msg.contains("%%split%")) {
-            strings.add(msg);
-            return strings;
+    // %%translation:[example.string]%
+    public static String replaceTranslation(@NotNull Language language, @NotNull String message, @NotNull MessageValue... messageValues) {
+        if (!message.contains("%%translation:[")) {
+            return message;
         }
 
-        final Pattern pattern = Pattern.compile("\\b.{1," + (lineSize - 1) + "}\\b\\W?");
-        final Matcher matcher = pattern.matcher(msg.replace("%%split%", ""));
-
-        while (matcher.find())
-            strings.add(matcher.group());
-
-        return strings;
-    }
-
-    // %%translation:[example.string]%
-    public static String replaceTranslation(final Plugin plugin, final String string, final MessageValue... messageValues) {
-        if (!string.contains("%%translation:["))
-            return string;
-
-        final Pattern pattern = Pattern.compile("%%translation:(.*?)]%");
-        Matcher matcher = pattern.matcher(string);
-
-        final StringBuilder stringBuilder = new StringBuilder(string);
+        StringBuilder stringBuilder = new StringBuilder(message);
+        Matcher matcher = TRANSLATION_PATTERN.matcher(message);
 
         while (matcher.find()) {
             String key = stringBuilder.substring(matcher.start() + 15, matcher.end() - 2);
 
-            key = replacePlaceHolder(plugin, key, messageValues);
+            key = replaceTranslation(language, key, messageValues);
+            key = replacePlaceHolder(key, messageValues);
 
-            stringBuilder.replace(matcher.start(), matcher.end(), new MessageKey(plugin, key).getRawMessage());
+            String toSet = "null";
+            Object value = language.getSetting().get(key);
 
-            matcher = pattern.matcher(stringBuilder.toString());
+            if (value != null) {
+                if (value instanceof List) {
+                    toSet = toString((List<?>) value, StringSeparator.NEW_LINE);
+                } else {
+                    toSet = value.toString();
+                }
+            }
+
+            stringBuilder.replace(matcher.start(), matcher.end(), toSet);
+
+            matcher = TRANSLATION_PATTERN.matcher(stringBuilder.toString());
         }
 
         return stringBuilder.toString();
     }
 
+    public enum StringSeparator {
 
+        SPACE(" "),
+        NEW_LINE("\n");
+
+        @NotNull
+        private final String separator;
+
+        StringSeparator(@NotNull String separator) {
+            this.separator = separator;
+        }
+
+        @NotNull
+        public String getSeparator() {
+            return separator;
+        }
+    }
 }
