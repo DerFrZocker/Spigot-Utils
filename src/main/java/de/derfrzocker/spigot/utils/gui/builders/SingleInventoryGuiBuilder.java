@@ -106,7 +106,7 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
             decorations = (setting, guiInfo) -> setting.get(identifier, "place-decorations", true);
         }
 
-        SingleInventoryGui gui = new SingleInventoryGui(identifier, setting, rows, name, allowBottomPickUp, decorations);
+        SingleInventoryGui gui = new SingleInventoryGui(identifier, setting, rows, name, allowBottomPickUp, decorations, messageValues);
 
         buttonContextBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addButtonContext);
         listButtonBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addListButton);
