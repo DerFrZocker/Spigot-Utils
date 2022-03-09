@@ -1,6 +1,5 @@
 package de.derfrzocker.spigot.utils.command;
 
-import de.derfrzocker.spigot.utils.message.MessageValue;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -74,7 +73,7 @@ public class HelpCommand implements TabExecutor {
     }
 
     private void sendShortHelp(@NotNull final CommandSender sender) {
-        helpConfig.getHeaderMessageFormat().sendMessage(sender);
+        /*helpConfig.getHeaderMessageFormat().sendMessage(sender);
 
         boolean separator = false;
 
@@ -94,11 +93,11 @@ public class HelpCommand implements TabExecutor {
             }
         }
 
-        helpConfig.getFooterMessageFormat().sendMessage(sender);
+        helpConfig.getFooterMessageFormat().sendMessage(sender);*/
     }
 
     private void sendHelp(@NotNull final CommandSender sender, @NotNull final String command, @NotNull final CommandSeparator.Command2 command2) {
-        if (command2.getUsage() != null)
+        /*if (command2.getUsage() != null)
             helpConfig.getUsageMessageFormat().sendMessage(sender, new MessageValue("command", command), new MessageValue("usage", command2.getUsage().getRawMessage()));
 
         if (command2.getPermission() != null)
@@ -106,7 +105,7 @@ public class HelpCommand implements TabExecutor {
 
         if (command2.getDescription() != null)
             helpConfig.getDescriptionMessageFormat().sendMessage(sender, new MessageValue("command", command), new MessageValue("description", command2.getDescription().getRawMessage()));
-
+*/
     }
 
 }

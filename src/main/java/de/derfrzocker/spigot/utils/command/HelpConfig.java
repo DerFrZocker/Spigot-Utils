@@ -1,8 +1,5 @@
 package de.derfrzocker.spigot.utils.command;
 
-import de.derfrzocker.spigot.utils.message.MessageKey;
-import org.jetbrains.annotations.NotNull;
-
 /**
  * The HelpConfig contains the message formats needed by the Help command to send the CommandSender the help messages
  */
@@ -14,8 +11,8 @@ public interface HelpConfig {
      *
      * @return the separator format
      */
-    @NotNull
-    MessageKey getSeparatorMessageFormat();
+    /*@NotNull
+    MessageKey getSeparatorMessageFormat();*/
 
     /**
      * The header gets displayed on begin from the help command <br>
@@ -23,8 +20,8 @@ public interface HelpConfig {
      *
      * @return the header format
      */
-    @NotNull
-    MessageKey getHeaderMessageFormat();
+    /*@NotNull
+    MessageKey getHeaderMessageFormat();*/
 
     /**
      * The footer gets displayed on the end of the help command <br>
@@ -32,8 +29,8 @@ public interface HelpConfig {
      *
      * @return the footer format
      */
-    @NotNull
-    MessageKey getFooterMessageFormat();
+    /*@NotNull
+    MessageKey getFooterMessageFormat();*/
 
     /**
      * The permissions format gets displayed when a command is specified by the help command <br>
@@ -42,8 +39,8 @@ public interface HelpConfig {
      *
      * @return the permission format
      */
-    @NotNull
-    MessageKey getPermissionMessageFormat();
+    /*@NotNull
+    MessageKey getPermissionMessageFormat();*/
 
     /**
      * The usage format gets displayed when a command is specified by the help command <br>
@@ -52,8 +49,8 @@ public interface HelpConfig {
      *
      * @return the usage format
      */
-    @NotNull
-    MessageKey getUsageMessageFormat();
+    /*@NotNull
+    MessageKey getUsageMessageFormat();*/
 
     /**
      * The description format gets displayed when a command is specified by the help command <br>
@@ -62,8 +59,8 @@ public interface HelpConfig {
      *
      * @return the description format
      */
-    @NotNull
-    MessageKey getDescriptionMessageFormat();
+    /*@NotNull
+    MessageKey getDescriptionMessageFormat();*/
 
     /**
      * The short help format gets displayed when no command is specified on the help command <br>
@@ -72,7 +69,7 @@ public interface HelpConfig {
      *
      * @return the short help format
      */
-    @NotNull
-    MessageKey getShortHelpMessageFormat();
+    /*@NotNull
+    MessageKey getShortHelpMessageFormat();*/
 
 }

@@ -1,7 +1,5 @@
 package de.derfrzocker.spigot.utils.command;
 
-import de.derfrzocker.spigot.utils.message.MessageKey;
-import de.derfrzocker.spigot.utils.message.MessageValue;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -52,22 +50,21 @@ public final class CommandUtil {
      * When it send the message, it gives the World name as the "world" placeholder
      *
      * @param worldName     the name of the World
-     * @param messageKey    which get send if the world was not found
      * @param commandSender which get the message when the world was not found
      * @return the world that have the given world name, it will never returns null
      * @throws NullPointerException   when worldName is null
      * @throws WorldNotFoundException when the world does not exist
      */
     @NotNull
-    public static World getWorld(@NotNull final String worldName, @Nullable final MessageKey messageKey, @Nullable final CommandSender commandSender) {
+    public static World getWorld(@NotNull final String worldName/*, @Nullable final MessageKey messageKey*/, @Nullable final CommandSender commandSender) {
         Validate.notNull(worldName, "World name can't be null");
 
         final World world = Bukkit.getWorld(worldName);
 
         if (world == null) {
-            if (messageKey != null && commandSender != null) {
+            /*if (messageKey != null && commandSender != null) {
                 messageKey.sendMessage(commandSender, new MessageValue("world", worldName));
-            }
+            }*/
             throw new WorldNotFoundException(worldName, "The world '" + worldName + "' does not exists!");
         }
 

@@ -1,7 +1,6 @@
 package de.derfrzocker.spigot.utils.command;
 
 import de.derfrzocker.spigot.utils.Permission;
-import de.derfrzocker.spigot.utils.message.MessageKey;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,19 +49,17 @@ public abstract class CommandSeparator implements TabExecutor {
      * @param executor    of the command
      * @param key         the name of the command
      * @param permission  of the command
-     * @param usage       of the command
-     * @param description of the command
      * @throws NullPointerException if executor is null
      */
-    public void registerExecutor(final @NotNull TabExecutor executor, final @Nullable String key, final @Nullable Permission permission, final @Nullable MessageKey usage, final @Nullable MessageKey description) {
+    public void registerExecutor(final @NotNull TabExecutor executor, final @Nullable String key, final @Nullable Permission permission/*, final @Nullable MessageKey usage, final @Nullable MessageKey description*/) {
         Validate.notNull(executor, "TabExecutor can't be null");
 
         if (key == null) {
-            fallBack = new Command2(executor, permission, usage, description);
+            fallBack = new Command2(executor, permission/*, usage, description*/);
             return;
         }
 
-        map.put(key.toLowerCase(), new Command2(executor, permission, usage, description));
+        map.put(key.toLowerCase(), new Command2(executor, permission/*, usage, description*/));
     }
 
     @Override
@@ -155,19 +152,19 @@ public abstract class CommandSeparator implements TabExecutor {
         @Nullable
         private final Permission permission;
 
-        @Nullable
+        /*@Nullable
         private final MessageKey usage;
 
         @Nullable
-        private final MessageKey description;
+        private final MessageKey description;*/
 
-        private Command2(@NotNull final TabExecutor tabExecutor, @Nullable final Permission permission, @Nullable final MessageKey usage, @Nullable final MessageKey description) {
+        private Command2(@NotNull final TabExecutor tabExecutor, @Nullable final Permission permission/*, @Nullable final MessageKey usage, @Nullable final MessageKey description*/) {
             Validate.notNull(tabExecutor, "TabExecutor can't be null");
 
             this.tabExecutor = tabExecutor;
             this.permission = permission;
-            this.usage = usage;
-            this.description = description;
+            /*this.usage = usage;
+            this.description = description;*/
         }
 
         @NotNull
@@ -180,7 +177,7 @@ public abstract class CommandSeparator implements TabExecutor {
             return permission;
         }
 
-        @Nullable
+        /*@Nullable
         MessageKey getUsage() {
             return usage;
         }
@@ -188,7 +185,7 @@ public abstract class CommandSeparator implements TabExecutor {
         @Nullable
         MessageKey getDescription() {
             return description;
-        }
+        }*/
     }
 
 }
