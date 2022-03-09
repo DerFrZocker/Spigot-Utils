@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils.guin.builders;
+package de.derfrzocker.spigot.utils.gui.builders;
 
 import de.derfrzocker.spigot.utils.setting.DummySetting;
 import de.derfrzocker.spigot.utils.setting.Setting;

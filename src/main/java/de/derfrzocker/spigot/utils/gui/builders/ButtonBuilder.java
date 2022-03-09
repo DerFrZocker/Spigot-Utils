@@ -1,9 +1,9 @@
-package de.derfrzocker.spigot.utils.guin.builders;
+package de.derfrzocker.spigot.utils.gui.builders;
 
-import de.derfrzocker.spigot.utils.guin.ClickAction;
-import de.derfrzocker.spigot.utils.guin.GuiInfo;
-import de.derfrzocker.spigot.utils.guin.buttons.Button;
-import de.derfrzocker.spigot.utils.guin.buttons.SimpleButton;
+import de.derfrzocker.spigot.utils.gui.ClickAction;
+import de.derfrzocker.spigot.utils.gui.GuiInfo;
+import de.derfrzocker.spigot.utils.gui.buttons.Button;
+import de.derfrzocker.spigot.utils.gui.buttons.SimpleButton;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

@@ -1,8 +1,8 @@
-package de.derfrzocker.spigot.utils.guin.builders;
+package de.derfrzocker.spigot.utils.gui.builders;
 
-import de.derfrzocker.spigot.utils.guin.GuiInfo;
-import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
-import de.derfrzocker.spigot.utils.guin.buttons.SimpleButtonContext;
+import de.derfrzocker.spigot.utils.gui.GuiInfo;
+import de.derfrzocker.spigot.utils.gui.buttons.ButtonContext;
+import de.derfrzocker.spigot.utils.gui.buttons.SimpleButtonContext;
 import de.derfrzocker.spigot.utils.setting.DummySetting;
 import de.derfrzocker.spigot.utils.setting.Setting;
 

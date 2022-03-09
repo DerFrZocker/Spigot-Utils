@@ -1,11 +1,11 @@
-package de.derfrzocker.spigot.utils.guin;
+package de.derfrzocker.spigot.utils.gui;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import de.derfrzocker.spigot.utils.guin.buttons.Button;
-import de.derfrzocker.spigot.utils.guin.buttons.ButtonContext;
-import de.derfrzocker.spigot.utils.guin.buttons.ListButton;
-import de.derfrzocker.spigot.utils.guin.buttons.PageContent;
+import de.derfrzocker.spigot.utils.gui.buttons.Button;
+import de.derfrzocker.spigot.utils.gui.buttons.ButtonContext;
+import de.derfrzocker.spigot.utils.gui.buttons.ListButton;
+import de.derfrzocker.spigot.utils.gui.buttons.PageContent;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

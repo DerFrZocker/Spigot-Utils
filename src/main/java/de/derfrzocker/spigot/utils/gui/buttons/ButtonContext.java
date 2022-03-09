@@ -1,6 +1,6 @@
-package de.derfrzocker.spigot.utils.guin.buttons;
+package de.derfrzocker.spigot.utils.gui.buttons;
 
-import de.derfrzocker.spigot.utils.guin.GuiInfo;
+import de.derfrzocker.spigot.utils.gui.GuiInfo;
 
 public interface ButtonContext {
 

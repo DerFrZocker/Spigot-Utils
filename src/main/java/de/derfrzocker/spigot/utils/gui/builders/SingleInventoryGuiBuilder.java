@@ -1,8 +1,8 @@
-package de.derfrzocker.spigot.utils.guin.builders;
+package de.derfrzocker.spigot.utils.gui.builders;
 
-import de.derfrzocker.spigot.utils.guin.GuiInfo;
-import de.derfrzocker.spigot.utils.guin.InventoryGui;
-import de.derfrzocker.spigot.utils.guin.SingleInventoryGui;
+import de.derfrzocker.spigot.utils.gui.GuiInfo;
+import de.derfrzocker.spigot.utils.gui.InventoryGui;
+import de.derfrzocker.spigot.utils.gui.SingleInventoryGui;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
 import java.util.LinkedHashSet;

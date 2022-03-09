@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils.guin;
+package de.derfrzocker.spigot.utils.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

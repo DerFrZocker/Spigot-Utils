@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils.guin;
+package de.derfrzocker.spigot.utils.gui;
 
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.inventory.ItemStack;

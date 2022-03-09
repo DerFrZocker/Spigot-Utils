@@ -1,7 +1,7 @@
-package de.derfrzocker.spigot.utils.guin.buttons;
+package de.derfrzocker.spigot.utils.gui.buttons;
 
-import de.derfrzocker.spigot.utils.guin.ClickAction;
-import de.derfrzocker.spigot.utils.guin.GuiInfo;
+import de.derfrzocker.spigot.utils.gui.ClickAction;
+import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;

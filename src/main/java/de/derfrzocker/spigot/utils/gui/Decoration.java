@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils.guin;
+package de.derfrzocker.spigot.utils.gui;
 
 import java.util.List;
 
