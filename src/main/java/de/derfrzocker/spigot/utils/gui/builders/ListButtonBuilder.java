@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-public class ListButtonBuilder extends GuiBuilder {
+public final class ListButtonBuilder extends GuiBuilder {
 
     private final List<BiConsumer<ClickAction, Object>> actions = new LinkedList<>();
     private final List<TriplePredicate<Setting, GuiInfo, Object>> conditions = new LinkedList<>();
