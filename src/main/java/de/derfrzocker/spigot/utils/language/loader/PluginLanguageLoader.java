@@ -1,5 +1,6 @@
 package de.derfrzocker.spigot.utils.language.loader;
 
+import com.google.common.base.Charsets;
 import de.derfrzocker.spigot.utils.language.Language;
 import de.derfrzocker.spigot.utils.language.LanguageLoader;
 import de.derfrzocker.spigot.utils.setting.ConfigSetting;
@@ -90,7 +91,7 @@ public class PluginLanguageLoader implements LanguageLoader {
                     continue;
                 }
 
-                YamlConfiguration infoConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(jarFile.getInputStream(infoFile)));
+                YamlConfiguration infoConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(jarFile.getInputStream(infoFile), Charsets.UTF_8));
 
                 ItemStack icon = infoConfig.getItemStack("icon");
 
@@ -128,7 +129,7 @@ public class PluginLanguageLoader implements LanguageLoader {
                         continue;
                     }
 
-                    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(new InputStreamReader(jarFile.getInputStream(jarEntry.getValue())));
+                    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(new InputStreamReader(jarFile.getInputStream(jarEntry.getValue()), Charsets.UTF_8));
 
                     if (saveLocation != null) {
                         File file = new File(saveLocation, jarEntry.getKey());
