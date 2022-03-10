@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class YamlDao<V> implements ReloadAble {
 
-    private File file;
+    private final File file;
 
     private YamlConfiguration yaml;
 

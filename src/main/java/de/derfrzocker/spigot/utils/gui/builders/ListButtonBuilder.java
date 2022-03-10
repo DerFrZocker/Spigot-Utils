@@ -6,6 +6,7 @@ import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.buttons.ListButton;
 import de.derfrzocker.spigot.utils.gui.buttons.SimpleListButton;
+import de.derfrzocker.spigot.utils.language.LanguageManager;
 import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
@@ -69,12 +70,12 @@ public final class ListButtonBuilder extends GuiBuilder {
         return this;
     }
 
-    ListButton build(Setting parent) {
+    ListButton build(Setting parent, LanguageManager languageManager) {
         List<BiConsumer<ClickAction, Object>> actions = this.actions;
         List<TriplePredicate<Setting, GuiInfo, Object>> conditions = this.conditions;
         String identifier = this.identifier;
         parent = parent.withSetting(setting);
 
-        return new SimpleListButton(identifier, parent, actions, conditions, messageValues);
+        return new SimpleListButton(identifier, parent, languageManager, actions, conditions, messageValues);
     }
 }

@@ -46,9 +46,9 @@ public abstract class CommandSeparator implements TabExecutor {
      * <br>
      * If a usage and / or a description is given the command while be shout on the default {@link HelpCommand}.
      *
-     * @param executor    of the command
-     * @param key         the name of the command
-     * @param permission  of the command
+     * @param executor   of the command
+     * @param key        the name of the command
+     * @param permission of the command
      * @throws NullPointerException if executor is null
      */
     public void registerExecutor(final @NotNull TabExecutor executor, final @Nullable String key, final @Nullable Permission permission/*, final @Nullable MessageKey usage, final @Nullable MessageKey description*/) {

@@ -6,6 +6,7 @@ import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.builders.ButtonBuilder;
 import de.derfrzocker.spigot.utils.gui.builders.ButtonContextBuilder;
+import de.derfrzocker.spigot.utils.language.LanguageManager;
 import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
@@ -18,13 +19,15 @@ public class SimpleListButton implements ListButton {
 
     private final String identifier;
     private final Setting setting;
+    private final LanguageManager languageManager;
     private final List<BiConsumer<ClickAction, Object>> actions = new LinkedList<>();
     private final List<TriplePredicate<Setting, GuiInfo, Object>> conditions = new LinkedList<>();
     private final List<TripleFunction<Setting, GuiInfo, Object, MessageValue>> messageValues = new LinkedList<>();
 
-    public SimpleListButton(String identifier, Setting setting, List<BiConsumer<ClickAction, Object>> actions, List<TriplePredicate<Setting, GuiInfo, Object>> conditions, List<TripleFunction<Setting, GuiInfo, Object, MessageValue>> messageValues) {
+    public SimpleListButton(String identifier, Setting setting, LanguageManager languageManager, List<BiConsumer<ClickAction, Object>> actions, List<TriplePredicate<Setting, GuiInfo, Object>> conditions, List<TripleFunction<Setting, GuiInfo, Object, MessageValue>> messageValues) {
         this.identifier = identifier;
         this.setting = setting;
+        this.languageManager = languageManager;
         this.actions.addAll(actions);
         this.conditions.addAll(conditions);
         this.messageValues.addAll(messageValues);
@@ -54,7 +57,7 @@ public class SimpleListButton implements ListButton {
 
             builder.button(buttonBuilder);
 
-            buttonContexts.add(builder.build());
+            buttonContexts.add(builder.build(languageManager));
         }
 
         return buttonContexts;

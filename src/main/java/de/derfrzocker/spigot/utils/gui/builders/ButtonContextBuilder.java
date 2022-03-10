@@ -3,6 +3,7 @@ package de.derfrzocker.spigot.utils.gui.builders;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.gui.buttons.SimpleButtonContext;
+import de.derfrzocker.spigot.utils.language.LanguageManager;
 import de.derfrzocker.spigot.utils.setting.DummySetting;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
@@ -71,11 +72,11 @@ public final class ButtonContextBuilder extends GuiBuilder {
         return this;
     }
 
-    public ButtonContext build() {
-        return build(new DummySetting());
+    public ButtonContext build(LanguageManager languageManager) {
+        return build(new DummySetting(), languageManager);
     }
 
-    ButtonContext build(Setting parent) {
+    ButtonContext build(Setting parent, LanguageManager languageManager) {
         BiFunction<Setting, GuiInfo, Integer> slotFunction = this.slotFunction;
         ButtonBuilder button = this.button;
         String identifier = this.identifier;
@@ -89,6 +90,6 @@ public final class ButtonContextBuilder extends GuiBuilder {
             button = ButtonBuilder.builder().identifier(identifier);
         }
 
-        return new SimpleButtonContext(parent, slotFunction, button.build(parent), conditions);
+        return new SimpleButtonContext(parent, slotFunction, button.build(parent, languageManager), conditions);
     }
 }

@@ -3,6 +3,7 @@ package de.derfrzocker.spigot.utils.gui.builders;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.InventoryGui;
 import de.derfrzocker.spigot.utils.gui.SingleInventoryGui;
+import de.derfrzocker.spigot.utils.language.LanguageManager;
 import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 
@@ -17,6 +18,7 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
     private final Set<ButtonContextBuilder> buttonContextBuilders = new LinkedHashSet<>();
     private final Set<ListButtonBuilder> listButtonBuilders = new LinkedHashSet<>();
     private final List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues = new LinkedList<>();
+    private LanguageManager languageManager;
     private BiFunction<Setting, GuiInfo, String> name;
     private BiFunction<Setting, GuiInfo, Integer> rows;
     private BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp;
@@ -36,6 +38,11 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
 
     public SingleInventoryGuiBuilder identifier(String identifier) {
         this.identifier = identifier;
+        return this;
+    }
+
+    public SingleInventoryGuiBuilder languageManager(LanguageManager languageManager) {
+        this.languageManager = languageManager;
         return this;
     }
 
@@ -106,10 +113,10 @@ public final class SingleInventoryGuiBuilder extends GuiBuilder {
             decorations = (setting, guiInfo) -> setting.get(identifier, "place-decorations", true);
         }
 
-        SingleInventoryGui gui = new SingleInventoryGui(identifier, setting, rows, name, allowBottomPickUp, decorations, messageValues);
+        SingleInventoryGui gui = new SingleInventoryGui(identifier, setting, languageManager, rows, name, allowBottomPickUp, decorations, messageValues);
 
-        buttonContextBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addButtonContext);
-        listButtonBuilders.stream().map(builder -> builder.build(setting)).forEach(gui::addListButton);
+        buttonContextBuilders.stream().map(builder -> builder.build(setting, languageManager)).forEach(gui::addButtonContext);
+        listButtonBuilders.stream().map(builder -> builder.build(setting, languageManager)).forEach(gui::addListButton);
 
         return gui;
     }

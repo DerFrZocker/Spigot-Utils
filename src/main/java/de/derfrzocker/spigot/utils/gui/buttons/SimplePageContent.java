@@ -4,9 +4,11 @@ import de.derfrzocker.spigot.utils.TripleFunction;
 import de.derfrzocker.spigot.utils.TriplePredicate;
 import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
+import de.derfrzocker.spigot.utils.language.LanguageManager;
 import de.derfrzocker.spigot.utils.message.MessageUtil;
 import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,6 +21,7 @@ import java.util.function.BiFunction;
 public class SimplePageContent<D> implements PageContent<D> {
 
     private final Setting setting;
+    private final LanguageManager languageManager;
     private final BiFunction<Setting, GuiInfo, List<D>> dataFunction;
     private final TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction;
     private final TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
@@ -26,8 +29,9 @@ public class SimplePageContent<D> implements PageContent<D> {
     private final List<TriplePredicate<Setting, GuiInfo, D>> conditions = new LinkedList<>();
     private final List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues = new LinkedList<>();
 
-    public SimplePageContent(Setting setting, BiFunction<Setting, GuiInfo, List<D>> dataFunction, TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction, TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction, List<BiConsumer<ClickAction, D>> actions, List<TriplePredicate<Setting, GuiInfo, D>> conditions, List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues) {
+    public SimplePageContent(Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, List<D>> dataFunction, TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction, TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction, List<BiConsumer<ClickAction, D>> actions, List<TriplePredicate<Setting, GuiInfo, D>> conditions, List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues) {
         this.setting = setting;
+        this.languageManager = languageManager;
         this.dataFunction = dataFunction;
         this.itemStackFunction = itemStackFunction;
         this.slotFunction = slotFunction;
@@ -48,7 +52,7 @@ public class SimplePageContent<D> implements PageContent<D> {
 
     @Override
     public ItemStack getItemStack(GuiInfo guiInfo, D data) {
-        return MessageUtil.format(null, itemStackFunction.apply(setting, guiInfo, data), messageValues.stream().map(function -> function.apply(setting, guiInfo, data)).toArray(MessageValue[]::new));
+        return MessageUtil.format(languageManager != null ? languageManager.getLanguage((Player) guiInfo.getEntity()) : null, itemStackFunction.apply(setting, guiInfo, data), messageValues.stream().map(function -> function.apply(setting, guiInfo, data)).toArray(MessageValue[]::new));
     }
 
     @Override

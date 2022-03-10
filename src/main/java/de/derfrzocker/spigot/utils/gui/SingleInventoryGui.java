@@ -5,12 +5,14 @@ import com.google.common.collect.HashBiMap;
 import de.derfrzocker.spigot.utils.gui.buttons.Button;
 import de.derfrzocker.spigot.utils.gui.buttons.ButtonContext;
 import de.derfrzocker.spigot.utils.gui.buttons.ListButton;
+import de.derfrzocker.spigot.utils.language.LanguageManager;
 import de.derfrzocker.spigot.utils.message.MessageUtil;
 import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -34,6 +36,7 @@ public class SingleInventoryGui implements InventoryGui, Listener {
 
     private final Map<HumanEntity, InventoryGui> previous = new LinkedHashMap<>();
 
+    private final LanguageManager languageManager;
     private final BiFunction<Setting, GuiInfo, Boolean> decorations;
     private final Setting setting;
     private final BiFunction<Setting, GuiInfo, Integer> rows;
@@ -50,9 +53,10 @@ public class SingleInventoryGui implements InventoryGui, Listener {
 
     private boolean registered = false;
 
-    public SingleInventoryGui(String identifier, Setting setting, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues) {
+    public SingleInventoryGui(String identifier, Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues) {
         this.identifier = identifier;
         this.setting = setting;
+        this.languageManager = languageManager;
         this.rows = rows;
         this.name = name;
         this.allowBottomPickUp = allowBottomPickUp;
@@ -101,7 +105,7 @@ public class SingleInventoryGui implements InventoryGui, Listener {
     public void createGui(Plugin plugin, HumanEntity humanEntity) {
         GuiInfo guiInfo = new SimpleGuiInfo(this, humanEntity);
         Inventory oldInv = inventorys.get(humanEntity);
-        Inventory newInv = Bukkit.createInventory(null, rows.apply(setting, guiInfo) * 9, MessageUtil.formatToString(null, name.apply(setting, guiInfo), messageValues.stream().map(function -> function.apply(setting, guiInfo)).toArray(MessageValue[]::new)));
+        Inventory newInv = Bukkit.createInventory(null, rows.apply(setting, guiInfo) * 9, MessageUtil.formatToString(languageManager != null ? languageManager.getLanguage((Player) humanEntity) : null, name.apply(setting, guiInfo), messageValues.stream().map(function -> function.apply(setting, guiInfo)).toArray(MessageValue[]::new)));
 
         fillInventory(newInv, humanEntity);
 

@@ -4,6 +4,7 @@ import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.buttons.Button;
 import de.derfrzocker.spigot.utils.gui.buttons.SimpleButton;
+import de.derfrzocker.spigot.utils.language.LanguageManager;
 import de.derfrzocker.spigot.utils.message.MessageValue;
 import de.derfrzocker.spigot.utils.setting.Setting;
 import org.bukkit.Material;
@@ -81,7 +82,7 @@ public final class ButtonBuilder extends GuiBuilder {
         return this;
     }
 
-    Button build(Setting parent) {
+    Button build(Setting parent, LanguageManager languageManager) {
         BiFunction<Setting, GuiInfo, ItemStack> itemStackFunction = this.itemStackFunction;
         String identifier = this.identifier;
         parent = parent.withSetting(setting);
@@ -90,6 +91,6 @@ public final class ButtonBuilder extends GuiBuilder {
             itemStackFunction = (setting, guiInfo) -> setting.get(identifier, "item-stack", new ItemStack(Material.STONE));
         }
 
-        return new SimpleButton(parent, itemStackFunction, actions, conditions, messageValues);
+        return new SimpleButton(parent, languageManager, itemStackFunction, actions, conditions, messageValues);
     }
 }
