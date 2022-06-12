@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -50,10 +51,11 @@ public class SingleInventoryGui implements InventoryGui, Listener {
     private final Map<Inventory, Map<Integer, Button>> buttons = new LinkedHashMap<>();
     private final Map<Inventory, Boolean> allowBottomPickUps = new LinkedHashMap<>();
     private final BiMap<HumanEntity, Inventory> inventorys = HashBiMap.create();
+    private final List<BiConsumer<Setting, GuiInfo>> backActions = new LinkedList<>();
 
     private boolean registered = false;
 
-    public SingleInventoryGui(String identifier, Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues) {
+    public SingleInventoryGui(String identifier, Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues, List<BiConsumer<Setting, GuiInfo>> backActions) {
         this.identifier = identifier;
         this.setting = setting;
         this.languageManager = languageManager;
@@ -62,6 +64,7 @@ public class SingleInventoryGui implements InventoryGui, Listener {
         this.allowBottomPickUp = allowBottomPickUp;
         this.decorations = decorations;
         this.messageValues.addAll(messageValues);
+        this.backActions.addAll(backActions);
     }
 
     public void addButtonContext(ButtonContext buttonContext) {
@@ -200,6 +203,12 @@ public class SingleInventoryGui implements InventoryGui, Listener {
         }
 
         humanEntity.openInventory(inventorys.get(humanEntity));
+    }
+
+    @Override
+    public void onBack(Player player) {
+        GuiInfo guiInfo = new SimpleGuiInfo(this, player);
+        backActions.forEach(value -> value.accept(setting, guiInfo));
     }
 
     @EventHandler

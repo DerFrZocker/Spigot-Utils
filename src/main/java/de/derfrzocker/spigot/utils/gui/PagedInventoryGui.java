@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -56,10 +57,11 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
 
     private final Map<Inventory, HumanEntity> inventoryHuman = new LinkedHashMap<>();
     private final Map<HumanEntity, PagedInventoryGuiData> guiDatas = new LinkedHashMap<>();
+    private final List<BiConsumer<Setting, GuiInfo>> backActions = new LinkedList<>();
 
     private boolean registered = false;
 
-    public PagedInventoryGui(String identifier, Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Integer> upperGap, BiFunction<Setting, GuiInfo, Integer> lowerGap, BiFunction<Setting, GuiInfo, Integer> sideGap, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, PageContent<D> pageContent, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues) {
+    public PagedInventoryGui(String identifier, Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, Integer> rows, BiFunction<Setting, GuiInfo, String> name, BiFunction<Setting, GuiInfo, Integer> upperGap, BiFunction<Setting, GuiInfo, Integer> lowerGap, BiFunction<Setting, GuiInfo, Integer> sideGap, BiFunction<Setting, GuiInfo, Boolean> allowBottomPickUp, PageContent<D> pageContent, BiFunction<Setting, GuiInfo, Boolean> decorations, List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues, List<BiConsumer<Setting, GuiInfo>> backActions) {
         this.identifier = identifier;
         this.setting = setting;
         this.languageManager = languageManager;
@@ -72,6 +74,7 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
         this.pageContent = pageContent;
         this.decorations = decorations;
         this.messageValues.addAll(messageValues);
+        this.backActions.addAll(backActions);
     }
 
     public void addButtonContext(ButtonContext buttonContext) {
@@ -313,6 +316,12 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
         }
 
         humanEntity.openInventory(guiDatas.get(humanEntity).inventorys.inverse().get(0));
+    }
+
+    @Override
+    public void onBack(Player player) {
+        GuiInfo guiInfo = new SimpleGuiInfo(this, player);
+        backActions.forEach(value -> value.accept(setting, guiInfo));
     }
 
     @EventHandler

@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public final class PagedInventoryGuiBuilder extends GuiBuilder {
@@ -21,6 +22,7 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
     private final Set<ButtonContextBuilder> buttonContextBuilders = new LinkedHashSet<>();
     private final Set<ListButtonBuilder> listButtonBuilders = new LinkedHashSet<>();
     private final List<BiFunction<Setting, GuiInfo, MessageValue>> messageValues = new LinkedList<>();
+    private final List<BiConsumer<Setting, GuiInfo>> backActions = new LinkedList<>();
     private LanguageManager languageManager;
     private BiFunction<Setting, GuiInfo, String> name;
     private BiFunction<Setting, GuiInfo, Integer> rows;
@@ -103,6 +105,11 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
         return this;
     }
 
+    public PagedInventoryGuiBuilder withBackAction(BiConsumer<Setting, GuiInfo> backAction) {
+        backActions.add(backAction);
+        return this;
+    }
+
     public PagedInventoryGuiBuilder addDefaultNextButton() {
         addButtonContext(ButtonContextBuilder.
                 builder().
@@ -171,7 +178,7 @@ public final class PagedInventoryGuiBuilder extends GuiBuilder {
             decorations = (setting, guiInfo) -> setting.get(identifier, "place-decorations", true);
         }
 
-        PagedInventoryGui<?> gui = new PagedInventoryGui<>(identifier, setting, languageManager, rows, name, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContentBuilder.build(setting, languageManager), decorations, messageValues);
+        PagedInventoryGui<?> gui = new PagedInventoryGui<>(identifier, setting, languageManager, rows, name, upperGap, lowerGap, sideGap, allowBottomPickUp, pageContentBuilder.build(setting, languageManager), decorations, messageValues, backActions);
 
         buttonContextBuilders.stream().map(builder -> builder.build(setting, languageManager)).forEach(gui::addButtonContext);
         listButtonBuilders.stream().map(builder -> builder.build(setting, languageManager)).forEach(gui::addListButton);
