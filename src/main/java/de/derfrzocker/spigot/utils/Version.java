@@ -3,6 +3,10 @@ package de.derfrzocker.spigot.utils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public enum Version implements Comparable<Version> {
 
@@ -61,6 +65,51 @@ public enum Version implements Comparable<Version> {
         Validate.notNull(server, "Server cannot be null");
 
         return server.getName().equalsIgnoreCase("Paper");
+    }
+
+    public static boolean isSupportedVersion(@Nullable Logger logger, @NotNull Version serverVersion, @NotNull Version... supportedVersions) {
+        for (Version version : supportedVersions) {
+            if (version == serverVersion) {
+                return true;
+            }
+        }
+
+        if (logger == null) {
+            return false;
+        }
+
+        logger.warning(String.format("The Server version which you are running is unsupported, you are running version '%s'.", serverVersion));
+        logger.warning(String.format("The plugin supports following versions %s.", combineVersions(supportedVersions)));
+
+        if (serverVersion == Version.UNKNOWN) {
+            logger.warning(String.format("The Version '%s' can indicate, that you are using a newer Minecraft version than currently supported.", serverVersion));
+            logger.warning("In this case please update to the newest version of this plugin. If this is the newest Version, than please be patient. It can take some weeks until the plugin is updated.");
+        }
+
+        logger.log(Level.WARNING, "No compatible Server version found!", new IllegalStateException("No compatible Server version found!"));
+
+        return false;
+    }
+
+    @NotNull
+    private static String combineVersions(@NotNull Version... versions) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        boolean first = true;
+
+        for (Version version : versions) {
+            if (first) {
+                first = false;
+            } else {
+                stringBuilder.append(" ");
+            }
+
+            stringBuilder.append("'");
+            stringBuilder.append(version);
+            stringBuilder.append("'");
+        }
+
+        return stringBuilder.toString();
     }
 
     /**
@@ -128,5 +177,4 @@ public enum Version implements Comparable<Version> {
 
         return value <= version.value;
     }
-
 }
