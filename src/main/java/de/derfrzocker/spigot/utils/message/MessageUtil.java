@@ -41,6 +41,7 @@ public final class MessageUtil {
 
         messages
                 .stream()
+                .map(line -> replacePlaceHolder(line, messageValues))
                 .map(line -> {
                     if (language != null) {
                         return replaceTranslation(language, line, messageValues);
