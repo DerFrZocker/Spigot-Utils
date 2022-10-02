@@ -13,8 +13,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 public class DirectLanguageManager implements LanguageManager {
@@ -86,6 +88,11 @@ public class DirectLanguageManager implements LanguageManager {
         }
 
         return language;
+    }
+
+    @Override
+    public @NotNull List<Language> getAvailableLanguages() {
+        return new ArrayList<>(languages.values());
     }
 
     @Override

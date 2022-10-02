@@ -4,6 +4,8 @@ import de.derfrzocker.spigot.utils.ReloadAble;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public interface LanguageManager extends ReloadAble {
 
     /**
@@ -31,9 +33,19 @@ public interface LanguageManager extends ReloadAble {
     void removeLanguage(@NotNull Player player);
 
     /**
+     * Returns the language of the player or the default one if not set.
+     *
      * @param player the player from which the language should be obtained.
      * @return the language the player has set or the default language
      */
     @NotNull
     Language getLanguage(@NotNull Player player);
+
+    /**
+     * Returns a list of all available languages this LanguageManager knows.
+     *
+     * @return a list which contains all available languages
+     */
+    @NotNull
+    List<Language> getAvailableLanguages();
 }
