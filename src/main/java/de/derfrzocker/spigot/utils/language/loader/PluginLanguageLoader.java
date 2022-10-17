@@ -120,11 +120,10 @@ public class PluginLanguageLoader implements LanguageLoader {
                 Setting setting = new ConfigSetting(() -> infoConfig);
 
                 if (saveLocation != null) {
-                    if (!saveLocation.exists()) {
-                        saveLocation.mkdirs();
-                    }
-
                     File file = new File(saveLocation, entry.getKey() + "/info.yml");
+                    if (!file.getParentFile().exists()) {
+                        file.getParentFile().mkdirs();
+                    }
                     if ((!file.exists() && file.createNewFile()) || override) {
                         infoConfig.save(file);
                     }
@@ -139,6 +138,9 @@ public class PluginLanguageLoader implements LanguageLoader {
 
                     if (saveLocation != null) {
                         File file = new File(saveLocation, entry.getKey() + "/" + jarEntry.getKey());
+                        if (!file.getParentFile().exists()) {
+                            file.getParentFile().mkdirs();
+                        }
                         if ((!file.exists() && file.createNewFile()) || override) {
                             configuration.save(file);
                         }
