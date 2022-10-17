@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils;
+package de.derfrzocker.spigot.utils.function;
 
 @FunctionalInterface
 public interface TriplePredicate<F, S, T> {

@@ -1,7 +1,7 @@
 package de.derfrzocker.spigot.utils.gui.builders;
 
-import de.derfrzocker.spigot.utils.TripleFunction;
-import de.derfrzocker.spigot.utils.TriplePredicate;
+import de.derfrzocker.spigot.utils.function.TripleFunction;
+import de.derfrzocker.spigot.utils.function.TriplePredicate;
 import de.derfrzocker.spigot.utils.gui.ClickAction;
 import de.derfrzocker.spigot.utils.gui.GuiInfo;
 import de.derfrzocker.spigot.utils.gui.buttons.ListButton;
