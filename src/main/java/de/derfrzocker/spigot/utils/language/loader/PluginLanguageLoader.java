@@ -32,16 +32,22 @@ public class PluginLanguageLoader implements LanguageLoader {
     private final Plugin plugin;
     @Nullable
     private final File saveLocation;
+    private final boolean override;
 
     public PluginLanguageLoader(@NotNull Plugin plugin) {
-        this(plugin, null);
+        this(plugin, null, false);
     }
 
     public PluginLanguageLoader(@NotNull Plugin plugin, @Nullable File saveLocation) {
+        this(plugin, null, false);
+    }
+
+    public PluginLanguageLoader(@NotNull Plugin plugin, @Nullable File saveLocation, boolean override) {
         Validate.notNull(plugin, "Plugin cannot be null.");
 
         this.plugin = plugin;
         this.saveLocation = saveLocation;
+        this.override = override;
     }
 
     @Override
@@ -118,8 +124,8 @@ public class PluginLanguageLoader implements LanguageLoader {
                         saveLocation.mkdirs();
                     }
 
-                    File file = new File(saveLocation, "info.yml");
-                    if (!file.exists()) {
+                    File file = new File(saveLocation, entry.getKey() + "/info.yml");
+                    if ((!file.exists() && file.createNewFile()) || override) {
                         infoConfig.save(file);
                     }
                 }
@@ -132,8 +138,8 @@ public class PluginLanguageLoader implements LanguageLoader {
                     YamlConfiguration configuration = YamlConfiguration.loadConfiguration(new InputStreamReader(jarFile.getInputStream(jarEntry.getValue()), Charsets.UTF_8));
 
                     if (saveLocation != null) {
-                        File file = new File(saveLocation, jarEntry.getKey());
-                        if (!file.exists()) {
+                        File file = new File(saveLocation, entry.getKey() + "/" + jarEntry.getKey());
+                        if ((!file.exists() && file.createNewFile()) || override) {
                             configuration.save(file);
                         }
                     }
