@@ -56,7 +56,7 @@ public class FileLanguageLoader implements LanguageLoader {
 
             File infoFile = new File(language, "info.yml");
 
-            if (infoFile.exists()) {
+            if (!infoFile.exists()) {
                 plugin.getLogger().info(String.format("No 'info.yml' found for the language '%s' in directory '%s', ignoring it.", name, language));
                 continue;
             }
