@@ -117,6 +117,11 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
         humanEntity.openInventory(toOpen);
     }
 
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
     @EventHandler
     @Override
     public void onClick(InventoryClickEvent event) {

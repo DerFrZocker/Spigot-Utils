@@ -7,6 +7,8 @@ import org.bukkit.plugin.Plugin;
 
 public interface InventoryGui {
 
+    String getIdentifier();
+
     void onClick(InventoryClickEvent event);
 
     void createGui(Plugin plugin, HumanEntity humanEntity);

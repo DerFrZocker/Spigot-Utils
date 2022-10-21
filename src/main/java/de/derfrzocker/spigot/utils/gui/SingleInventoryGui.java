@@ -75,6 +75,11 @@ public class SingleInventoryGui implements InventoryGui, Listener {
         listButtons.add(listButton);
     }
 
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
     @EventHandler
     @Override
     public void onClick(InventoryClickEvent event) {
