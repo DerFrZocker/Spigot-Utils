@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public enum Version implements Comparable<Version> {
 
+    v1_19_R2(19),
     v1_19_R1(18),
     v1_18_R2(17),
     v1_18_R1(16),
