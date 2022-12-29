@@ -171,7 +171,7 @@ public class PagedInventoryGui<D> implements InventoryGui, Listener {
         GuiInfo guiInfo = new SimpleGuiInfo(this, humanEntity);
         List<D> datas = pageContent.getData(guiInfo);
         TreeMap<Integer, D> sortedData = new TreeMap<>();
-        int current = 0;
+        int current = pageContent.getSkipSlotsFunction().apply(setting, guiInfo).orElse(0);
         for (D data : datas) {
             OptionalInt optionalInt = pageContent.getSlot(guiInfo, data);
             int slot;

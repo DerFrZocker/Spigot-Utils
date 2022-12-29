@@ -28,6 +28,7 @@ public final class PageContentBuilder<D> extends GuiBuilder {
     private BiFunction<Setting, GuiInfo, List<D>> dataFunction;
     private TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction;
     private TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
+    private BiFunction<Setting, GuiInfo, OptionalInt> skipSlotsFunction;
     private final List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues = new LinkedList<>();
 
     private PageContentBuilder() {
@@ -72,6 +73,11 @@ public final class PageContentBuilder<D> extends GuiBuilder {
         return this;
     }
 
+    public PageContentBuilder<D> skipSlots(BiFunction<Setting, GuiInfo, OptionalInt> skipSlotsFunction) {
+        this.skipSlotsFunction = skipSlotsFunction;
+        return this;
+    }
+
     public PageContentBuilder<D> withAction(BiConsumer<ClickAction, D> consumer) {
         actions.add(consumer);
         return this;
@@ -106,6 +112,7 @@ public final class PageContentBuilder<D> extends GuiBuilder {
         BiFunction<Setting, GuiInfo, List<D>> dataFunction = this.dataFunction;
         TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction = this.itemStackFunction;
         TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction = this.slotFunction;
+        BiFunction<Setting, GuiInfo, OptionalInt> skipSlotsFunction = this.skipSlotsFunction;
         parent = parent.withSetting(setting);
 
         if (itemStackFunction == null) {
@@ -123,10 +130,21 @@ public final class PageContentBuilder<D> extends GuiBuilder {
             };
         }
 
+        if (skipSlotsFunction == null) {
+            skipSlotsFunction = ((setting, guiInfo) -> {
+                Integer slot = setting.get("skip-slots", null);
+                if (slot == null) {
+                    return OptionalInt.empty();
+                } else {
+                    return OptionalInt.of(slot);
+                }
+            });
+        }
+
         if (dataFunction == null) {
             dataFunction = (setting, guiInfo) -> new ArrayList<>();
         }
 
-        return new SimplePageContent<>(parent, languageManager, dataFunction, itemStackFunction, slotFunction, actions, conditions, messageValues);
+        return new SimplePageContent<>(parent, languageManager, dataFunction, itemStackFunction, slotFunction, actions, conditions, messageValues, skipSlotsFunction);
     }
 }

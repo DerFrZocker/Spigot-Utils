@@ -25,16 +25,18 @@ public class SimplePageContent<D> implements PageContent<D> {
     private final BiFunction<Setting, GuiInfo, List<D>> dataFunction;
     private final TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction;
     private final TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction;
+    private final BiFunction<Setting, GuiInfo, OptionalInt> skipSlotsFunction;
     private final List<BiConsumer<ClickAction, D>> actions = new LinkedList<>();
     private final List<TriplePredicate<Setting, GuiInfo, D>> conditions = new LinkedList<>();
     private final List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues = new LinkedList<>();
 
-    public SimplePageContent(Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, List<D>> dataFunction, TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction, TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction, List<BiConsumer<ClickAction, D>> actions, List<TriplePredicate<Setting, GuiInfo, D>> conditions, List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues) {
+    public SimplePageContent(Setting setting, LanguageManager languageManager, BiFunction<Setting, GuiInfo, List<D>> dataFunction, TripleFunction<Setting, GuiInfo, D, ItemStack> itemStackFunction, TripleFunction<Setting, GuiInfo, D, OptionalInt> slotFunction, List<BiConsumer<ClickAction, D>> actions, List<TriplePredicate<Setting, GuiInfo, D>> conditions, List<TripleFunction<Setting, GuiInfo, D, MessageValue>> messageValues, BiFunction<Setting, GuiInfo, OptionalInt> skipSlotsFunction) {
         this.setting = setting;
         this.languageManager = languageManager;
         this.dataFunction = dataFunction;
         this.itemStackFunction = itemStackFunction;
         this.slotFunction = slotFunction;
+        this.skipSlotsFunction = skipSlotsFunction;
         this.actions.addAll(actions);
         this.conditions.addAll(conditions);
         this.messageValues.addAll(messageValues);
@@ -68,5 +70,10 @@ public class SimplePageContent<D> implements PageContent<D> {
         } else {
             event.getClickEvent().setCancelled(true);
         }
+    }
+
+    @Override
+    public BiFunction<Setting, GuiInfo, OptionalInt> getSkipSlotsFunction() {
+        return skipSlotsFunction;
     }
 }
