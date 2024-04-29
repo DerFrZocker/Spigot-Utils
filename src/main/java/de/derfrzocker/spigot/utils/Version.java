@@ -1,11 +1,13 @@
 package de.derfrzocker.spigot.utils;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
 
 public enum Version implements Comparable<Version> {
 
+    v1_20_R4(24),
     v1_20_R3(23),
     v1_20_R2(22),
     v1_20_R1(21),
@@ -46,6 +48,12 @@ public enum Version implements Comparable<Version> {
     @NotNull
     public static Version getServerVersion(@NotNull Server server) {
         Validate.notNull(server, "Server cannot be null");
+
+        if (isPaper(server)) {
+            if (Bukkit.getBukkitVersion().contains("1.20.5")) {
+                return v1_20_R4;
+            }
+        }
 
         String packageName = server.getClass().getPackage().getName();
         String version = packageName.substring(packageName.lastIndexOf('.') + 1);
