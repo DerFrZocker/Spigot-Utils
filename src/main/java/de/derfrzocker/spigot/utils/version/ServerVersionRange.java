@@ -17,7 +17,7 @@ public record ServerVersionRange(ServerVersion minInclusive, ServerVersion maxIn
     public static final ServerVersionRange V1_9 = create("1.9", "1.9.4");
     public static final ServerVersionRange V1_8 = create("1.8", "1.8.9");
 
-    boolean isInRange(ServerVersion version) {
+    public boolean isInRange(ServerVersion version) {
         return version.isNewerThanOrSameAs(minInclusive) && version.isOlderThanOrSameAs(maxInclusive);
     }
 
