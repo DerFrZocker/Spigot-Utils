@@ -2,8 +2,11 @@ package de.derfrzocker.spigot.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class ServerVersion implements Comparable<ServerVersion> {
 
@@ -33,6 +36,46 @@ public final class ServerVersion implements Comparable<ServerVersion> {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
+    }
+
+    public static boolean isSupportedVersion(@Nullable Logger logger, @NotNull ServerVersion serverVersion, @NotNull ServerVersion... supportedVersions) {
+        for (ServerVersion version : supportedVersions) {
+            if (version == serverVersion) {
+                return true;
+            }
+        }
+
+        if (logger == null) {
+            return false;
+        }
+
+        logger.warning(String.format("The Server version which you are running is unsupported, you are running version '%s'.", serverVersion));
+        logger.warning(String.format("The plugin supports following versions %s.", combineVersions(supportedVersions)));
+
+        logger.log(Level.WARNING, "No compatible Server version found!", new IllegalStateException("No compatible Server version found!"));
+
+        return false;
+    }
+
+    @NotNull
+    private static String combineVersions(@NotNull ServerVersion... versions) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        boolean first = true;
+
+        for (ServerVersion version : versions) {
+            if (first) {
+                first = false;
+            } else {
+                stringBuilder.append(" ");
+            }
+
+            stringBuilder.append("'");
+            stringBuilder.append(version);
+            stringBuilder.append("'");
+        }
+
+        return stringBuilder.toString();
     }
 
     public static ServerVersion getCurrentVersion(Server server) {
