@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils;
+package de.derfrzocker.spigot.utils.version;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +38,9 @@ public final class ServerVersion implements Comparable<ServerVersion> {
         this.patch = patch;
     }
 
-    public static boolean isSupportedVersion(@Nullable Logger logger, @NotNull ServerVersion serverVersion, @NotNull ServerVersion... supportedVersions) {
-        for (ServerVersion version : supportedVersions) {
-            if (version == serverVersion) {
+    public static boolean isSupportedVersion(@Nullable Logger logger, @NotNull ServerVersion serverVersion, @NotNull ServerVersionRange... supportedVersions) {
+        for (ServerVersionRange version : supportedVersions) {
+            if (version.isInRange(serverVersion)) {
                 return true;
             }
         }
@@ -58,21 +58,19 @@ public final class ServerVersion implements Comparable<ServerVersion> {
     }
 
     @NotNull
-    private static String combineVersions(@NotNull ServerVersion... versions) {
+    private static String combineVersions(@NotNull ServerVersionRange... versions) {
         StringBuilder stringBuilder = new StringBuilder();
 
         boolean first = true;
 
-        for (ServerVersion version : versions) {
+        for (ServerVersionRange version : versions) {
             if (first) {
                 first = false;
             } else {
-                stringBuilder.append(" ");
+                stringBuilder.append(", ");
             }
 
-            stringBuilder.append("'");
             stringBuilder.append(version);
-            stringBuilder.append("'");
         }
 
         return stringBuilder.toString();

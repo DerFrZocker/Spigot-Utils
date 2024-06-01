@@ -1,4 +1,4 @@
-package de.derfrzocker.spigot.utils;
+package de.derfrzocker.spigot.utils.version;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
