@@ -2,6 +2,7 @@ package de.derfrzocker.spigot.utils.version;
 
 public enum InternalVersion {
 
+    v1_21_R7(ServerVersionRange.create("1.21.11", "1.21.11")),
     v1_21_R6(ServerVersionRange.create("1.21.9", "1.21.10")),
     v1_21_R5(ServerVersionRange.create("1.21.6", "1.21.8")),
     v1_21_R4(ServerVersionRange.create("1.21.5", "1.21.5")),
