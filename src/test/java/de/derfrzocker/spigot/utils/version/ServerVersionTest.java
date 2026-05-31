@@ -19,7 +19,8 @@ public class ServerVersionTest {
                 Arguments.of("none", "none"),
                 Arguments.of("1.12", "1.12.0"),
                 Arguments.of("1.13.3", "1.13.3"),
-                Arguments.of("1.+20.3", "1.20.3")
+                Arguments.of("1.+20.3", "1.20.3"),
+                Arguments.of("26.1.2.build.65", "26.1.2")
         );
     }
 
