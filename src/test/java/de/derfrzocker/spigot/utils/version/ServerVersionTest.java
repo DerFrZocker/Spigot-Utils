@@ -1,8 +1,7 @@
 package de.derfrzocker.spigot.utils.version;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import java.util.stream.Stream;
 import org.bukkit.Server;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,8 @@ public class ServerVersionTest {
                 Arguments.of("none", "none"),
                 Arguments.of("1.12", "1.12.0"),
                 Arguments.of("1.13.3", "1.13.3"),
-                Arguments.of("1.+20.3", "1.20.3")
+                Arguments.of("1.+20.3", "1.20.3"),
+                Arguments.of("26.1.2.build.65", "26.1.2")
         );
     }
 

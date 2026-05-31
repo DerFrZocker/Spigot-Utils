@@ -38,7 +38,10 @@ public final class ServerVersion implements Comparable<ServerVersion> {
         this.patch = patch;
     }
 
-    public static boolean isSupportedVersion(@Nullable Logger logger, @NotNull ServerVersion serverVersion, @NotNull ServerVersionRange... supportedVersions) {
+    public static boolean isSupportedVersion(
+            @Nullable Logger logger,
+            @NotNull ServerVersion serverVersion,
+            @NotNull ServerVersionRange... supportedVersions) {
         for (ServerVersionRange version : supportedVersions) {
             if (version.isInRange(serverVersion)) {
                 return true;
@@ -49,10 +52,15 @@ public final class ServerVersion implements Comparable<ServerVersion> {
             return false;
         }
 
-        logger.warning(String.format("The Server version which you are running is unsupported, you are running version '%s'.", serverVersion));
+        logger.warning(String.format(
+                "The Server version which you are running is unsupported, you are running version '%s'.",
+                serverVersion));
         logger.warning(String.format("The plugin supports following versions %s.", combineVersions(supportedVersions)));
 
-        logger.log(Level.WARNING, "No compatible Server version found!", new IllegalStateException("No compatible Server version found!"));
+        logger.log(
+                Level.WARNING,
+                "No compatible Server version found!",
+                new IllegalStateException("No compatible Server version found!"));
 
         return false;
     }
@@ -88,6 +96,10 @@ public final class ServerVersion implements Comparable<ServerVersion> {
             return versions.computeIfAbsent("none", s -> new ServerVersion());
         }
 
+        if (versionString.contains(".build.")) {
+            versionString = versionString.substring(0, versionString.indexOf(".build."));
+        }
+
         ServerVersion version = versions.get(versionString);
 
         if (version != null) {
@@ -97,7 +109,11 @@ public final class ServerVersion implements Comparable<ServerVersion> {
         String[] versionParts = versionString.split("\\.");
 
         if (versionParts.length != 2 && versionParts.length != 3) {
-            throw new IllegalArgumentException(String.format("API version string should be of format \"major.minor.patch\" or \"major.minor\", where \"major\", \"minor\" and \"patch\" are numbers. For example \"1.18.2\" or \"1.13\", but got '%s' instead.", versionString));
+            throw new IllegalArgumentException(String.format(
+                    "API version string should be of format \"major.minor.patch\" or \"major.minor\", where " +
+                    "\"major\", \"minor\" and \"patch\" are numbers. For example \"1.18.2\" or \"1.13\", but got '%s'" +
+                    " instead.",
+                    versionString));
         }
 
         int major = parseNumber(versionParts[0]);
