@@ -2,6 +2,7 @@ package de.derfrzocker.spigot.utils.version;
 
 public record ServerVersionRange(ServerVersion minInclusive, ServerVersion maxInclusive) {
 
+    public static final ServerVersionRange V26_3 = create("26.3", "26.3");
     public static final ServerVersionRange V26_2 = create("26.2", "26.2");
     public static final ServerVersionRange V26_1 = create("26.1", "26.1.2");
     public static final ServerVersionRange V1_21 = create("1.21", "1.21.11");
